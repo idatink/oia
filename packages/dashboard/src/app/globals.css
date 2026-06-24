@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-brand-warm-bone text-brand-deep-charcoal;
+  }
+
+  input,
+  textarea,
+  select {
+    @apply bg-brand-warm-bone outline-none ring-0 transition-all duration-200;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    @apply ring-1 ring-brand-terracotta;
+  }
+}

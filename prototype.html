@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NIA — Medical Tourism</title>
+<style>
+  :root {
+    --brand: #1B5E7A;
+    --brand-2: #12485C;
+    --accent: #F4A261;
+    --accent-2: #E6955F;
+    --danger: #E76F51;
+    --surface: #F8F9FA;
+    --ink: #1A1A2E;
+    --muted: #6B7280;
+    --border: #E5E7EB;
+    --card: #ffffff;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    background: var(--surface);
+  }
+  header, footer {
+    background: var(--brand);
+    color: white;
+    padding: 16px 24px;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  footer { position: static; }
+  nav a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 6px;
+  }
+  nav a:hover { color: white; background: rgba(255,255,255,0.15); }
+  nav a[aria-current] { color: white; background: rgba(255,255,255,0.2); }
+  .grid {
+    display: grid;
+    gap: 24px;
+    padding: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: 0 1px 2px rgba(17,24,39,0.04);
+  }
+  .badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: rgba(27,94,122,0.12);
+    color: var(--brand);
+  }
+  button.primary {
+    background: var(--brand);
+    color: white;
+    border: 0;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button.primary:hover { background: var(--brand-2); }
+  button.accent {
+    background: var(--accent);
+    color: #3b2410;
+    border: 0;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  button.accent:hover { background: var(--accent-2); }
+  .row { display: flex; gap: 14px; align-items: center; justify-content: space-between; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    border-radius: 999px;
+  }
+  .pill input { border: 0; outline: 0; background: transparent; }
+  .hidden { display: none !important; }
+  .chat {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 360px;
+    max-width: calc(100vw - 40px);
+    height: 520px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 20px 40px rgba(17,24,39,0.15);
+    display: grid;
+    grid-template-rows: 56px 1fr 56px;
+    overflow: hidden;
+  }
+  .chat header {
+    position: static;
+    background: linear-gradient(180deg, var(--brand), var(--brand-2));
+    color: white;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 0 14px;
+  }
+  .chat .messages {
+    background: #f3f4f6;
+    padding: 14px;
+    overflow-y: auto;
+  }
+  .bubble {
+    margin: 6px 0;
+    padding: 10px 12px;
+    border-radius: 16px;
+    max-width: 85%;
+    line-height: 1.3;
+    font-size: 14px;
+  }
+  .bubble.user { background: #dcfce7; margin-left: auto; border-bottom-right-radius: 4px; }
+  .bubble.nia { background: white; margin-right: auto; border-bottom-left-radius: 4px; }
+  .chat .composer {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    padding: 8px 10px;
+    background: white;
+    align-items: center;
+    border-top: 1px solid var(--border);
+  }
+  .chat .composer input {
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    outline: 0;
+  }
+  .fab {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 54px; height: 54px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #3b2410;
+    display: grid; place-items: center;
+    font-weight: 800;
+    box-shadow: 0 8px 20px rgba(244,162,97,0.35);
+    border: 0;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div style="font-weight:800">NIA Medical Tourism</div>
+  <nav>
+    <a href="#" data-view="home" aria-current>Home</a>
+    <a href="#" data-view="clinic">Clinic Dashboard</a>
+    <a href="#" data-view="about">About</a>
+  </nav>
+</header>
+
+<main id="app">
+  <!-- Home -->
+  <section id="view-home" class="grid">
+    <div class="card">
+      <div class="row">
+        <div>
+          <div class="badge">Popular</div>
+          <h1 style="margin:10px 0 6px">Dental implants</h1>
+          <p style="margin:0; color:var(--muted)">Antalya, Turkey · from $1,190</p>
+        </div>
+        <img src="https://images.unsplash.com/photo/1606811841689-23dfddce3e68?w=120&h=120&fit=crop" width="64" height="64" alt="dental" style="border-radius:10px" />
+      </div>
+      <div class="row" style="margin-top:14px">
+        <span class="pill">⏱ 5–7 days</span>
+        <span class="pill">★ 4.9</span>
+      </div>
+      <button class="accent" style="width:100%; margin-top:16px" onclick="niaChat('I want dental implants in Antalya. Suggest clinics.')">Ask NIA</button>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <div>
+          <div class="badge">Trending</div>
+          <h1 style="margin:10px 0 6px">Rhinoplasty</h1>
+          <p style="margin:0; color:var(--muted)">Istanbul, Turkey · from $3,450</p>
+        </div>
+        <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=120&h=120&fit=crop" width="64" height="64" alt="clinic" style="border-radius:10px" />
+      </div>
+      <div class="row" style="margin-top:14px">
+        <span class="pill">✈ Flights included</span>
+        <span class="pill">★ 4.8</span>
+      </div>
+      <button class="accent" style="width:100%; margin-top:16px" onclick="niaChat('I want rhinoplasty. Is Istanbul a good destination?')">Ask NIA</button>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <div>
+          <div class="badge">Family friendly</div>
+          <h1 style="margin:10px 0 6px">IVF Treatment</h1>
+          <p style="margin:0; color:var(--muted)">Prague, Czechia · from €2,900</p>
+        </div>
+        <img src="https://images.unsplash.com/photo-1581056771107-24ca5f033842?w=120&h=120&fit=crop" width="64" height="64" alt="ivf" style="border-radius:10px" />
+      </div>
+      <div class="row" style="margin-top:14px">
+        <span class="pill">🌍 English-speaking</span>
+        <span class="pill">★ 4.7</span>
+      </div>
+      <button class="accent" style="width:100%; margin-top:16px" onclick="niaChat('I want IVF treatment in Prague. What are next steps?')">Ask NIA</button>
+    </div>
+  </section>
+
+  <!-- Clinic Dashboard -->
+  <section id="view-clinic" class="hidden">
+    <div class="grid" style="grid-template-columns: repeat(auto-fit,minmax(220px,1fr))">
+      <div class="card">
+        <div class="badge">Revenue</div>
+        <h2 style="margin:8px 0 0">$247,800</h2>
+        <p style="color:var(--muted); margin:0">+12.4% vs last month</p>
+      </div>
+      <div class="card">
+        <div class="badge">Bookings</div>
+        <h2 style="margin:8px 0 0">38</h2>
+        <p style="color:var(--muted); margin:0">6 pending review</p>
+      </div>
+      <div class="card">
+        <div class="badge">Reviews</div>
+        <h2 style="margin:8px 0 0">4.9/5</h2>
+        <p style="color:var(--muted); margin:0">From 214 verified stays</p>
+      </div>
+      <div class="card">
+        <div class="badge">Occupancy</div>
+        <h2 style="margin:8px 0 0">87%</h2>
+        <p style="color:var(--muted); margin:0">Next 14 days</p>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="row">
+          <h3 style="margin:0">Recent bookings</h3>
+          <span class="badge">Live</span>
+        </div>
+        <ul style="padding-left:18px; color:var(--muted); line-height:1.8">
+          <li><strong>Sara M.</strong> — Dental implants — Antalya — <span style="color:#16a34a">Confirmed</span></li>
+          <li><strong>John D.</strong> — Rhinoplasty — Istanbul — <span style="color:#ca8a04">Awaiting deposit</span></li>
+          <li><strong>Amina K.</strong> — IVF — Prague — <span style="color:#16a34a">Confirmed</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="row">
+          <h3 style="margin:0">NIA Insights</h3>
+          <span class="badge">Agent</span>
+        </div>
+        <ul style="padding-left:18px; color:var(--muted); line-height:1.8">
+          <li>Best time to market: <strong>Q3 leads</strong> in Europe</li>
+          <li>Suggested procedure package: <strong>Dental + hotel</strong></li>
+          <li>WhatsApp conversion rate: <strong>24%</strong></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="view-about" class="hidden grid">
+    <div class="card">
+      <h1 style="margin-top:0">Dual-sided medical tourism platform</h1>
+      <p>Patients and clinics connect via NIA, the central AI agent that understands both sides.</p>
+      <p>Surfaces: Patient App, Clinic Dashboard, WhatsApp — all state synced.</p>
+    </div>
+  </section>
+</main>
+
+<button class="fab" id="fab" aria-label="Open NIA chat">N</button>
+<div id="chat" class="chat hidden">
+  <header>
+    <div>
+      <div style="font-weight:800">NIA</div>
+      <div style="font-size:12px; opacity:0.9">Medical concierge</div>
+    </div>
+    <div style="font-size:12px; opacity:0.85">WhatsApp-style</div>
+  </header>
+  <div class="messages" id="messages">
+    <div class="bubble nia">Hi! I’m NIA. I can help you compare clinics, estimate costs, check travel logistics, or start a booking. What procedure are you considering?</div>
+  </div>
+  <div class="composer">
+    <input id="q" placeholder="Message NIA…" />
+    <button class="primary" id="send">Send</button>
+  </div>
+</div>
+
+<script>
+  const app = {
+    views: ["home", "clinic", "about"],
+    chatOpen: false,
+    init() {
+      document.querySelectorAll('nav a[data-view]').forEach(a => a.addEventListener('click', e => {
+        e.preventDefault();
+        this.show(a.dataset.view);
+      }));
+
+      document.getElementById('fab').addEventListener('click', () => this.toggleChat());
+      document.getElementById('send').addEventListener('click', () => this.send());
+      document.getElementById('q').addEventListener('keydown', e => { if (e.key === 'Enter') this.send(); });
+    },
+    show(name) {
+      this.views.forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
+      const target = document.getElementById('view-' + name);
+      if (target) target.classList.remove('hidden');
+    },
+    toggleChat() {
+      this.chatOpen = !this.chatOpen;
+      document.getElementById('fab').classList.toggle('hidden', this.chatOpen);
+      document.getElementById('chat').classList.toggle('hidden', !this.chatOpen);
+      if (this.chatOpen) document.getElementById('q').focus();
+    },
+    send() {
+      const q = document.getElementById('q').value.trim();
+      if (!q) return;
+      this.addBubble(q, 'user');
+      document.getElementById('q').value = '';
+      setTimeout(() => this.simulateReply(q), 600);
+    },
+    addBubble(text, who) {
+      const box = document.getElementById('messages');
+      const el = document.createElement('div');
+      el.className = 'bubble ' + who;
+      el.textContent = text;
+      box.appendChild(el);
+      box.scrollTop = box.scrollHeight;
+    },
+    simulateReply(q) {
+      const ql = q.toLowerCase();
+      let reply = "I’ll help you with that. Based on what you’ve told me, I can check clinic availability and estimated costs for your dates.";
+      if (ql.includes('antalya') || ql.includes('dental')) {
+        reply = "Antalya is a strong option for dental work — quick turnaround, English-speaking clinics, and flight + hotel packages available. I can shortlist 3 verified clinics.";
+      } else if (ql.includes('istanbul') || ql.includes('rhino')) {
+        reply = "Istanbul has excellent rhinoplasty specialists. Average recovery: 7–10 days. I can share top-rated clinics and provide a cost breakdown.";
+      } else if (ql.includes('prague') || ql.includes('ivf')) {
+        reply = "Prague is well-regarded for IVF with high success rates and English-speaking teams. I’ll prepare a pre-screening checklist and travel timeline.";
+      } else if (ql.includes('hello') || ql.includes('hi')) {
+        reply = "Hello! Share the procedure and preferred destination, and I’ll get you a tailored comparison.";
+      }
+      this.addBubble(reply, 'nia');
+    }
+  };
+
+  window.niaChat = (seed) => {
+    if (!app.chatOpen) app.toggleChat();
+    if (seed) {
+      document.getElementById('q').value = seed;
+      app.send();
+    }
+  };
+
+  app.init();
+</script>
+</body>
+</html>

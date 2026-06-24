@@ -1,0 +1,11 @@
+# NIA Agent Workflow — Compaction Note
+
+Single-flight turn used for:
+- packages/agent/package.json (JSON/tooling only)
+
+Next turn target:
+- packages/agent/src/cli.ts
+- packages/agent/src/index.ts
+- packages/agent/src/router/topo.ts
+- packages/agent/src/adapters/index.ts
+- packages/agent/src/agents/*.ts

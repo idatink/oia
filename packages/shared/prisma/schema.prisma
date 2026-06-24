@@ -1,0 +1,368 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+// ─── Auth ────────────────────────────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  phone        String?
+  role         UserRole
+  passwordHash String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  patient     Patient?
+  coordinator Coordinator?
+  surgeon     Surgeon?
+
+  // NextAuth
+  accounts Account[]
+  sessions Session[]
+}
+
+enum UserRole {
+  PATIENT
+  COORDINATOR
+  SURGEON
+  ADMIN
+}
+
+// NextAuth adapter tables
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires      DateTime
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── Patient ─────────────────────────────────────────────────────────────────
+
+model Patient {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id])
+  whatsappNumber     String?  @unique
+  nationality        String?
+  countryOfResidence String?
+  imageConsentGiven  Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  consultations Consultation[]
+  sessions      NIASession[]
+  documents     Document[]
+}
+
+// ─── Clinic ──────────────────────────────────────────────────────────────────
+
+model Clinic {
+  id               String   @id @default(cuid())
+  name             String
+  slug             String   @unique
+  description      String?
+  shortDescription String?
+  country          String   // ISO 3166-1 alpha-2
+  city             String
+  address          String?
+  phone            String?
+  email            String?
+  website          String?
+  isVerified       Boolean  @default(false)
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  coordinators     Coordinator[]
+  surgeons         Surgeon[]
+  consultations    Consultation[]
+  beforeAfterCases BeforeAfterCase[]
+  procedures       ClinicProcedure[]
+}
+
+model Coordinator {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  clinicId  String
+  clinic    Clinic   @relation(fields: [clinicId], references: [id])
+  isOnDuty  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  leads Lead[]
+}
+
+model Surgeon {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id])
+  clinicId        String
+  clinic          Clinic   @relation(fields: [clinicId], references: [id])
+  bio             String?
+  photoUrl        String?
+  yearsExperience Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  consultations    Consultation[]
+  beforeAfterCases BeforeAfterCase[]
+}
+
+// ─── Procedures ──────────────────────────────────────────────────────────────
+
+model Procedure {
+  id       String @id @default(cuid())
+  slug     String @unique // "rhinoplasty" | "facelift" | "bbl" | "liposuction" | "breast-augmentation"
+  name     String
+  category String // maps to PROCEDURE_CATEGORIES in @nia/shared
+
+  clinics          ClinicProcedure[]
+  consultations    Consultation[]
+  beforeAfterCases BeforeAfterCase[]
+}
+
+model ClinicProcedure {
+  clinicId    String
+  procedureId String
+  clinic      Clinic    @relation(fields: [clinicId], references: [id])
+  procedure   Procedure @relation(fields: [procedureId], references: [id])
+  priceFrom   Int?      // in cents
+  currency    String    @default("USD")
+
+  @@id([clinicId, procedureId])
+}
+
+// ─── Consultation (the core patient × clinic record) ─────────────────────────
+
+model Consultation {
+  id          String             @id @default(cuid())
+  patientId   String
+  patient     Patient            @relation(fields: [patientId], references: [id])
+  clinicId    String
+  clinic      Clinic             @relation(fields: [clinicId], references: [id])
+  surgeonId   String?
+  surgeon     Surgeon?           @relation(fields: [surgeonId], references: [id])
+  procedureId String
+  procedure   Procedure          @relation(fields: [procedureId], references: [id])
+  status      ConsultationStatus @default(ENQUIRY)
+  notes       String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  lead               Lead?
+  complianceTimeline ComplianceTimeline?
+  documents          Document[]
+}
+
+// Mirrors the BookingStatus state machine in @nia/shared/src/types/core.ts
+// — ENQUIRY through COMPLETED maps to the existing TransitionMap transitions
+enum ConsultationStatus {
+  ENQUIRY
+  CONTACTED
+  CONSULTATION_BOOKED
+  CONSULTATION_DONE
+  DEPOSIT_PAID
+  CONFIRMED
+  PRE_OP
+  IN_TREATMENT
+  POST_OP
+  COMPLETED
+  CANCELLED
+}
+
+// ─── Lead (coordinator pipeline card) ────────────────────────────────────────
+
+model Lead {
+  id             String      @id @default(cuid())
+  consultationId String      @unique
+  consultation   Consultation @relation(fields: [consultationId], references: [id])
+  coordinatorId  String?
+  coordinator    Coordinator? @relation(fields: [coordinatorId], references: [id])
+  status         LeadStatus  @default(NEW)
+  claimedAt      DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+enum LeadStatus {
+  NEW
+  CLAIMED
+  IN_PROGRESS
+  ESCALATED
+  CLOSED
+}
+
+// ─── Compliance ───────────────────────────────────────────────────────────────
+
+model ComplianceTimeline {
+  id             String       @id @default(cuid())
+  consultationId String       @unique
+  consultation   Consultation @relation(fields: [consultationId], references: [id])
+  surgeryDate    DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  items ComplianceItem[]
+}
+
+model ComplianceItem {
+  id          String             @id @default(cuid())
+  timelineId  String
+  timeline    ComplianceTimeline @relation(fields: [timelineId], references: [id])
+  category    ComplianceCategory
+  title       String
+  description String?
+  dueDate     DateTime?
+  completedAt DateTime?
+  missedAt    DateTime?          // set by daily cron when dueDate passes without completedAt
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+enum ComplianceCategory {
+  BLOOD_WORK
+  NUTRITION
+  HYDRATION
+  COMPRESSION_GARMENT
+  MEDICATION
+  DOCUMENT
+  OTHER
+}
+
+// ─── Documents ────────────────────────────────────────────────────────────────
+
+model Document {
+  id             String       @id @default(cuid())
+  patientId      String
+  patient        Patient      @relation(fields: [patientId], references: [id])
+  consultationId String?
+  consultation   Consultation? @relation(fields: [consultationId], references: [id])
+  type           DocumentType
+  fileName       String
+  storageKey     String       // S3 key — never expose raw URL in API responses
+  mimeType       String
+  sizeBytes      Int
+  parsedData     Json?        // LLM-extracted structured data (blood values, expiry dates, etc.)
+  parseStatus    ParseStatus  @default(PENDING)
+  uploadedVia    String       // "whatsapp" | "web"
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+enum DocumentType {
+  BLOOD_TEST
+  PASSPORT
+  CONSENT_FORM
+  INSURANCE
+  OTHER
+}
+
+enum ParseStatus {
+  PENDING
+  PROCESSING
+  DONE
+  FAILED
+}
+
+// ─── Before / After Media ────────────────────────────────────────────────────
+
+model BeforeAfterCase {
+  id          String    @id @default(cuid())
+  clinicId    String
+  clinic      Clinic    @relation(fields: [clinicId], references: [id])
+  surgeonId   String?
+  surgeon     Surgeon?  @relation(fields: [surgeonId], references: [id])
+  procedureId String
+  procedure   Procedure @relation(fields: [procedureId], references: [id])
+  beforeKey   String    // S3 storage key
+  afterKey    String    // S3 storage key
+  tags        String[]  // anatomy descriptors for image matching
+  consentedAt DateTime
+  consentRef  String    // audit reference
+  isApproved  Boolean   @default(false) // surgeon must approve before NIA surfaces it
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// ─── NIA Session & Messages ───────────────────────────────────────────────────
+
+model NIASession {
+  id           String   @id @default(cuid())
+  patientId    String
+  patient      Patient  @relation(fields: [patientId], references: [id])
+  surface      String   // "whatsapp" | "web"
+  identifier   String   // phone number (WA) or browser session token (web)
+  lastActiveAt DateTime @default(now())
+  createdAt    DateTime @default(now())
+
+  messages NIAMessage[]
+
+  @@unique([surface, identifier])
+}
+
+model NIAMessage {
+  id        String     @id @default(cuid())
+  sessionId String
+  session   NIASession @relation(fields: [sessionId], references: [id])
+  role      MessageRole
+  content   String
+  metadata  Json?      // parsed intent, matched clinic ids, escalation flag, etc.
+  createdAt DateTime   @default(now())
+}
+
+enum MessageRole {
+  PATIENT
+  NIA
+}
+
+// ─── Audit Log ───────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?  // null = system/NIA
+  actorRole  String?
+  action     String   // "lead.claimed" | "document.accessed" | "status.changed" etc.
+  entityType String
+  entityId   String
+  meta       Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([actorId])
+}

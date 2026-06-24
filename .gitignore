@@ -1,0 +1,19 @@
+# env
+.env.local
+.env.*.local
+.env
+
+# deps
+node_modules/
+
+# build
+.next/
+dist/
+.turbo/
+
+# prisma
+packages/shared/prisma/migrations/
+
+# misc
+.DS_Store
+*.log
