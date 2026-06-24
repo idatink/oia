@@ -14,9 +14,6 @@
     "db:seed": "prisma db seed --schema=packages/shared/prisma/schema.prisma",
     "db:studio": "prisma studio --schema=packages/shared/prisma/schema.prisma"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": ["@prisma/client", "@prisma/engines", "prisma", "esbuild", "bufferutil"]
-  },
   "devDependencies": {
     "turbo": "^2.3.0",
     "typescript": "^5.6.0",
