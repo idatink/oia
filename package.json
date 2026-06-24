@@ -1,6 +1,7 @@
 {
   "name": "nia-medtourism",
   "private": true,
+  "packageManager": "pnpm@11.9.0",
   "workspaces": [
     "packages/*"
   ],
