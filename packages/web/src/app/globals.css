@@ -2,24 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --font-sans: 'Inter', system-ui, sans-serif;
-}
-
 @layer base {
   body {
-    @apply bg-brand-warm-bone text-brand-deep-charcoal;
+    @apply bg-surface text-on-surface font-body antialiased;
   }
 
-  input,
-  textarea,
-  select {
-    @apply bg-brand-warm-bone outline-none ring-0 transition-all duration-200;
+  h1, h2, h3, h4 {
+    @apply font-display;
   }
 
-  input:focus,
-  textarea:focus,
-  select:focus {
-    @apply ring-1 ring-brand-terracotta;
+  input, textarea, select {
+    @apply bg-surface-container-low outline-none ring-0 transition-all duration-200;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    @apply ring-1 ring-primary;
+  }
+}
+
+@layer utilities {
+  .nav-blur {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .shadow-concierge {
+    box-shadow: 0 32px 64px -12px rgba(153, 64, 43, 0.08);
   }
 }
