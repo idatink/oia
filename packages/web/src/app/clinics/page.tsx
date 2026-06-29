@@ -167,8 +167,8 @@ export default function ClinicsPage() {
       <main className="pt-16 flex-grow">
 
         {/* ── Hero ─────────────────────────────────────────────────────── */}
-        <section className="bg-surface py-24 px-[64px]">
-          <div className="max-w-container mx-auto">
+        <section className="bg-surface py-24">
+          <div className="max-w-container mx-auto px-[64px]">
             <div className="max-w-2xl">
               <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-5">Our Partner Network</span>
               <h1 className="font-display text-display-xl text-on-surface leading-[1.1] mb-6">
@@ -198,8 +198,8 @@ export default function ClinicsPage() {
         </section>
 
         {/* ── Featured three ────────────────────────────────────────────── */}
-        <section className="py-16 px-[64px] bg-surface-container-low">
-          <div className="max-w-container mx-auto">
+        <section className="py-16 bg-surface-container-low">
+          <div className="max-w-container mx-auto px-[64px]">
             <div className="flex items-end justify-between mb-10">
               <div>
                 <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-2">Editor&apos;s Selection</span>
@@ -260,8 +260,8 @@ export default function ClinicsPage() {
         </section>
 
         {/* ── All clinics with region filter ───────────────────────────── */}
-        <section className="py-16 px-[64px] bg-surface">
-          <div className="max-w-container mx-auto">
+        <section className="py-16 bg-surface">
+          <div className="max-w-container mx-auto px-[64px]">
             <div className="flex items-end justify-between mb-8">
               <h2 className="font-display text-display-lg text-on-surface">All Partner Clinics</h2>
             </div>
@@ -330,12 +330,13 @@ export default function ClinicsPage() {
         </section>
 
         {/* ── How we vet ───────────────────────────────────────────────── */}
-        <section className="py-20 px-[64px] bg-surface-container-low">
-          <div className="max-w-container mx-auto text-center mb-14">
+        <section className="py-20 bg-surface-container-low">
+          <div className="max-w-container mx-auto px-[64px]">
+          <div className="text-center mb-14">
             <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-4">Our Vetting Process</span>
             <h2 className="font-display text-display-lg text-on-surface">How a Clinic Earns a Place in Our Network</h2>
           </div>
-          <div className="max-w-container mx-auto grid md:grid-cols-4 gap-gutter">
+          <div className="grid md:grid-cols-4 gap-gutter">
             {[
               { step: '01', label: 'Application & Credential Review', body: 'Surgeon board certifications, facility licensing and accreditation status are verified against primary sources.' },
               { step: '02', label: 'On-Site Audit', body: 'A Nia clinical assessor visits in person. Theatre standards, sterilisation, emergency protocols and patient pathways are inspected.' },
@@ -349,11 +350,12 @@ export default function ClinicsPage() {
               </div>
             ))}
           </div>
+          </div>
         </section>
 
         {/* ── CTA ──────────────────────────────────────────────────────── */}
-        <section className="py-20 px-[64px] bg-surface">
-          <div className="max-w-container mx-auto bg-primary rounded-card3 p-14 md:p-20 text-center text-on-primary">
+        <section className="py-20 bg-surface">
+          <div className="max-w-container mx-auto px-[64px]"><div className="bg-primary rounded-card3 p-14 md:p-20 text-center text-on-primary">
             <span className="font-body text-label-caps uppercase tracking-[0.2em] text-on-primary/60 block mb-4">Find Your Match</span>
             <h2 className="font-display text-display-xl mb-6 max-w-xl mx-auto leading-[1.1]">
               The right clinic isn&apos;t the most famous one. It&apos;s the one right for you.
@@ -367,7 +369,7 @@ export default function ClinicsPage() {
             >
               Start AI Assessment →
             </button>
-          </div>
+          </div></div>
         </section>
       </main>
 

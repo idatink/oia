@@ -113,8 +113,8 @@ export default function TreatmentsPage() {
       <main className="pt-16 flex-grow">
 
         {/* ── Hero ───────────────────────────────────────────────────────── */}
-        <section className="bg-surface-container-low py-24 px-[64px]">
-          <div className="max-w-container mx-auto grid md:grid-cols-2 gap-16 items-center">
+        <section className="bg-surface-container-low py-24">
+          <div className="max-w-container mx-auto px-[64px] grid md:grid-cols-2 gap-16 items-center">
             <div>
               <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-5">Our Specialties</span>
               <h1 className="font-display text-display-xl text-on-surface leading-[1.1] mb-6">
@@ -151,8 +151,8 @@ export default function TreatmentsPage() {
         </section>
 
         {/* ── Category filter ────────────────────────────────────────────── */}
-        <div className="sticky top-16 z-20 bg-surface border-b border-outline-variant/20 px-[64px]">
-          <div className="max-w-container mx-auto flex gap-8 overflow-x-auto py-0">
+        <div className="sticky top-16 z-20 bg-surface border-b border-outline-variant/20">
+          <div className="max-w-container mx-auto px-[64px] flex gap-8 overflow-x-auto py-0">
             {CATEGORIES.map(cat => (
               <button
                 key={cat}
@@ -170,8 +170,8 @@ export default function TreatmentsPage() {
         </div>
 
         {/* ── Procedure grid ─────────────────────────────────────────────── */}
-        <section className="py-16 px-[64px] bg-surface">
-          <div className="max-w-container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+        <section className="py-16 bg-surface">
+          <div className="max-w-container mx-auto px-[64px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
             {filtered.map(proc => (
               <article
                 key={proc.slug}
@@ -209,8 +209,8 @@ export default function TreatmentsPage() {
         </section>
 
         {/* ── Process strip ──────────────────────────────────────────────── */}
-        <section className="py-20 px-[64px] bg-surface-container-low">
-          <div className="max-w-container mx-auto">
+        <section className="py-20 bg-surface-container-low">
+          <div className="max-w-container mx-auto px-[64px]">
             <div className="text-center mb-14">
               <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-4">How It Works</span>
               <h2 className="font-display text-display-lg text-on-surface">From Assessment to Recovery</h2>
@@ -237,8 +237,8 @@ export default function TreatmentsPage() {
         </section>
 
         {/* ── CTA ────────────────────────────────────────────────────────── */}
-        <section className="py-20 px-[64px] bg-surface">
-          <div className="max-w-container mx-auto bg-primary rounded-card3 p-14 md:p-20 text-center text-on-primary">
+        <section className="py-20 bg-surface">
+          <div className="max-w-container mx-auto px-[64px]"><div className="bg-primary rounded-card3 p-14 md:p-20 text-center text-on-primary">
             <span className="font-body text-label-caps uppercase tracking-[0.2em] text-on-primary/60 block mb-4">Ready to Begin?</span>
             <h2 className="font-display text-display-xl mb-6 max-w-xl mx-auto leading-[1.1]">
               Not sure which procedure fits your goals?
@@ -252,7 +252,7 @@ export default function TreatmentsPage() {
             >
               Start AI Assessment →
             </button>
-          </div>
+          </div></div>
         </section>
       </main>
 

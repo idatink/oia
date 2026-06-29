@@ -100,8 +100,8 @@ export default function AboutPage() {
       <main className="pt-16 flex-grow">
 
         {/* ── Hero ─────────────────────────────────────────────────────── */}
-        <section className="min-h-[60vh] flex items-center bg-surface py-24 px-[64px] overflow-hidden">
-          <div className="max-w-container mx-auto grid md:grid-cols-2 gap-20 items-center">
+        <section className="min-h-[60vh] flex items-center bg-surface py-24 overflow-hidden">
+          <div className="max-w-container mx-auto px-[64px] grid md:grid-cols-2 gap-20 items-center">
             <div>
               <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-5">Our Methodology</span>
               <h1 className="font-display text-display-xl text-on-surface leading-[1.1] mb-6">
@@ -150,8 +150,8 @@ export default function AboutPage() {
         </section>
 
         {/* ── Four pillars ──────────────────────────────────────────────── */}
-        <section className="py-24 px-[64px] bg-surface-container-low">
-          <div className="max-w-container mx-auto">
+        <section className="py-24 bg-surface-container-low">
+          <div className="max-w-container mx-auto px-[64px]">
             <div className="text-center mb-16">
               <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-4">Our Principles</span>
               <h2 className="font-display text-display-lg text-on-surface">Built on Four Unbreakable Commitments</h2>
@@ -175,8 +175,8 @@ export default function AboutPage() {
         </section>
 
         {/* ── The 6-step journey ────────────────────────────────────────── */}
-        <section className="py-24 px-[64px] bg-surface">
-          <div className="max-w-container mx-auto">
+        <section className="py-24 bg-surface">
+          <div className="max-w-container mx-auto px-[64px]">
             <div className="text-center mb-16">
               <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-4">Your Journey</span>
               <h2 className="font-display text-display-lg text-on-surface">Six Steps, Zero Uncertainty</h2>
@@ -203,8 +203,8 @@ export default function AboutPage() {
         </section>
 
         {/* ── Safety standards ─────────────────────────────────────────── */}
-        <section className="py-24 px-[64px] bg-surface-container-low">
-          <div className="max-w-container mx-auto grid md:grid-cols-2 gap-20 items-center">
+        <section className="py-24 bg-surface-container-low">
+          <div className="max-w-container mx-auto px-[64px] grid md:grid-cols-2 gap-20 items-center">
             <div>
               <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-5">Safety First</span>
               <h2 className="font-display text-display-lg text-on-surface mb-6">A Standard the NHS Would Recognise</h2>
@@ -266,8 +266,8 @@ export default function AboutPage() {
         </section>
 
         {/* ── Testimonials ─────────────────────────────────────────────── */}
-        <section className="py-24 px-[64px] bg-surface">
-          <div className="max-w-container mx-auto">
+        <section className="py-24 bg-surface">
+          <div className="max-w-container mx-auto px-[64px]">
             <div className="text-center mb-16">
               <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-4">Patient Voices</span>
               <h2 className="font-display text-display-lg text-on-surface">Trusted by Discerning Patients Globally</h2>
@@ -312,8 +312,8 @@ export default function AboutPage() {
         </section>
 
         {/* ── CTA ──────────────────────────────────────────────────────── */}
-        <section className="py-20 px-[64px] bg-surface-container-low">
-          <div className="max-w-container mx-auto bg-primary rounded-card3 p-14 md:p-20 text-center text-on-primary">
+        <section className="py-20 bg-surface-container-low">
+          <div className="max-w-container mx-auto px-[64px]"><div className="bg-primary rounded-card3 p-14 md:p-20 text-center text-on-primary">
             <span className="font-body text-label-caps uppercase tracking-[0.2em] text-on-primary/60 block mb-4">Begin Your Journey</span>
             <h2 className="font-display text-display-xl mb-6 max-w-xl mx-auto leading-[1.1]">
               Experience the Nia Way for yourself.
@@ -327,7 +327,7 @@ export default function AboutPage() {
             >
               Start AI Assessment →
             </button>
-          </div>
+          </div></div>
         </section>
       </main>
 
