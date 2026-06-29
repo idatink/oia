@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { EB_Garamond, Work_Sans } from 'next/font/google';
+import BottomTabNav from '@/components/concierge/BottomTabNav';
 import './globals.css';
 
 const ebGaramond = EB_Garamond({
@@ -24,7 +25,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${ebGaramond.variable} ${workSans.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <BottomTabNav />
+      </body>
     </html>
   );
 }

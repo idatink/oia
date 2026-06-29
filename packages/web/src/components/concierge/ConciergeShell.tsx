@@ -4,7 +4,6 @@ import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import PatientSidebar from './PatientSidebar';
 import ChatWindow from './ChatWindow';
-import BottomTabNav from './BottomTabNav';
 import Link from 'next/link';
 
 export default function ConciergeShell() {
@@ -62,7 +61,6 @@ export default function ConciergeShell() {
         </div>
       </div>
 
-      <BottomTabNav />
     </div>
   );
 }
