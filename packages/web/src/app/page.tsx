@@ -58,8 +58,7 @@ export default function Home() {
             {/* Right — hero image */}
             <div className="relative order-1 md:order-2 flex justify-center md:justify-end py-10 md:py-0">
               <div className="relative w-full max-w-[500px] aspect-[4/5] rounded-card3 overflow-hidden shadow-concierge bg-surface-container">
-                {/* Placeholder gradient until real image is wired */}
-                <div className="w-full h-full bg-gradient-to-br from-primary-fixed via-tertiary-fixed to-secondary-container" />
+                <img src="https://images.unsplash.com/photo-1607962837359-5e7e89f86776?w=800&q=80" alt="Patient consultation" className="w-full h-full object-cover" />
 
                 {/* NIA agent bubble */}
                 <div className="absolute bottom-8 left-8 right-8 bg-white/40 backdrop-blur-xl border border-white/20 p-5 rounded-card2 shadow-concierge">
@@ -116,7 +115,9 @@ export default function Home() {
 
               {/* Concierge Planning */}
               <div className="md:col-span-5 bg-tertiary-container p-10 rounded-card2 flex flex-col justify-between">
-                <div className="w-full aspect-video rounded-xl overflow-hidden mb-8 bg-tertiary-fixed opacity-60" />
+                <div className="w-full aspect-video rounded-xl overflow-hidden mb-8">
+                  <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=700&q=80" alt="Luxury recovery suite" className="w-full h-full object-cover" />
+                </div>
                 <div>
                   <h3 className="font-display text-display-md mb-4 text-on-primary">Concierge Planning</h3>
                   <p className="font-body text-body-md text-on-tertiary-container">
@@ -182,13 +183,14 @@ export default function Home() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
               {[
-                { title: 'Facial Sculpting', desc: 'Rhinoplasty, V-Line, and Anti-Aging procedures.' },
-                { title: 'Body Contouring', desc: 'High-definition liposuction and 360 sculpting.' },
-                { title: 'Skin Regeneration', desc: 'Stem-cell therapies and advanced laser resurfacing.' },
-                { title: 'Corrective Care', desc: 'Revision surgery and post-traumatic reconstruction.' },
+                { title: 'Facial Sculpting', desc: 'Rhinoplasty, V-Line, and Anti-Aging procedures.', img: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=600&q=80' },
+                { title: 'Body Contouring', desc: 'High-definition liposuction and 360 sculpting.', img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80' },
+                { title: 'Skin Regeneration', desc: 'Stem-cell therapies and advanced laser resurfacing.', img: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&q=80' },
+                { title: 'Corrective Care', desc: 'Revision surgery and post-traumatic reconstruction.', img: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&q=80' },
               ].map(proc => (
                 <div key={proc.title} className="group cursor-pointer">
-                  <div className="relative aspect-[3/4] rounded-card2 overflow-hidden mb-6 shadow-concierge bg-gradient-to-br from-secondary-container to-tertiary-fixed">
+                  <div className="relative aspect-[3/4] rounded-card2 overflow-hidden mb-6 shadow-concierge">
+                    <img src={proc.img} alt={proc.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
                   <h4 className="font-display text-display-sm text-on-surface mb-2">{proc.title}</h4>
@@ -230,7 +232,9 @@ export default function Home() {
               </div>
 
               <div className="relative">
-                <div className="w-full aspect-square rounded-card3 overflow-hidden shadow-concierge bg-gradient-to-br from-tertiary-fixed to-secondary-container" />
+                <div className="w-full aspect-square rounded-card3 overflow-hidden shadow-concierge">
+                  <img src="https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=700&q=80" alt="Patient recovery" className="w-full h-full object-cover" />
+                </div>
                 <div className="absolute -bottom-8 -left-8 bg-surface-container-lowest p-8 rounded-card2 shadow-concierge border border-outline-variant max-w-[280px]">
                   <div className="flex gap-1 mb-2 text-primary">
                     {[...Array(5)].map((_, i) => (

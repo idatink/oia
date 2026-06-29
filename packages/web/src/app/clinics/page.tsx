@@ -18,6 +18,7 @@ type Clinic = {
   reviewCount: number;
   since: string;
   gradient: string;
+  img: string;
   featured?: boolean;
 };
 
@@ -36,6 +37,7 @@ const CLINICS: Clinic[] = [
     reviewCount: 312,
     since: '2009',
     gradient: 'from-[#ffdad2] to-[#fadcd1]',
+    img: 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=700&q=80',
     featured: true,
   },
   {
@@ -52,6 +54,7 @@ const CLINICS: Clinic[] = [
     reviewCount: 198,
     since: '2011',
     gradient: 'from-[#ecddd4] to-[#fadcd1]',
+    img: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=700&q=80',
     featured: true,
   },
   {
@@ -68,6 +71,7 @@ const CLINICS: Clinic[] = [
     reviewCount: 441,
     since: '2007',
     gradient: 'from-[#fadcd1] to-[#ecddd4]',
+    img: 'https://images.unsplash.com/photo-1555834022-bfa6e5bf9ca6?w=700&q=80',
     featured: true,
   },
   {
@@ -84,6 +88,7 @@ const CLINICS: Clinic[] = [
     reviewCount: 156,
     since: '2015',
     gradient: 'from-[#ffdad2] to-[#eae8e6]',
+    img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=700&q=80',
   },
   {
     id: 'seoul-aesthetics',
@@ -99,6 +104,7 @@ const CLINICS: Clinic[] = [
     reviewCount: 287,
     since: '2006',
     gradient: 'from-[#ecddd4] to-[#ffdad2]',
+    img: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=700&q=80',
   },
   {
     id: 'milan-clinicaor',
@@ -114,6 +120,7 @@ const CLINICS: Clinic[] = [
     reviewCount: 124,
     since: '2001',
     gradient: 'from-[#fadcd1] to-[#ffdad2]',
+    img: 'https://images.unsplash.com/photo-1533929736458-ca588d08c8be?w=700&q=80',
   },
   {
     id: 'singapore-mhc',
@@ -129,6 +136,7 @@ const CLINICS: Clinic[] = [
     reviewCount: 203,
     since: '2010',
     gradient: 'from-[#ffdad2] to-[#ecddd4]',
+    img: 'https://images.unsplash.com/photo-1563911302283-d2bc129e7570?w=700&q=80',
   },
   {
     id: 'miami-aesthetic',
@@ -144,6 +152,7 @@ const CLINICS: Clinic[] = [
     reviewCount: 389,
     since: '2003',
     gradient: 'from-[#ecddd4] to-[#eae8e6]',
+    img: 'https://images.unsplash.com/photo-1516738901171-8eb4fc13bd20?w=700&q=80',
   },
 ];
 
@@ -220,7 +229,8 @@ export default function ClinicsPage() {
                   onClick={() => setSelected(clinic)}
                   className="group bg-surface-container-lowest rounded-card2 overflow-hidden border border-outline-variant/20 cursor-pointer hover:shadow-concierge hover:-translate-y-1 transition-all duration-300"
                 >
-                  <div className={`h-48 bg-gradient-to-br ${clinic.gradient} relative`}>
+                  <div className="h-48 relative overflow-hidden">
+                    <img src={clinic.img} alt={clinic.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-gradient-to-t from-on-surface/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     {i === 0 && (
                       <div className="absolute top-4 left-4 bg-primary text-on-primary font-body text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">
@@ -291,7 +301,8 @@ export default function ClinicsPage() {
                   onClick={() => setSelected(clinic)}
                   className="group bg-surface-container-lowest rounded-card2 border border-outline-variant/20 overflow-hidden cursor-pointer hover:shadow-concierge hover:-translate-y-1 transition-all duration-300"
                 >
-                  <div className={`h-36 bg-gradient-to-br ${clinic.gradient} relative`}>
+                  <div className="h-36 relative overflow-hidden">
+                    <img src={clinic.img} alt={clinic.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
                       <span className="font-body text-[9px] font-bold uppercase tracking-wider bg-surface-container-lowest/80 backdrop-blur-sm text-on-surface px-2 py-1 rounded-full">
                         {clinic.city}, {clinic.country}
@@ -392,7 +403,8 @@ export default function ClinicsPage() {
 
             {/* Body */}
             <div className="overflow-y-auto flex-1 px-6 py-5 space-y-6">
-              <div className={`aspect-[16/7] bg-gradient-to-br ${selected.gradient} rounded-xl relative overflow-hidden`}>
+              <div className="aspect-[16/7] rounded-xl relative overflow-hidden">
+                <img src={selected.img} alt={selected.name} className="w-full h-full object-cover" />
                 <div className="absolute bottom-4 left-4 flex items-center gap-1.5">
                   <svg className="w-4 h-4 text-primary fill-current" viewBox="0 0 24 24">
                     <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>

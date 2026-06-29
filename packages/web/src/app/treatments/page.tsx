@@ -15,6 +15,7 @@ const PROCEDURES = [
     recovery: '2–3 weeks',
     from: '€2,800',
     gradient: 'from-[#ffdad2] to-[#fadcd1]',
+    img: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=600&q=80',
   },
   {
     slug: 'blepharoplasty',
@@ -26,6 +27,7 @@ const PROCEDURES = [
     recovery: '10–14 days',
     from: '€1,900',
     gradient: 'from-[#ecddd4] to-[#fadcd1]',
+    img: 'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?w=600&q=80',
   },
   {
     slug: 'facelift',
@@ -37,6 +39,7 @@ const PROCEDURES = [
     recovery: '2–4 weeks',
     from: '€4,500',
     gradient: 'from-[#ffdad2] to-[#ecddd4]',
+    img: 'https://images.unsplash.com/photo-1559757175-5700dde675bc?w=600&q=80',
   },
   {
     slug: 'liposuction',
@@ -48,6 +51,7 @@ const PROCEDURES = [
     recovery: '1–2 weeks',
     from: '€2,200',
     gradient: 'from-[#fadcd1] to-[#eae8e6]',
+    img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80',
   },
   {
     slug: 'breast-augmentation',
@@ -59,6 +63,7 @@ const PROCEDURES = [
     recovery: '1–2 weeks',
     from: '€3,100',
     gradient: 'from-[#ecddd4] to-[#ffdad2]',
+    img: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?w=600&q=80',
   },
   {
     slug: 'abdominoplasty',
@@ -70,6 +75,7 @@ const PROCEDURES = [
     recovery: '2–3 weeks',
     from: '€3,400',
     gradient: 'from-[#fadcd1] to-[#ecddd4]',
+    img: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&q=80',
   },
   {
     slug: 'skin-regeneration',
@@ -81,6 +87,7 @@ const PROCEDURES = [
     recovery: '3–7 days',
     from: '€800',
     gradient: 'from-[#ffdad2] to-[#dcc0ba]',
+    img: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&q=80',
   },
   {
     slug: 'corrective-care',
@@ -92,6 +99,7 @@ const PROCEDURES = [
     recovery: 'On consultation',
     from: 'On consultation',
     gradient: 'from-[#ecddd4] to-[#fadcd1]',
+    img: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&q=80',
   },
 ];
 
@@ -179,7 +187,8 @@ export default function TreatmentsPage() {
                 className="group bg-surface-container-lowest rounded-card2 border border-outline-variant/20 overflow-hidden cursor-pointer hover:shadow-concierge transition-all duration-300 hover:-translate-y-1"
               >
                 {/* Visual */}
-                <div className={`aspect-[4/3] bg-gradient-to-br ${proc.gradient} relative overflow-hidden`}>
+                <div className="aspect-[4/3] relative overflow-hidden bg-surface-container-low">
+                  <img src={proc.img} alt={proc.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-on-surface/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="absolute bottom-3 left-3">
                     <span className="font-body text-[9px] font-bold uppercase tracking-widest bg-surface-container-lowest/80 backdrop-blur-sm text-on-surface px-2.5 py-1 rounded-full">
@@ -275,7 +284,9 @@ export default function TreatmentsPage() {
 
             {/* Body */}
             <div className="overflow-y-auto flex-1 px-6 py-5 space-y-6">
-              <div className={`aspect-[16/7] bg-gradient-to-br ${selected.gradient} rounded-xl`} />
+              <div className="aspect-[16/7] rounded-xl overflow-hidden">
+                <img src={selected.img} alt={selected.title} className="w-full h-full object-cover" />
+              </div>
 
               <p className="font-body text-body-md text-on-surface-variant leading-relaxed">{selected.desc}</p>
 
