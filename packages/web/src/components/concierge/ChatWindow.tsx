@@ -76,7 +76,16 @@ interface ChatWindowProps {
   onProcedureDetected?: (procedures: string[]) => void;
 }
 
+function getOrCreateSessionId(): string {
+  if (typeof window === 'undefined') return crypto.randomUUID();
+  const key = 'nia_web_session_id';
+  let id = sessionStorage.getItem(key);
+  if (!id) { id = crypto.randomUUID(); sessionStorage.setItem(key, id); }
+  return id;
+}
+
 export default function ChatWindow({ patientName, onProcedureDetected }: ChatWindowProps) {
+  const sessionId = getOrCreateSessionId();
   const [messages, setMessages] = useState<Message[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [suggestions, setSuggestions] = useState<string[]>(INITIAL_QUICK_REPLIES);
@@ -148,6 +157,7 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
           message: text.trim(),
           history,
           patientName,
+          sessionId,
           photos: photos.map(({ base64, mediaType }) => ({ base64, mediaType })),
         }),
       });
