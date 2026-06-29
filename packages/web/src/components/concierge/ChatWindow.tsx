@@ -1,114 +1,260 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import ChatMessage, { type Message } from './ChatMessage';
 import QuickReplies from './QuickReplies';
 import ChatInput from './ChatInput';
-import { type ClinicCardData } from './ClinicCard';
+import TriageWidget, { type TriageAnswers } from './TriageWidget';
+import type { ClinicCardData } from './ClinicCard';
 
-const STUB_CLINICS: ClinicCardData[] = [
+const INITIAL_QUICK_REPLIES = [
+  'Tell me about rhinoplasty options',
+  'What procedures do you cover?',
+  'How does the process work?',
+];
+
+const PLACEHOLDER_CLINICS: ClinicCardData[] = [
   {
-    id: 'clinic-1',
-    name: 'Glow Plastic Surgery',
-    city: 'Seoul',
-    country: 'KR',
-    rating: 4.9,
-    reviewCount: 210,
-    description: 'Experts in 3D-simulated rhinoplasty with a focus on harmonious proportions.',
-    tags: ['Vectra 3D', 'In-House Recovery'],
-  },
-  {
-    id: 'clinic-2',
-    name: 'Elite Esthetics Clinic',
+    id: 'istanbul-aesthetic',
+    name: 'Istanbul Aesthetic Centre',
     city: 'Istanbul',
-    country: 'TR',
-    rating: 4.8,
-    reviewCount: 156,
-    description: 'Led by world-renowned structural surgeons specialising in preservation rhinoplasty.',
-    tags: ['Preservation PT', 'Luxury Concierge'],
+    country: 'Turkey',
+    rating: 4.9,
+    reviewCount: 312,
+    description: 'JCI-accredited centre specialising in facial sculpting and body contouring with 15 years of international patient care.',
+    tags: ['JCI Accredited', 'English Speaking', 'VIP Suite'],
   },
-];
-
-const INITIAL_MESSAGES: Message[] = [
   {
-    id: '1',
-    role: 'nia',
-    content: 'Hello! I\'m Nia, your personal medical concierge. Based on your interest, I\'ve been reviewing clinics that specialise in facial contouring. To give you the most accurate recommendations, could you tell me more about your desired outcome — or upload a reference photo?',
-    timestamp: new Date(Date.now() - 120000),
+    id: 'barcelona-cmed',
+    name: 'Barcelona CMed Clinic',
+    city: 'Barcelona',
+    country: 'Spain',
+    rating: 4.8,
+    reviewCount: 198,
+    description: 'Boutique European clinic renowned for natural-looking rhinoplasty and advanced laser treatments.',
+    tags: ['EU Standards', 'Bilingual Staff', 'Private Rooms'],
+  },
+  {
+    id: 'bangkok-premium',
+    name: 'Bangkok Premium Surgery',
+    city: 'Bangkok',
+    country: 'Thailand',
+    rating: 4.9,
+    reviewCount: 441,
+    description: 'Award-winning facility offering full cosmetic surgery packages including 5-star recovery retreats.',
+    tags: ['ISO Certified', 'Recovery Package', 'Airport Transfer'],
   },
 ];
 
-const QUICK_SUGGESTIONS = [
-  'Tell me about recovery in Seoul',
-  'Flight & Logistics support',
-  'Insurance coverage?',
-];
+interface HistoryItem {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+interface PhotoItem {
+  base64: string;
+  mediaType: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
+  previewUrl: string;
+}
+
+async function fileToPhotoItem(file: File): Promise<PhotoItem> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      const base64 = dataUrl.split(',')[1];
+      const mediaType = (file.type || 'image/jpeg') as PhotoItem['mediaType'];
+      resolve({ base64, mediaType, previewUrl: dataUrl });
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 interface ChatWindowProps {
   patientName: string;
+  onProcedureDetected?: (procedures: string[]) => void;
 }
 
-export default function ChatWindow({ patientName }: ChatWindowProps) {
-  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
-  const [suggestions, setSuggestions] = useState<string[]>(QUICK_SUGGESTIONS);
+export default function ChatWindow({ patientName, onProcedureDetected }: ChatWindowProps) {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [suggestions, setSuggestions] = useState<string[]>(INITIAL_QUICK_REPLIES);
   const [loading, setLoading] = useState(false);
+  const [intakeComplete, setIntakeComplete] = useState(false);
+  const [showTriage, setShowTriage] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const greeted = useRef(false);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  async function handleSend(text: string, files?: File[]) {
+  useEffect(() => {
+    if (greeted.current) return;
+    greeted.current = true;
+    const greeting = patientName && patientName !== 'there'
+      ? `Hello ${patientName}! I'm Nia, your personal medical concierge. I'm here to help you explore your options and connect you with the right clinic. What procedure are you interested in?`
+      : "Hello! I'm Nia, your personal medical concierge. I'm here to help you explore cosmetic and reconstructive surgery options at world-class international clinics. What procedure are you considering?";
+    setMessages([{ id: 'greeting', role: 'nia', content: greeting, timestamp: new Date() }]);
+    setHistory([{ role: 'assistant', content: greeting }]);
+  }, [patientName]);
+
+  const sendMessage = useCallback(async (text: string, files?: File[]) => {
+    if (loading) return;
+
+    // Convert files to base64 photo items
+    const photos: PhotoItem[] = [];
     if (files?.length) {
-      // Photo upload — acknowledge and request more angles
-      const userMsg: Message = {
-        id: Date.now().toString(),
-        role: 'patient',
-        content: `[Uploaded ${files.length} photo${files.length > 1 ? 's' : ''}]`,
-        timestamp: new Date(),
-      };
-      setMessages(m => [...m, userMsg]);
-      setSuggestions([]);
-      setLoading(true);
-      await delay(1200);
-      const niaReply: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'nia',
-        content: 'Thank you for the photos. I can see you\'re looking for natural refinement. Based on your images and goals, here are three elite clinics I recommend:',
-        clinics: STUB_CLINICS,
-        timestamp: new Date(),
-      };
-      setMessages(m => [...m, niaReply]);
-      setSuggestions(['Tell me about recovery in Seoul', 'Flight & Logistics support', 'Insurance coverage?']);
-      setLoading(false);
-      return;
+      for (const file of files) {
+        try {
+          photos.push(await fileToPhotoItem(file));
+        } catch {
+          console.error('Failed to read file', file.name);
+        }
+      }
     }
 
-    if (!text.trim()) return;
+    if (!text.trim() && photos.length === 0) return;
 
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      role: 'patient',
-      content: text,
-      timestamp: new Date(),
-    };
-    setMessages(m => [...m, userMsg]);
+    // Build the display text for the patient message
+    const displayText = [
+      text.trim(),
+      photos.length ? `📎 ${photos.length} photo${photos.length > 1 ? 's' : ''} attached` : '',
+    ].filter(Boolean).join(' — ');
+
+    const userMsgId = Date.now().toString();
+    const niaMsgId = (Date.now() + 1).toString();
+
+    setMessages(m => [
+      ...m,
+      {
+        id: userMsgId,
+        role: 'patient',
+        content: displayText,
+        timestamp: new Date(),
+        photoPreviewUrls: photos.map(p => p.previewUrl),
+      },
+      { id: niaMsgId, role: 'nia', content: '', timestamp: new Date() },
+    ]);
     setSuggestions([]);
     setLoading(true);
 
-    await delay(1400);
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: text.trim(),
+          history,
+          patientName,
+          photos: photos.map(({ base64, mediaType }) => ({ base64, mediaType })),
+        }),
+      });
 
-    // Stub NIA response — will be replaced by real API call
-    const niaReply: Message = {
-      id: (Date.now() + 1).toString(),
-      role: 'nia',
-      content: getNiaReply(text),
-      timestamp: new Date(),
+      if (!res.ok || !res.body) throw new Error('Network error');
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let rawAccumulated = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n\n');
+        buffer = lines.pop() ?? '';
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          try {
+            const event = JSON.parse(line.slice(6));
+
+            if (event.type === 'delta') {
+              rawAccumulated += event.text;
+              // Strip the <INTAKE> block from what the patient sees
+              const visible = rawAccumulated.replace(/<INTAKE>[\s\S]*$/, '').trim();
+              setMessages(m => m.map(msg =>
+                msg.id === niaMsgId ? { ...msg, content: visible } : msg
+              ));
+            } else if (event.type === 'done') {
+              const finalText = event.fullText ?? rawAccumulated.replace(/<INTAKE>[\s\S]*/, '').trim();
+              setMessages(m => m.map(msg =>
+                msg.id === niaMsgId ? { ...msg, content: finalText } : msg
+              ));
+              setHistory(h => [
+                ...h,
+                { role: 'user', content: displayText },
+                { role: 'assistant', content: finalText },
+              ]);
+              // Attach gallery or clinic cards to the Nia message
+              if (event.gallery || event.showClinics) {
+                setMessages(m => m.map(msg =>
+                  msg.id === niaMsgId
+                    ? { ...msg, gallery: event.gallery ?? undefined }
+                    : msg
+                ));
+              }
+
+              if (event.intakeComplete && event.intake) {
+                setIntakeComplete(true);
+                setSuggestions([]);
+                if (event.intake.procedure && onProcedureDetected) {
+                  onProcedureDetected([event.intake.procedure as string]);
+                }
+                fetch('/api/submit-intake', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(event.intake),
+                }).catch(console.error);
+              } else if (event.showTriage) {
+                setShowTriage(true);
+                setSuggestions([]);
+              } else {
+                setSuggestions(INITIAL_QUICK_REPLIES);
+              }
+
+              // Attach clinic cards if Nia triggered the CLINICS display
+              if (event.showClinics) {
+                setMessages(m => m.map(msg =>
+                  msg.id === niaMsgId
+                    ? { ...msg, clinics: PLACEHOLDER_CLINICS }
+                    : msg
+                ));
+              }
+            } else if (event.type === 'error') {
+              setMessages(m => m.map(msg =>
+                msg.id === niaMsgId ? { ...msg, content: event.message } : msg
+              ));
+            }
+          } catch { /* ignore parse errors */ }
+        }
+      }
+    } catch {
+      setMessages(m => m.map(msg =>
+        msg.id === niaMsgId ? { ...msg, content: 'Something went wrong. Please try again.' } : msg
+      ));
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, history, patientName]);
+
+  const submitTriage = useCallback((answers: TriageAnswers) => {
+    setShowTriage(false);
+    const LABELS: Record<string, string> = {
+      diabetes: 'Diabetes', cancerTreatment: 'Cancer/cancer treatment', organTransplant: 'Organ transplant',
+      dvt: 'DVT/blood clots', pacemaker: 'Pacemaker/cardiac implant', hypertension: 'High blood pressure',
+      heartDisease: 'Heart disease', thyroidDisorder: 'Thyroid disorder', immuneDisorder: 'Immune disorder',
+      pregnancy: 'Pregnant/trying to conceive', allergies: 'Severe allergies',
     };
-    setMessages(m => [...m, niaReply]);
-    setSuggestions(QUICK_SUGGESTIONS);
-    setLoading(false);
-  }
+    const yesItems = Object.entries(answers).filter(([, v]) => v).map(([k]) => LABELS[k]);
+    const noItems  = Object.entries(answers).filter(([, v]) => !v).map(([k]) => LABELS[k]);
+    const text = yesItems.length === 0
+      ? `Medical screening answers: No to all conditions (${noItems.join(', ')}).`
+      : `Medical screening answers — Yes: ${yesItems.join(', ')}. No: ${noItems.join(', ')}.`;
+    sendMessage(text);
+  }, [sendMessage]);
 
   return (
     <div className="flex flex-col h-full">
@@ -123,23 +269,12 @@ export default function ChatWindow({ patientName }: ChatWindowProps) {
           <div>
             <p className="font-body font-semibold text-on-surface">Nia AI Advisor</p>
             <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-green-500" />
-              <p className="font-body text-body-sm text-on-surface-variant">Online & Ready to Assist</p>
+              <div className={`w-2 h-2 rounded-full ${loading ? 'bg-yellow-400 animate-pulse' : 'bg-green-500'}`} />
+              <p className="font-body text-body-sm text-on-surface-variant">
+                {loading ? 'Nia is typing…' : intakeComplete ? 'Consultation complete' : 'Online & Ready to Assist'}
+              </p>
             </div>
           </div>
-        </div>
-        <div className="flex items-center gap-3 text-on-surface-variant">
-          <button className="hover:text-primary transition-colors" aria-label="Help">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
-            </svg>
-          </button>
-          <button className="hover:text-primary transition-colors" aria-label="Settings">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-            </svg>
-          </button>
         </div>
       </div>
 
@@ -149,57 +284,37 @@ export default function ChatWindow({ patientName }: ChatWindowProps) {
           <ChatMessage
             key={msg.id}
             message={msg}
-            patientInitial={patientName.charAt(0)}
-            onClinicSelect={id => handleSend(`Tell me more about clinic ${id}`)}
+            patientInitial={(patientName !== 'there' ? patientName : 'Y').charAt(0).toUpperCase()}
+            onClinicSelect={id => sendMessage(`Tell me more about clinic ${id}`)}
           />
         ))}
 
-        {loading && (
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center">
-              <svg className="w-5 h-5 text-on-primary" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
-              </svg>
-            </div>
-            <div className="bg-surface-container-lowest border border-outline-variant/20 px-4 py-3 rounded-2xl rounded-tl-sm flex gap-1.5 items-center">
-              {[0, 1, 2].map(i => (
-                <span
-                  key={i}
-                  className="w-2 h-2 rounded-full bg-on-surface-variant/40 animate-bounce"
-                  style={{ animationDelay: `${i * 0.15}s` }}
-                />
-              ))}
-            </div>
+        {showTriage && !intakeComplete && (
+          <TriageWidget onSubmit={submitTriage} />
+        )}
+
+        {intakeComplete && (
+          <div className="bg-green-500/10 border border-green-500/20 rounded-2xl px-5 py-4 text-center">
+            <svg className="w-8 h-8 text-green-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p className="font-body font-semibold text-green-400 text-sm">Consultation Registered</p>
+            <p className="font-body text-on-surface-variant text-xs mt-1">Our team will review your profile and reach out within 24–48 hours.</p>
           </div>
         )}
+
         <div ref={bottomRef} />
       </div>
 
       {/* Quick replies */}
-      {suggestions.length > 0 && !loading && (
-        <QuickReplies suggestions={suggestions} onSelect={handleSend} />
+      {suggestions.length > 0 && !loading && !intakeComplete && !showTriage && (
+        <QuickReplies suggestions={suggestions} onSelect={sendMessage} />
       )}
 
       {/* Input */}
-      <ChatInput onSend={handleSend} disabled={loading} />
+      {!intakeComplete && !showTriage && (
+        <ChatInput onSend={sendMessage} disabled={loading} />
+      )}
     </div>
   );
-}
-
-function delay(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function getNiaReply(input: string): string {
-  const lower = input.toLowerCase();
-  if (lower.includes('recovery') || lower.includes('seoul')) {
-    return 'Recovery in Seoul typically takes 7–10 days before you\'re comfortable flying. Most patients stay in a serviced apartment near the clinic. I can arrange private nursing, daily check-ins, and airport transfers — all coordinated through your concierge.';
-  }
-  if (lower.includes('flight') || lower.includes('logistics')) {
-    return 'I work with a network of medical travel specialists to handle flights, accommodation, and ground transfers. Once you select a clinic, I\'ll prepare a full travel itinerary and pre-op logistics plan for your approval.';
-  }
-  if (lower.includes('insurance')) {
-    return 'Several of our partner clinics offer procedure guarantees and revision coverage. I can also connect you with medical travel insurance providers who specialise in cosmetic procedures abroad. Shall I send you a comparison?';
-  }
-  return 'Thank you for sharing that. Based on what you\'ve told me, I\'d like to understand a little more about your goals. Could you describe the specific changes you\'re hoping to achieve, or upload a reference photo so I can provide more accurate recommendations?';
 }
