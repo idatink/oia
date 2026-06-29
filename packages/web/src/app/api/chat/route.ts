@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { db } from '@nia/shared/src/db';
+import { Prisma } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
 
@@ -131,7 +132,7 @@ function extractClinics(text: string): { clean: string; showClinics: boolean } {
 type HistoryItem = { role: 'user' | 'assistant'; content: string };
 type PhotoItem = { base64: string; mediaType: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp' };
 
-async function logTurn(sessionId: string, patientMessage: string, niaResponse: string, metadata?: Record<string, unknown>) {
+async function logTurn(sessionId: string, patientMessage: string, niaResponse: string, metadata?: Prisma.InputJsonValue) {
   try {
     // Upsert an anonymous web session — no patient account required
     await db.nIASession.upsert({
@@ -260,8 +261,8 @@ export async function POST(req: Request) {
         // Log the turn async — do not await so stream closes immediately
         if (sessionId && message?.trim()) {
           const patientText = message.trim();
-          const logMeta = json ? { intakeComplete: true, ...json } : undefined;
-          logTurn(sessionId, patientText, clean, logMeta as Record<string, unknown> | undefined);
+          const logMeta = json ? { intakeComplete: true, ...json } as Prisma.InputJsonValue : undefined;
+          logTurn(sessionId, patientText, clean, logMeta);
         }
       } catch (err) {
         console.error('[chat]', err);
