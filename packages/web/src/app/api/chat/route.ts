@@ -168,7 +168,7 @@ async function logTurn(sessionId: string, patientMessage: string, niaResponse: s
     await db.nIAMessage.createMany({
       data: [
         { sessionId: session.id, role: 'PATIENT', content: patientMessage },
-        { sessionId: session.id, role: 'NIA', content: niaResponse, metadata: metadata ?? null },
+        { sessionId: session.id, role: 'NIA', content: niaResponse, ...(metadata ? { metadata } : {}) },
       ],
     });
   } catch (err) {
