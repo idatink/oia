@@ -15,7 +15,7 @@ const PROCEDURES = [
     recovery: '2–3 weeks',
     from: '€2,800',
     gradient: 'from-[#ffdad2] to-[#fadcd1]',
-    img: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=600&q=80',
+    img: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=600&q=80',
   },
   {
     slug: 'blepharoplasty',
@@ -27,7 +27,7 @@ const PROCEDURES = [
     recovery: '10–14 days',
     from: '€1,900',
     gradient: 'from-[#ecddd4] to-[#fadcd1]',
-    img: 'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?w=600&q=80',
+    img: 'https://images.unsplash.com/photo-1595272568891-123402d0fb3b?w=600&q=80',
   },
   {
     slug: 'facelift',
@@ -39,7 +39,7 @@ const PROCEDURES = [
     recovery: '2–4 weeks',
     from: '€4,500',
     gradient: 'from-[#ffdad2] to-[#ecddd4]',
-    img: 'https://images.unsplash.com/photo-1559757175-5700dde675bc?w=600&q=80',
+    img: 'https://images.unsplash.com/photo-1509967419530-da38b4704bc6?w=600&q=80',
   },
   {
     slug: 'liposuction',
@@ -51,7 +51,7 @@ const PROCEDURES = [
     recovery: '1–2 weeks',
     from: '€2,200',
     gradient: 'from-[#fadcd1] to-[#eae8e6]',
-    img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80',
+    img: 'https://images.unsplash.com/photo-1609557927087-f9cf8e88de18?w=600&q=80',
   },
   {
     slug: 'breast-augmentation',
@@ -63,7 +63,7 @@ const PROCEDURES = [
     recovery: '1–2 weeks',
     from: '€3,100',
     gradient: 'from-[#ecddd4] to-[#ffdad2]',
-    img: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?w=600&q=80',
+    img: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=600&q=80',
   },
   {
     slug: 'abdominoplasty',
@@ -75,7 +75,7 @@ const PROCEDURES = [
     recovery: '2–3 weeks',
     from: '€3,400',
     gradient: 'from-[#fadcd1] to-[#ecddd4]',
-    img: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&q=80',
+    img: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600&q=80',
   },
   {
     slug: 'skin-regeneration',
@@ -87,7 +87,7 @@ const PROCEDURES = [
     recovery: '3–7 days',
     from: '€800',
     gradient: 'from-[#ffdad2] to-[#dcc0ba]',
-    img: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&q=80',
+    img: 'https://images.unsplash.com/photo-1526758097130-bab247274f58?w=600&q=80',
   },
   {
     slug: 'corrective-care',
@@ -99,7 +99,7 @@ const PROCEDURES = [
     recovery: 'On consultation',
     from: 'On consultation',
     gradient: 'from-[#ecddd4] to-[#fadcd1]',
-    img: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&q=80',
+    img: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&q=80',
   },
 ];
 

@@ -58,7 +58,7 @@ export default function Home() {
             {/* Right — hero image */}
             <div className="relative order-1 md:order-2 flex justify-center md:justify-end py-10 md:py-0">
               <div className="relative w-full max-w-[500px] aspect-[4/5] rounded-card3 overflow-hidden shadow-concierge bg-surface-container">
-                <img src="https://images.unsplash.com/photo-1607962837359-5e7e89f86776?w=800&q=80" alt="Patient consultation" className="w-full h-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=800&q=80" alt="Patient journey" className="w-full h-full object-cover object-top" />
 
                 {/* NIA agent bubble */}
                 <div className="absolute bottom-8 left-8 right-8 bg-white/40 backdrop-blur-xl border border-white/20 p-5 rounded-card2 shadow-concierge">
@@ -183,10 +183,10 @@ export default function Home() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
               {[
-                { title: 'Facial Sculpting', desc: 'Rhinoplasty, V-Line, and Anti-Aging procedures.', img: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=600&q=80' },
-                { title: 'Body Contouring', desc: 'High-definition liposuction and 360 sculpting.', img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80' },
-                { title: 'Skin Regeneration', desc: 'Stem-cell therapies and advanced laser resurfacing.', img: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&q=80' },
-                { title: 'Corrective Care', desc: 'Revision surgery and post-traumatic reconstruction.', img: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&q=80' },
+                { title: 'Facial Sculpting', desc: 'Rhinoplasty, V-Line, and Anti-Aging procedures.', img: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=600&q=80' },
+                { title: 'Body Contouring', desc: 'High-definition liposuction and 360 sculpting.', img: 'https://images.unsplash.com/photo-1609557927087-f9cf8e88de18?w=600&q=80' },
+                { title: 'Skin Regeneration', desc: 'Stem-cell therapies and advanced laser resurfacing.', img: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=600&q=80' },
+                { title: 'Corrective Care', desc: 'Revision surgery and post-traumatic reconstruction.', img: 'https://images.unsplash.com/photo-1595272568891-123402d0fb3b?w=600&q=80' },
               ].map(proc => (
                 <div key={proc.title} className="group cursor-pointer">
                   <div className="relative aspect-[3/4] rounded-card2 overflow-hidden mb-6 shadow-concierge">
@@ -233,7 +233,7 @@ export default function Home() {
 
               <div className="relative">
                 <div className="w-full aspect-square rounded-card3 overflow-hidden shadow-concierge">
-                  <img src="https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=700&q=80" alt="Patient recovery" className="w-full h-full object-cover" />
+                  <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=700&q=80" alt="Patient recovery" className="w-full h-full object-cover object-top" />
                 </div>
                 <div className="absolute -bottom-8 -left-8 bg-surface-container-lowest p-8 rounded-card2 shadow-concierge border border-outline-variant max-w-[280px]">
                   <div className="flex gap-1 mb-2 text-primary">
