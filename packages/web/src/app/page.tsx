@@ -142,19 +142,19 @@ export default function Home() {
         </section>
 
         {/* ── The Nia Way ───────────────────────────────────────────────── */}
-        <section className="py-24 bg-surface-container-low">
+        <section className="py-14 md:py-24 bg-surface-container-low">
           <div className="max-w-container mx-auto px-6 md:px-[64px]">
-            <div className="text-center mb-16">
-              <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-4">Our Methodology</span>
-              <h2 className="font-display text-display-lg text-on-surface">The Nia Way</h2>
-              <p className="font-body text-body-md text-on-surface-variant mt-4 max-w-2xl mx-auto">
+            <div className="text-center mb-10 md:mb-16">
+              <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-3">Our Methodology</span>
+              <h2 className="font-display text-3xl md:text-display-lg text-on-surface">The Nia Way</h2>
+              <p className="font-body text-body-md text-on-surface-variant mt-3 max-w-2xl mx-auto">
                 We bridge the gap between world-class surgical expertise and seamless logistical peace of mind.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-gutter">
               {/* AI Analysis — wide */}
-              <div className="md:col-span-7 bg-surface-container-lowest p-10 rounded-card2 shadow-concierge flex flex-col justify-between min-h-[400px]">
+              <div className="md:col-span-7 bg-surface-container-lowest p-6 md:p-10 rounded-card2 shadow-concierge flex flex-col justify-between min-h-[280px] md:min-h-[400px]">
                 <div>
                   <div className="w-14 h-14 bg-primary-fixed rounded-xl flex items-center justify-center mb-8">
                     <svg className="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1 1 .03 2.798-1.338 2.798a10.5 10.5 0 01-7.864-3.55"/></svg>
@@ -172,8 +172,8 @@ export default function Home() {
               </div>
 
               {/* Concierge Planning */}
-              <div className="md:col-span-5 bg-tertiary-container p-10 rounded-card2 flex flex-col justify-between">
-                <div className="w-full aspect-video rounded-xl overflow-hidden mb-8">
+              <div className="md:col-span-5 bg-tertiary-container p-6 md:p-10 rounded-card2 flex flex-col justify-between">
+                <div className="w-full aspect-video rounded-xl overflow-hidden mb-5 md:mb-8">
                   {img('recovery-suite') && <img src={img('recovery-suite')} alt="Luxury recovery suite" className="w-full h-full object-cover" />}
                 </div>
                 <div>
@@ -185,7 +185,7 @@ export default function Home() {
               </div>
 
               {/* Luxury Recovery */}
-              <div className="md:col-span-5 bg-primary p-10 rounded-card2 text-on-primary">
+              <div className="md:col-span-5 bg-primary p-6 md:p-10 rounded-card2 text-on-primary">
                 <div className="h-full flex flex-col justify-between">
                   <div>
                     <svg className="w-10 h-10 mb-6 opacity-80" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
@@ -204,7 +204,7 @@ export default function Home() {
               </div>
 
               {/* Stats */}
-              <div className="md:col-span-7 bg-surface p-10 border border-outline-variant rounded-card2 grid grid-cols-2 gap-8 items-center">
+              <div className="md:col-span-7 bg-surface p-6 md:p-10 border border-outline-variant rounded-card2 grid grid-cols-2 gap-6 md:gap-8 items-center">
                 <div>
                   <h3 className="font-display text-display-md text-on-surface mb-2">Global Excellence</h3>
                   <p className="font-body text-body-sm text-on-surface-variant">Our reach across the most prestigious medical hubs in Asia, Europe, and the Middle East.</p>
@@ -227,16 +227,16 @@ export default function Home() {
         </section>
 
         {/* ── Treatments ────────────────────────────────────────────────── */}
-        <section className="py-16 md:py-24 px-6 md:px-[64px] bg-surface overflow-hidden">
+        <section className="py-14 md:py-24 px-6 md:px-[64px] bg-surface overflow-hidden">
           <div className="max-w-container mx-auto">
-            <div className="flex justify-between items-end mb-16">
+            <div className="flex justify-between items-end mb-10 md:mb-16">
               <div className="max-w-xl">
-                <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-4">Specialties</span>
-                <h2 className="font-display text-display-lg text-on-surface">Curated Surgical Excellence</h2>
+                <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-3">Specialties</span>
+                <h2 className="font-display text-3xl md:text-display-lg text-on-surface">Curated Surgical Excellence</h2>
               </div>
-              <button className="text-primary font-body text-label-caps uppercase border-b border-primary pb-1 hover:opacity-70 transition-all">
-                View All Procedures
-              </button>
+              <a href="/treatments" className="hidden sm:block text-primary font-body text-label-caps uppercase border-b border-primary pb-1 hover:opacity-70 transition-all shrink-0 ml-4">
+                View All
+              </a>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
@@ -264,12 +264,12 @@ export default function Home() {
         </section>
 
         {/* ── Testimonials ──────────────────────────────────────────────── */}
-        <section className="py-24 bg-surface-container-low">
+        <section className="py-14 md:py-24 bg-surface-container-low">
           <div className="max-w-container mx-auto px-6 md:px-[64px]">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-20 items-center">
               <div>
-                <h2 className="font-display text-display-lg text-on-surface mb-8">Trusted by Discerning Patients Globally.</h2>
-                <div className="space-y-12">
+                <h2 className="font-display text-3xl md:text-display-lg text-on-surface mb-6 md:mb-8">Trusted by Discerning Patients Globally.</h2>
+                <div className="space-y-8 md:space-y-12">
                   {[
                     { quote: 'Nia transformed my entire perception of medical travel. From the AI-matched surgeon in Seoul to the private villa recovery in Bali, every detail was handled with a level of care I didn\'t think existed.', name: 'Elena V.', detail: 'London, UK | Facelift Revision' },
                     { quote: 'The medical transparency provided by their AI dashboard gave me the confidence to fly across the world for a complex reconstruction. Truly world-class.', name: 'Mark S.', detail: 'Dubai, UAE | Body Sculpting' },
@@ -289,11 +289,12 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="relative">
-                <div className="w-full aspect-square rounded-card3 overflow-hidden shadow-concierge">
+              <div className="relative pb-0 md:pb-10">
+                <div className="w-full aspect-[4/3] md:aspect-square rounded-card3 overflow-hidden shadow-concierge">
                   {img('concierge-about') && <img src={img('concierge-about')} alt="Patient recovery" className="w-full h-full object-cover object-top" />}
                 </div>
-                <div className="absolute -bottom-8 -left-8 bg-surface-container-lowest p-8 rounded-card2 shadow-concierge border border-outline-variant max-w-[280px]">
+                {/* Pull-out quote card — inline on mobile, overlapping on desktop */}
+                <div className="mt-4 md:mt-0 md:absolute md:-bottom-8 md:-left-8 bg-surface-container-lowest p-5 md:p-8 rounded-card2 shadow-concierge border border-outline-variant md:max-w-[280px]">
                   <div className="flex gap-1 mb-2 text-primary">
                     {[...Array(5)].map((_, i) => (
                       <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
@@ -307,22 +308,22 @@ export default function Home() {
         </section>
 
         {/* ── CTA ───────────────────────────────────────────────────────── */}
-        <section className="py-16 md:py-24 px-6 md:px-[64px]">
-          <div className="max-w-container mx-auto bg-primary rounded-card3 p-12 md:p-20 text-center text-on-primary">
+        <section className="py-10 md:py-24 px-6 md:px-[64px]">
+          <div className="max-w-container mx-auto bg-primary rounded-card3 p-8 md:p-20 text-center text-on-primary">
             <div className="max-w-2xl mx-auto">
-              <h2 className="font-display text-display-xl mb-8">Begin Your Bespoke Transformation</h2>
-              <p className="font-body text-body-lg mb-12 opacity-90">
-                Let our AI concierge analyze your goals and match you with the world&apos;s leading specialists today.
+              <h2 className="font-display text-2xl md:text-display-xl mb-4 md:mb-8">Begin Your Bespoke Transformation</h2>
+              <p className="font-body text-body-md md:text-body-lg mb-8 md:mb-12 opacity-90">
+                Tell Nia your goals. She finds the right surgeon, at the right clinic, when you&apos;re ready to travel.
               </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4">
                 <button
                   onClick={() => setModalOpen(true)}
-                  className="bg-surface-container-lowest text-primary px-10 py-5 rounded-xl font-body font-bold text-label-caps uppercase tracking-[0.2em] hover:shadow-float transition-all"
+                  className="bg-surface-container-lowest text-primary px-8 md:px-10 py-4 md:py-5 rounded-xl font-body font-bold text-label-caps uppercase tracking-[0.2em] hover:shadow-float transition-all"
                 >
-                  Start AI Assessment
+                  Talk to Nia
                 </button>
-                <button className="border border-white/40 text-on-primary px-10 py-5 rounded-xl font-body text-label-caps uppercase tracking-[0.2em] hover:bg-white/10 transition-all">
-                  Speak with a Human Concierge
+                <button className="border border-white/40 text-on-primary px-8 md:px-10 py-4 md:py-5 rounded-xl font-body text-label-caps uppercase tracking-[0.2em] hover:bg-white/10 transition-all">
+                  Speak with a Concierge
                 </button>
               </div>
             </div>
@@ -332,7 +333,7 @@ export default function Home() {
 
       {/* ── Footer ──────────────────────────────────────────────────────── */}
       <footer className="bg-surface-container-low border-t border-outline-variant/30">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-gutter px-6 md:px-[64px] py-20 max-w-container mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-gutter px-6 md:px-[64px] py-12 md:py-20 max-w-container mx-auto">
           <div className="space-y-6">
             <div className="font-display text-display-md text-primary">Nia</div>
             <p className="font-body text-body-sm text-on-surface-variant pr-8">Defining the future of global healthcare through artificial intelligence and white-glove concierge service.</p>
@@ -363,7 +364,7 @@ export default function Home() {
       </footer>
 
       {/* ── Floating Nia orb — IBM pearl style, coral/orange/pink/red ──────── */}
-      <div className="nia-orb-wrap fixed bottom-8 right-8 z-50" style={{ width: 80, height: 80 }}>
+      <div className="nia-orb-wrap fixed bottom-5 right-5 md:bottom-8 md:right-8 z-50" style={{ width: 60, height: 60 }}>
 
         <button
           onClick={() => setModalOpen(true)}
