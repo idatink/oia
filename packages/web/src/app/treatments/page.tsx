@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Nav from '@/components/Nav';
 import LeadCaptureModal from '@/components/LeadCaptureModal';
+import { useSiteConfig } from '@/components/SiteComponents';
 
 const PROCEDURES = [
   {
@@ -105,10 +106,27 @@ const PROCEDURES = [
 
 const CATEGORIES = ['All', 'Facial', 'Body', 'Aesthetic Medicine', 'Specialist'];
 
+const TX_IMAGE_KEYS: Record<string, string> = {
+  rhinoplasty: 'tx-rhinoplasty',
+  blepharoplasty: 'tx-blepharoplasty',
+  facelift: 'tx-facelift',
+  liposuction: 'tx-body-contouring',
+  'breast-augmentation': 'tx-breast-aug',
+  abdominoplasty: 'tx-tummy-tuck',
+  'skin-regeneration': 'tx-skin-regen',
+  'corrective-care': 'tx-corrective',
+};
+
 export default function TreatmentsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState('All');
   const [selected, setSelected] = useState<typeof PROCEDURES[0] | null>(null);
+  const { images: siteImages } = useSiteConfig();
+
+  function txImg(slug: string, fallback: string) {
+    const key = TX_IMAGE_KEYS[slug];
+    return (key && siteImages[key]) ? siteImages[key] : fallback;
+  }
 
   const filtered = activeCategory === 'All'
     ? PROCEDURES
@@ -188,7 +206,7 @@ export default function TreatmentsPage() {
               >
                 {/* Visual */}
                 <div className="aspect-[4/3] relative overflow-hidden bg-surface-container-low">
-                  <img src={proc.img} alt={proc.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <img src={txImg(proc.slug, proc.img)} alt={proc.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-on-surface/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="absolute bottom-3 left-3">
                     <span className="font-body text-[9px] font-bold uppercase tracking-widest bg-surface-container-lowest/80 backdrop-blur-sm text-on-surface px-2.5 py-1 rounded-full">
@@ -285,7 +303,7 @@ export default function TreatmentsPage() {
             {/* Body */}
             <div className="overflow-y-auto flex-1 px-6 py-5 space-y-6">
               <div className="aspect-[16/7] rounded-xl overflow-hidden">
-                <img src={selected.img} alt={selected.title} className="w-full h-full object-cover" />
+                <img src={txImg(selected.slug, selected.img)} alt={selected.title} className="w-full h-full object-cover" />
               </div>
 
               <p className="font-body text-body-md text-on-surface-variant leading-relaxed">{selected.desc}</p>

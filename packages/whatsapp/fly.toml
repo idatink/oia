@@ -1,0 +1,21 @@
+app = "nia-whatsapp-gateway"
+primary_region = "lhr"
+
+[build]
+
+[env]
+  NIA_API_URL = "https://nia-medtourism-dashboard.vercel.app"
+  NIA_WEB_URL = "https://nia-medtourism-web.vercel.app"
+
+[[mounts]]
+  source = "openclaw_data"
+  destination = "/data"
+
+[[services]]
+  internal_port = 3000
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+

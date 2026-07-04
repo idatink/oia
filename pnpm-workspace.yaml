@@ -3,6 +3,7 @@ packages:
 allowBuilds:
   "@prisma/client": true
   "@prisma/engines": true
+  "@nia/shared": true
   bufferutil: true
   esbuild: true
   prisma: true

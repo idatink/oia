@@ -1,0 +1,315 @@
+{
+  "version": "1.2",
+  "description": "NIA end-to-end patient journey test suite",
+  "notes": "auto_converted is not detectable from the frontend \u2014 verified separately via admin API. It's stored in expectAutoConvert for documentation.",
+  "journeys": [
+    {
+      "id": "J01",
+      "label": "Clean high-priority candidate",
+      "expectAutoConvert": true,
+      "profile": {
+        "name": "Sophie Laurent",
+        "dob": "15 March 1991",
+        "country": "UK",
+        "procedure": "rhinoplasty",
+        "triage": {
+          "diabetes": false,
+          "cancerTreatment": false,
+          "organTransplant": false,
+          "dvt": false,
+          "pacemaker": false,
+          "hypertension": false,
+          "heartDisease": false,
+          "thyroidDisorder": false,
+          "immuneDisorder": false,
+          "pregnancy": false,
+          "allergies": false
+        }
+      },
+      "messages": [
+        "Hi, I'm Sophie. I'm interested in rhinoplasty \u2014 I'd like to refine my nose tip and reduce the bridge.",
+        "My goal is a subtle, natural result. I want the tip more refined and the bridge softer.",
+        "I'm thinking of travelling in about 3 months. I live in London, UK.",
+        "My date of birth is 15 March 1991.",
+        "I'd love to see some before and after photos if you have any.",
+        "I'd prefer not to share photos right now, please proceed without.",
+        "No, I really cannot share photos. Please proceed without, I understand it may affect the assessment."
+      ],
+      "expectedEvents": [
+        "gallery_shown",
+        "triage_shown",
+        "intake_complete"
+      ]
+    },
+    {
+      "id": "J02",
+      "label": "Hard contraindication \u2014 DVT history",
+      "expectAutoConvert": false,
+      "profile": {
+        "name": "Marcus Weber",
+        "dob": "2 August 1978",
+        "country": "Germany",
+        "procedure": "blepharoplasty",
+        "triage": {
+          "diabetes": false,
+          "cancerTreatment": false,
+          "organTransplant": false,
+          "dvt": true,
+          "pacemaker": false,
+          "hypertension": false,
+          "heartDisease": false,
+          "thyroidDisorder": false,
+          "immuneDisorder": false,
+          "pregnancy": false,
+          "allergies": false
+        }
+      },
+      "messages": [
+        "Hello, I'm Marcus. I'm interested in an upper eyelid lift \u2014 blepharoplasty.",
+        "My main goal is to look less tired and more alert. The upper eyelids are quite heavy.",
+        "I'm based in Munich, Germany. I'd like to travel in about 6 months.",
+        "My date of birth is 2 August 1978.",
+        "Can you show me which clinics I might match with?",
+        "I'd prefer not to share photos, please proceed without.",
+        "No, I really cannot share photos. Please proceed without, I understand it may affect the assessment."
+      ],
+      "expectedEvents": [
+        "clinics_shown",
+        "triage_shown",
+        "intake_complete"
+      ],
+      "notes": "DVT is a hard contraindication \u2014 should stay as inquiry (no auto-convert)"
+    },
+    {
+      "id": "J03",
+      "label": "Multiple soft flags \u2014 diabetes and hypertension",
+      "expectAutoConvert": true,
+      "profile": {
+        "name": "Priya Sharma",
+        "dob": "20 November 1985",
+        "country": "India",
+        "procedure": "liposuction",
+        "triage": {
+          "diabetes": true,
+          "cancerTreatment": false,
+          "organTransplant": false,
+          "dvt": false,
+          "pacemaker": false,
+          "hypertension": true,
+          "heartDisease": false,
+          "thyroidDisorder": false,
+          "immuneDisorder": false,
+          "pregnancy": false,
+          "allergies": false
+        }
+      },
+      "messages": [
+        "Hi! I'm Priya, I'm interested in liposuction for my abdomen and flanks.",
+        "My goal is to contour my midsection after losing 20kg \u2014 remove stubborn fat that won't budge.",
+        "I'm from Mumbai, India and I'm thinking of travelling in about 4 months.",
+        "My date of birth is 20 November 1985.",
+        "I'd rather not share photos, please proceed without.",
+        "No, I really cannot share photos. Please proceed without, I understand it may affect the assessment."
+      ],
+      "expectedEvents": [
+        "triage_shown",
+        "intake_complete"
+      ],
+      "notes": "Diabetes and hypertension are soft flags \u2014 auto-convert should still happen (verified via admin)"
+    },
+    {
+      "id": "J04",
+      "label": "Hard contraindication \u2014 active cancer treatment",
+      "expectAutoConvert": false,
+      "profile": {
+        "name": "Elena Rossi",
+        "dob": "5 June 1972",
+        "country": "Italy",
+        "procedure": "facelift",
+        "triage": {
+          "diabetes": false,
+          "cancerTreatment": true,
+          "organTransplant": false,
+          "dvt": false,
+          "pacemaker": false,
+          "hypertension": false,
+          "heartDisease": false,
+          "thyroidDisorder": true,
+          "immuneDisorder": false,
+          "pregnancy": false,
+          "allergies": false
+        }
+      },
+      "messages": [
+        "Ciao, I am Elena. I would like to discuss a facelift \u2014 neck and jawline.",
+        "My goal is to lift the jawline and reduce neck sagging for a natural rejuvenated look.",
+        "I live in Rome, Italy. I am hoping to travel in two months.",
+        "My date of birth is 5 June 1972.",
+        "I would prefer not to share photos, please proceed without.",
+        "No, I really cannot share photos. Please proceed without, I understand it may affect the assessment."
+      ],
+      "expectedEvents": [
+        "triage_shown",
+        "intake_complete"
+      ],
+      "notes": "Cancer treatment and thyroid disorder \u2014 hard flag (cancer), should NOT auto-convert"
+    },
+    {
+      "id": "J05",
+      "label": "Photo refusal both times \u2014 clean triage",
+      "expectAutoConvert": true,
+      "profile": {
+        "name": "Aisha Al-Mahmoud",
+        "dob": "12 April 1993",
+        "country": "UAE",
+        "procedure": "rhinoplasty",
+        "triage": {
+          "diabetes": false,
+          "cancerTreatment": false,
+          "organTransplant": false,
+          "dvt": false,
+          "pacemaker": false,
+          "hypertension": false,
+          "heartDisease": false,
+          "thyroidDisorder": false,
+          "immuneDisorder": false,
+          "pregnancy": false,
+          "allergies": false
+        }
+      },
+      "messages": [
+        "Hello, I'm Aisha. I'm interested in a subtle rhinoplasty \u2014 just tip refinement.",
+        "My goal is to refine the tip shape and make it slightly narrower. Very natural result.",
+        "I'm based in Dubai, UAE. I want to travel in about 2 months.",
+        "My date of birth is 12 April 1993.",
+        "I'm not comfortable sharing photos at all, even with a clinical team.",
+        "No, I really can't share photos. Please proceed without."
+      ],
+      "expectedEvents": [
+        "triage_shown",
+        "intake_complete"
+      ],
+      "notes": "Photos declined twice \u2014 photosDeclined:true \u2014 should still auto-convert (verified via admin)"
+    },
+    {
+      "id": "J06",
+      "label": "Escalated \u2014 suspicious of data collection",
+      "expectAutoConvert": false,
+      "profile": {
+        "name": "James Thornton",
+        "dob": "8 January 1980",
+        "country": "Australia",
+        "procedure": "abdominoplasty",
+        "triage": {
+          "diabetes": false,
+          "cancerTreatment": false,
+          "organTransplant": false,
+          "dvt": false,
+          "pacemaker": false,
+          "hypertension": false,
+          "heartDisease": false,
+          "thyroidDisorder": false,
+          "immuneDisorder": false,
+          "pregnancy": false,
+          "allergies": false
+        }
+      },
+      "messages": [
+        "I'm interested in a tummy tuck. But first \u2014 why do you need all this personal information?",
+        "My goal is to remove loose skin and fat after 30kg of weight loss.",
+        "OK fine, James Thornton.",
+        "My date of birth is 8 January 1980.",
+        "Why are you asking all these medical questions? Are you going to sell my data?",
+        "I'm from Sydney, Australia. Maybe I'll travel later this year.",
+        "I'd rather not share photos."
+      ],
+      "expectedEvents": [],
+      "notes": "Escalated / resistant patient. Pass criterion: graceful handling, not intake completion. Triage may not appear.",
+      "qualitativeChecks": [
+        "Nia explains data privacy without pushing",
+        "No aggressive or dismissive tone",
+        "Nia maintains warmth throughout resistance",
+        "Triage appearing would be a bonus \u2014 not required for this escalation scenario"
+      ]
+    },
+    {
+      "id": "J07",
+      "label": "Escalated \u2014 pacemaker with urgent timeline",
+      "expectAutoConvert": false,
+      "profile": {
+        "name": "Robert Chalmers",
+        "dob": "14 March 1955",
+        "country": "USA",
+        "procedure": "facelift",
+        "triage": {
+          "diabetes": false,
+          "cancerTreatment": false,
+          "organTransplant": false,
+          "dvt": false,
+          "pacemaker": true,
+          "hypertension": true,
+          "heartDisease": false,
+          "thyroidDisorder": false,
+          "immuneDisorder": false,
+          "pregnancy": false,
+          "allergies": true
+        }
+      },
+      "messages": [
+        "Hi there. I'm Robert and I want a full facelift \u2014 neck lift included. I'm 69.",
+        "My goal is to reduce sagging around the jaw and neck. I've wanted this for years.",
+        "I'm from New York, USA. I want to do this in the next month \u2014 I'm retiring.",
+        "My date of birth is 14 March 1955.",
+        "I have a pacemaker and blood pressure medication. I'm also allergic to penicillin.",
+        "I'd prefer not to share photos, please proceed without.",
+        "No, I really cannot share photos. Please proceed without, I understand it may affect the assessment."
+      ],
+      "expectedEvents": [
+        "triage_shown",
+        "intake_complete"
+      ],
+      "notes": "Pacemaker is hard contraindication \u2014 intake should complete but NOT auto-convert (verified via admin)"
+    },
+    {
+      "id": "J08",
+      "label": "Gallery and clinic browsing before committing",
+      "expectAutoConvert": true,
+      "profile": {
+        "name": "Lena Fischer",
+        "dob": "3 September 1996",
+        "country": "Germany",
+        "procedure": "rhinoplasty",
+        "triage": {
+          "diabetes": false,
+          "cancerTreatment": false,
+          "organTransplant": false,
+          "dvt": false,
+          "pacemaker": false,
+          "hypertension": false,
+          "heartDisease": false,
+          "thyroidDisorder": false,
+          "immuneDisorder": false,
+          "pregnancy": false,
+          "allergies": false
+        }
+      },
+      "messages": [
+        "Hi! I'm Lena. I'm thinking about rhinoplasty but I want to see real results first.",
+        "Can you show me before and after photos?",
+        "Ok nice. Can you also show me which clinics I could go to?",
+        "Ok I'm convinced. My goal is a natural feminine result \u2014 narrow bridge, refined tip.",
+        "I'm from Berlin, Germany. I want to travel in 2 months.",
+        "My date of birth is 3 September 1996.",
+        "I'd prefer not to share photos right now, please proceed without.",
+        "No, I really cannot share photos. Please proceed without, I understand it may affect the assessment."
+      ],
+      "expectedEvents": [
+        "gallery_shown",
+        "clinics_shown",
+        "triage_shown",
+        "intake_complete"
+      ],
+      "notes": "Gallery and clinics before personal data, then intake completes cleanly"
+    }
+  ]
+}

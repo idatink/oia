@@ -8,43 +8,20 @@ import TriageWidget, { type TriageAnswers } from './TriageWidget';
 import type { ClinicCardData } from './ClinicCard';
 
 const INITIAL_QUICK_REPLIES = [
-  'Tell me about rhinoplasty options',
+  'How does Nia work?',
+  'Why should I book with Nia?',
   'What procedures do you cover?',
-  'How does the process work?',
 ];
 
-const PLACEHOLDER_CLINICS: ClinicCardData[] = [
-  {
-    id: 'istanbul-aesthetic',
-    name: 'Istanbul Aesthetic Centre',
-    city: 'Istanbul',
-    country: 'Turkey',
-    rating: 4.9,
-    reviewCount: 312,
-    description: 'JCI-accredited centre specialising in facial sculpting and body contouring with 15 years of international patient care.',
-    tags: ['JCI Accredited', 'English Speaking', 'VIP Suite'],
-  },
-  {
-    id: 'barcelona-cmed',
-    name: 'Barcelona CMed Clinic',
-    city: 'Barcelona',
-    country: 'Spain',
-    rating: 4.8,
-    reviewCount: 198,
-    description: 'Boutique European clinic renowned for natural-looking rhinoplasty and advanced laser treatments.',
-    tags: ['EU Standards', 'Bilingual Staff', 'Private Rooms'],
-  },
-  {
-    id: 'bangkok-premium',
-    name: 'Bangkok Premium Surgery',
-    city: 'Bangkok',
-    country: 'Thailand',
-    rating: 4.9,
-    reviewCount: 441,
-    description: 'Award-winning facility offering full cosmetic surgery packages including 5-star recovery retreats.',
-    tags: ['ISO Certified', 'Recovery Package', 'Airport Transfer'],
-  },
-];
+async function fetchMatchedClinics(procedure: string): Promise<ClinicCardData[]> {
+  try {
+    const res = await fetch(`/api/clinics?procedure=${encodeURIComponent(procedure)}`);
+    if (!res.ok) return [];
+    return await res.json();
+  } catch {
+    return [];
+  }
+}
 
 interface HistoryItem {
   role: 'user' | 'assistant';
@@ -221,17 +198,16 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
               } else if (event.showTriage) {
                 setShowTriage(true);
                 setSuggestions([]);
-              } else {
-                setSuggestions(INITIAL_QUICK_REPLIES);
               }
 
-              // Attach clinic cards if Nia triggered the CLINICS display
+              // Attach real clinic cards matched to the patient's procedure
               if (event.showClinics) {
-                setMessages(m => m.map(msg =>
-                  msg.id === niaMsgId
-                    ? { ...msg, clinics: PLACEHOLDER_CLINICS }
-                    : msg
-                ));
+                const procedure = event.intake?.procedure ?? text.trim();
+                fetchMatchedClinics(procedure).then(clinics => {
+                  setMessages(m => m.map(msg =>
+                    msg.id === niaMsgId ? { ...msg, clinics } : msg
+                  ));
+                });
               }
             } else if (event.type === 'error') {
               setMessages(m => m.map(msg =>
@@ -295,7 +271,11 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
             key={msg.id}
             message={msg}
             patientInitial={(patientName !== 'there' ? patientName : 'Y').charAt(0).toUpperCase()}
-            onClinicSelect={id => sendMessage(`Tell me more about clinic ${id}`)}
+            onClinicSelect={id => {
+              const clinic = messages.flatMap(m => m.clinics ?? []).find(c => c.id === id);
+              if (clinic?.website) window.open(clinic.website, '_blank', 'noopener');
+              else sendMessage(`Tell me more about this clinic`);
+            }}
           />
         ))}
 

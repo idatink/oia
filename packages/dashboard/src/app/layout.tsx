@@ -24,7 +24,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${ebGaramond.variable} ${workSans.variable}`}>
-      <body>{children}</body>
+      <body className="bg-surface">
+        {children}
+      </body>
     </html>
   );
 }

@@ -1,0 +1,188 @@
+[
+  {
+    "id": "J01",
+    "label": "Clean high-priority candidate",
+    "status": "PASS",
+    "events": [
+      "triage_shown",
+      "gallery_shown",
+      "clinics_shown",
+      "intake_complete"
+    ],
+    "passed": [
+      "gallery_shown",
+      "triage_shown",
+      "intake_complete"
+    ],
+    "failed": [],
+    "niaNotes": [
+      "That's a great goal, Sophie — tip refinement and bridge reduction are two of the most common requests our surgeons excel at. To help me find the best match for you, could you tell me a little about what you're hoping to achieve — for example, a more natural look, a specific aesthetic style, or something else?",
+      "That's a lovely goal — subtle and natural results are very achievable with the right surgeon. When are you thinking of traveling for the procedure?",
+      "Perfect, three months gives us a great window to find you the right match. Could I also ask your date of birth? It helps our surgical teams confirm suitability.",
+      "That's great news, Sophie — no flags at all, which is really positive. Could you share a quick photo of the area you'd like to address? It helps our surgeons give you a much more accurate first impression.",
+      "Of course!\n\n\n\nHere are some results from our partner clinics. Would you also be able to share a photo of your nose so our surgeons can give you a more personalised impression?",
+      "Of course, Sophie — just so you know, photos are only ever seen by the clinical team and really do help surgeons give you a much more accurate first impression. Would you be comfortable sharing one, even just a single photo?",
+      "Absolutely understood, Sophie — no problem at all. Thank you, I have everything I need. Our team will review your profile and be in touch within 24–48 hours."
+    ]
+  },
+  {
+    "id": "J02",
+    "label": "Hard contraindication — DVT history",
+    "status": "PASS",
+    "events": [
+      "triage_shown",
+      "gallery_shown",
+      "clinics_shown",
+      "intake_complete"
+    ],
+    "passed": [
+      "clinics_shown",
+      "triage_shown",
+      "intake_complete"
+    ],
+    "failed": [],
+    "niaNotes": [
+      "Great choice, Marcus — blepharoplasty is one of the most transformative yet subtle procedures we work with. What are you hoping to achieve with the surgery — is it more about a refreshed, youthful look, or are there functional concerns like heaviness or restricted vision?",
+      "That's a really common and very achievable goal with upper blepharoplasty. Do you have a rough idea of when you'd like to travel for the procedure?",
+      "Perfect, that gives us a good runway to find you the ideal match. Could I also ask your date of birth? It helps our surgical teams confirm suitability.",
+      "Thank you for being upfront about that, Marcus — our surgical team will just want to review your DVT history to ensure the right precautions are in place for travel and surgery. Could you share a quick photo of the area you'd like to address? It helps our surgeons give you a much more accurate first impression.",
+      "These are a few of our top-rated partner clinics for your procedure. Now, were you able to grab a quick photo of your upper eyelids to share with the team?",
+      "I completely understand — just so you know, photos are only ever seen by the clinical team and help them give you a much more tailored assessment. Would you be comfortable sharing just one, even a casual one taken at home?",
+      "Of course, Marcus, I completely respect that. Thank you for everything you've shared — our team will review your profile and be in touch within 24–48 hours."
+    ]
+  },
+  {
+    "id": "J03",
+    "label": "Multiple soft flags — diabetes and hypertension",
+    "status": "PASS",
+    "events": [
+      "triage_shown",
+      "intake_complete"
+    ],
+    "passed": [
+      "triage_shown",
+      "intake_complete"
+    ],
+    "failed": [],
+    "niaNotes": [
+      "That's a great starting point, Priya — abdominal and flank liposuction is one of the most popular and transformative procedures we help with. What's the main result you're hoping to achieve — are you looking to contour and define, or more focused on reducing overall volume?",
+      "That's such a motivating journey, and it's incredibly common for stubborn pockets to remain even after significant weight loss — liposuction can be a fantastic finishing touch. Do you have a travel timeline in mind for when you'd like to have the procedure done?",
+      "A 4-month timeline gives us a great runway to find you the perfect match. Could I also ask your date of birth? It helps our surgical teams confirm suitability.",
+      "Thank you for sharing that, Priya — our surgical teams are very experienced working with patients managing diabetes and hypertension, and they'll just want to ensure both are well-controlled ahead of any procedure. Could you share a quick photo of the area you'd like to address? It helps our surgeons give you a much more accurate first impression.",
+      "Of course, I completely understand — just so you know, photos are only ever seen by the clinical team and really do help them give you a more tailored assessment. Would you be open to sharing just one, even a general shot of the midsection area?",
+      "Absolutely, no problem at all Priya — we'll note that and the team will follow up with you directly if they need more information.\n\nThank you Priya, I have everything I need. Our team will review your profile and be in touch within 24–48 hours."
+    ]
+  },
+  {
+    "id": "J04",
+    "label": "Hard contraindication — active cancer treatment",
+    "status": "PASS",
+    "events": [
+      "triage_shown",
+      "intake_complete"
+    ],
+    "passed": [
+      "triage_shown",
+      "intake_complete"
+    ],
+    "failed": [],
+    "niaNotes": [
+      "That's a wonderful area to focus on, Elena — a lot can be achieved with the right approach for the neck and jawline. Could you tell me a little about what you're hoping to achieve — for example, are you looking to address sagging skin, define the jawline, or something else?",
+      "That's a really clear and achievable goal — many of our patients are after exactly that natural, refreshed result. When are you thinking of traveling for this?",
+      "Two months is a great timeline — plenty of time to get everything arranged. Could I also ask your date of birth? It helps our surgical teams confirm suitability.",
+      "Thank you for sharing that, Elena — our clinical team will take note of the cancer treatment and thyroid disorder history to make sure everything is planned with your safety in mind. Could you share a photo of the neck and jawline area you'd like to address? It helps our surgeons give you a much more accurate first impression.",
+      "Of course, I completely understand. Just to let you know, photos are only ever seen by the clinical team and really do help the surgeons give you a more tailored assessment — would you be comfortable sharing just one?",
+      "Absolutely, Elena, I respect that completely. Thank you for everything you've shared — our team will review your profile and be in touch within 24–48 hours."
+    ]
+  },
+  {
+    "id": "J05",
+    "label": "Photo refusal both times — clean triage",
+    "status": "PASS",
+    "events": [
+      "triage_shown",
+      "intake_complete"
+    ],
+    "passed": [
+      "triage_shown",
+      "intake_complete"
+    ],
+    "failed": [],
+    "niaNotes": [
+      "That's a lovely choice — tip refinement can make such a natural, elegant difference. What's the main goal you're hoping to achieve with the procedure?",
+      "Perfect, that's a very clear and achievable goal. When are you thinking of traveling for the procedure?",
+      "That's a great timeline to work with. Could I also ask your date of birth? It helps our surgical teams confirm suitability.",
+      "That's all clear — no flags at all, which is great. Could you share a quick photo of the area you'd like to address? It helps our surgeons give you a much more accurate first impression.",
+      "I completely understand — just to reassure you, photos are only ever seen by the surgical team and never shared beyond that. Would you feel comfortable sharing just one photo to help them give you a more accurate first impression?",
+      "Of course, Aisha — I completely respect that. Thank you, I have everything I need. Our team will review your profile and be in touch within 24–48 hours."
+    ]
+  },
+  {
+    "id": "J06",
+    "label": "Escalated — suspicious of data collection",
+    "status": "PASS",
+    "events": [],
+    "passed": [],
+    "failed": [],
+    "niaNotes": [
+      "That's a completely fair question, James. The details help our surgical teams confirm you're a strong candidate and match you with the clinic best suited to your goals — everything is kept strictly confidential and only seen by relevant clinical staff. Does that put your mind at ease?",
+      "That's a remarkable achievement, James — 30kg is no small feat. Could you tell me what your travel timeline looks like, as in roughly when you'd be hoping to travel for the procedure?",
+      "It sounds like that may have been a accidental message — no worries at all! When were you thinking of travelling for your procedure?",
+      "Thank you, James — and when were you thinking of travelling for the procedure?",
+      "Your data is never sold — it's only shared with the clinical team reviewing your case, and solely for the purpose of matching you with the right surgeon. These details help ensure your safety and that any clinic we recommend is the right fit for you personally. Does that reassure you enough to continue?",
+      "Perfect, thank you James. Could I ask which country you'd be hoping to travel to, or are you open to recommendations?",
+      "That's completely understandable — could I just mention that photos are only ever seen by the clinical team, purely to help surgeons give you a more accurate first impression? It really does make a difference to the quality of feedback you'd receive."
+    ]
+  },
+  {
+    "id": "J07",
+    "label": "Escalated — pacemaker with urgent timeline",
+    "status": "PASS",
+    "events": [
+      "triage_shown",
+      "intake_complete"
+    ],
+    "passed": [
+      "triage_shown",
+      "intake_complete"
+    ],
+    "failed": [],
+    "niaNotes": [
+      "That's a wonderful choice, Robert — a facelift with neck lift can make such a transformative difference. What are the main goals you're hoping to achieve — is it more about the jawline, overall skin laxity, or something specific you've noticed?",
+      "That's a very clear and achievable goal — surgeons do beautiful work in exactly that area. When are you thinking of traveling for the procedure?",
+      "How exciting — what a wonderful way to mark a new chapter! Could I also ask your date of birth? It helps our surgical teams confirm suitability.",
+      "Thank you for sharing that, Robert — the pacemaker, blood pressure, and allergies are things our surgical team will want to review closely to ensure everything is planned safely around them. Could you share a photo of the areas you'd like to address — the jaw and neck? It helps our surgeons give you a much more accurate first impression.",
+      "That's really helpful context, thank you. Could you share a quick photo of the jaw and neck area you'd like to address? It's only seen by our clinical team and really helps them give you a much more accurate first impression.",
+      "Of course, I completely understand. Just to mention, photos are only ever seen by our clinical team and can really help the surgeons give you a more tailored assessment — would you be open to sharing even just one? No pressure at all if not.",
+      "Absolutely, Robert, I'll note that and we'll proceed. Thank you so much — I have everything I need. Our team will review your profile and be in touch within 24–48 hours."
+    ]
+  },
+  {
+    "id": "J08",
+    "label": "Gallery and clinic browsing before committing",
+    "status": "PASS",
+    "events": [
+      "gallery_shown",
+      "clinics_shown",
+      "triage_shown",
+      "intake_complete"
+    ],
+    "passed": [
+      "gallery_shown",
+      "clinics_shown",
+      "triage_shown",
+      "intake_complete"
+    ],
+    "failed": [],
+    "niaNotes": [
+      "Of course — here are some results from our partner clinics.\n\n\n\nWhat are you hoping to achieve with your rhinoplasty — is there a specific area of your nose you'd like to change?",
+      "Here are some results from our partner clinics. What specific changes are you hoping to achieve with your rhinoplasty?",
+      "These are a few of our top-rated partner clinics for your procedure. Now, I'd love to understand your goals a little better — what specifically are you hoping to change about your nose?",
+      "That's a beautiful goal and very achievable with the right surgeon. When are you thinking of travelling for the procedure?",
+      "That's a great timeline! Could I also ask your date of birth? It helps our surgical teams confirm suitability.",
+      "That's great news — no flags at all, which is reassuring. Could you share a quick photo of the area you'd like to address? It helps our surgeons give you a much more accurate first impression.",
+      "Of course, I completely understand — just so you know, photos are only ever seen by your clinical team and really do help them give you a more tailored first impression. Would you be open to sharing just one?",
+      "Absolutely, no problem at all Lena. Thank you — I have everything I need. Our team will review your profile and be in touch within 24–48 hours."
+    ]
+  }
+]

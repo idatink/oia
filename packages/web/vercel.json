@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd ../.. && pnpm --filter @nia/web build",
+  "buildCommand": "cd ../.. && pnpm install && pnpm --filter @nia/shared db:generate && pnpm --filter @nia/shared db:migrate && pnpm --filter @nia/web build",
   "outputDirectory": ".next",
   "installCommand": "cd ../.. && pnpm install",
   "framework": "nextjs"

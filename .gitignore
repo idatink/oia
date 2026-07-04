@@ -18,3 +18,12 @@ packages/shared/prisma/migrations/
 .DS_Store
 *.log
 .vercel
+.env*
+
+# build artifacts
+*.tsbuildinfo
+
+# openclaw runtime state / local workspace backups
+.openclaw/
+openclaw-workspace-state.json
+_backup-*/

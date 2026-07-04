@@ -1,3 +1,4 @@
+export { NiaWhatsAppAgent } from './agents/nia-whatsapp-agent.js';
 export { TopoRouter } from './router/topo.js';
 export type { SurfaceKind, AgentOutput } from './router/topo.js';
 export { IntentAgent } from './agents/intent.js';

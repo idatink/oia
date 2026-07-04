@@ -1,0 +1,39 @@
+{
+  "version": "1",
+  "gateway": {
+    "mode": "local"
+  },
+  "agent": {
+    "name": "Nia",
+    "soul": "./workspace/SOUL.md",
+    "llm": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-6",
+      "apiKey": "$ANTHROPIC_API_KEY"
+    }
+  },
+  "channels": {
+    "whatsapp": {
+      "dmPolicy": "open",
+      "allowFrom": "*",
+      "sessionTimeout": 3600
+    }
+  },
+  "skills": [
+    {
+      "name": "create_nia_inquiry",
+      "path": "./workspace/skills/create-nia-inquiry",
+      "description": "Submit completed patient intake to the Nia platform"
+    },
+    {
+      "name": "get_clinic_recommendations",
+      "path": "./workspace/skills/get-clinic-recommendations",
+      "description": "Fetch matched clinic recommendations from the Nia database for the patient's procedure"
+    }
+  ],
+  "env": {
+    "NIA_API_URL": "$NIA_API_URL",
+    "NIA_WHATSAPP_SECRET": "$NIA_WHATSAPP_SECRET",
+    "NIA_WEB_URL": "$NIA_WEB_URL"
+  }
+}

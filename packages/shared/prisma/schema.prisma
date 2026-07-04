@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
@@ -80,6 +81,8 @@ model Patient {
   whatsappNumber     String?  @unique
   nationality        String?
   countryOfResidence String?
+  preferredLanguage  String?
+  dateOfBirth        DateTime?
   imageConsentGiven  Boolean  @default(false)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
@@ -105,14 +108,44 @@ model Clinic {
   website          String?
   isVerified       Boolean  @default(false)
   isActive         Boolean  @default(true)
+  // Nia curation fields
+  niaScore         Int?                   // 1–10 internal quality score
+  specialties      String[]               // procedure slugs this clinic excels at
+  photoUrls        String[]               // cover/gallery photos
+  accreditations   String[]               // e.g. ["JCI", "ISO 9001"]
+  whatsappNumber   String?                // for sending leads
+  internalNotes    String?                // private notes for the NIA team
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
   coordinators     Coordinator[]
+  invites          Invite[]
   surgeons         Surgeon[]
   consultations    Consultation[]
   beforeAfterCases BeforeAfterCase[]
   procedures       ClinicProcedure[]
+  notifications    Notification[]
+  offers           Offer[]
+  supportTickets   SupportTicket[]
+}
+
+// ─── Recovery Suite ──────────────────────────────────────────────────────────
+
+model RecoverySuite {
+  id                 String   @id @default(cuid())
+  name               String
+  city               String
+  country            String
+  description        String?
+  photoUrls          String[]
+  pricePerNightEur   Int?     // approximate nightly price in EUR
+  amenities          String[] // e.g. ["Pool", "Airport Transfer", "Nurse on call"]
+  websiteUrl         String?
+  whatsappNumber     String?
+  isActive           Boolean  @default(true)
+  internalNotes      String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
 
 model Coordinator {
@@ -125,7 +158,8 @@ model Coordinator {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  leads Lead[]
+  leads  Lead[]
+  offers Offer[]
 }
 
 model Surgeon {
@@ -178,14 +212,17 @@ model Consultation {
   clinic      Clinic             @relation(fields: [clinicId], references: [id])
   surgeonId   String?
   surgeon     Surgeon?           @relation(fields: [surgeonId], references: [id])
-  procedureId String
-  procedure   Procedure          @relation(fields: [procedureId], references: [id])
-  status      ConsultationStatus @default(ENQUIRY)
+  procedureId              String
+  procedure                Procedure          @relation(fields: [procedureId], references: [id])
+  additionalProcedureIds   String[]
+  preferredDoctorName      String?
+  status                   ConsultationStatus @default(ENQUIRY)
   notes       String?
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
 
   lead               Lead?
+  bookings           Booking[]
   complianceTimeline ComplianceTimeline?
   documents          Document[]
 }
@@ -209,23 +246,125 @@ enum ConsultationStatus {
 // ─── Lead (coordinator pipeline card) ────────────────────────────────────────
 
 model Lead {
-  id             String      @id @default(cuid())
-  consultationId String      @unique
+  id             String       @id @default(cuid())
+  consultationId String       @unique
   consultation   Consultation @relation(fields: [consultationId], references: [id])
   coordinatorId  String?
   coordinator    Coordinator? @relation(fields: [coordinatorId], references: [id])
-  status         LeadStatus  @default(NEW)
+  status         LeadStatus   @default(NEW)
   claimedAt      DateTime?
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  source         String       @default("web") // "whatsapp" | "web" | "referral"
+  patientLocation String?                     // "London, UK" — denormalised from first message
+  intent         String?                      // AI-extracted patient goal sentence
+  scope          String[]                     // AI-extracted procedure scope bullets
+  aiScore        Int?                         // 0–100 booking-intent probability
+  aiRationale    String?                      // full AI analysis paragraph
+  aiPriority     String?                      // "High" | "Medium" | "Low"
+  medicalScreening Json?                      // { diabetes: false, cancer: false, ... }
+  photoUrls      String[]                     // patient-submitted photo URLs/keys
+  patientSelectedAt DateTime?                 // set by Nia when patient chooses this clinic; gates conversation access
+  proposal       Json?                        // treatment proposal sent to patient after selection
+  closedAt       DateTime?                    // set when coordinator marks case CLOSED
+  closureOutcome String?                      // "successful" | "cancelled" | "complication" | "no_show"
+  closureNotes   String?                      // free-text coordinator notes at closure
+  departureDate  DateTime?                    // patient's actual departure date
+  followUpDays   Int[]                        // e.g. [3, 7, 30] — days post-op to schedule reminders
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  offers Offer[]
+
+  @@index([status])
+  @@index([coordinatorId])
+}
+
+// ─── Offer (clinic's price quote submitted to Nia for a patient lead) ─────────
+
+model Offer {
+  id            String      @id @default(cuid())
+  leadId        String
+  lead          Lead        @relation(fields: [leadId], references: [id])
+  clinicId      String
+  clinic        Clinic      @relation(fields: [clinicId], references: [id])
+  coordinatorId String
+  coordinator   Coordinator @relation(fields: [coordinatorId], references: [id])
+  totalPrice    Float
+  currency      String      @default("EUR")
+  inclusions    String[]    // ["Surgeon Fee", "Anaesthesia", "Hospital 2 nights", ...]
+  notes         String?
+  validDays     Int         @default(30)
+  status        String      @default("SENT") // SENT | ACCEPTED | REJECTED | EXPIRED | WITHDRAWN
+  sentAt        DateTime    @default(now())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([leadId])
+  @@index([clinicId])
 }
 
 enum LeadStatus {
   NEW
   CLAIMED
+  OFFER_SENT
+  SELECTED
   IN_PROGRESS
   ESCALATED
   CLOSED
+}
+
+// ─── Booking (individual appointment within a consultation arc) ───────────────
+
+model Booking {
+  id             String        @id @default(cuid())
+  consultationId String
+  consultation   Consultation  @relation(fields: [consultationId], references: [id])
+  type           BookingType
+  scheduledAt    DateTime
+  durationMins   Int           @default(60)
+  status         BookingStatus @default(CONFIRMED)
+  room           String?       // "Room 104" — null for virtual
+  joinLink       String?       // Zoom / Teams URL — only set when type = VIRTUAL
+  remindedAt     DateTime?     // set when Send Reminder fires, prevents duplicate sends
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([consultationId])
+  @@index([scheduledAt])
+}
+
+enum BookingType {
+  SURGERY
+  CONSULTATION
+  VIRTUAL
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CLEARED
+  ACTION_REQUIRED
+  REMINDED
+  RESCHEDULED
+  CANCELLED
+}
+
+// ─── Notification ─────────────────────────────────────────────────────────────
+
+model Notification {
+  id          String   @id @default(cuid())
+  clinicId    String
+  clinic      Clinic   @relation(fields: [clinicId], references: [id])
+  recipientId String              // User.id
+  type        String              // "lead.new" | "booking.delay" | "insight.alert" | "lead.claimed"
+  title       String
+  body        String?
+  entityType  String?             // "Lead" | "Booking" — for deep-link on click
+  entityId    String?
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([recipientId, isRead])
+  @@index([clinicId])
 }
 
 // ─── Compliance ───────────────────────────────────────────────────────────────
@@ -349,6 +488,56 @@ model NIAMessage {
 enum MessageRole {
   PATIENT
   NIA
+}
+
+// ─── Invite ──────────────────────────────────────────────────────────────────
+
+model Invite {
+  id        String   @id @default(cuid())
+  email     String
+  clinicId  String
+  clinic    Clinic   @relation(fields: [clinicId], references: [id])
+  role      UserRole @default(COORDINATOR)
+  token     String   @unique @default(cuid())
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([email])
+}
+
+// ─── Support Tickets (clinic → Nia admin) ────────────────────────────────────
+
+model SupportTicket {
+  id          String   @id @default(cuid())
+  clinicId    String
+  clinic      Clinic   @relation(fields: [clinicId], references: [id])
+  submittedBy String              // User.id of coordinator who submitted
+  subject     String
+  body        String
+  category    String   @default("general") // "general" | "technical" | "billing" | "patient" | "other"
+  status      String   @default("OPEN")    // "OPEN" | "IN_REVIEW" | "RESOLVED" | "CLOSED"
+  adminReply  String?
+  repliedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([clinicId])
+  @@index([status])
+}
+
+// ─── Nia Config (platform-level AI settings managed by admin) ─────────────────
+
+model NiaConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique  // e.g. "persona.tone" | "intake.questions" | "suitability.threshold"
+  value     Json
+  label     String
+  category  String   // "persona" | "intake" | "suitability" | "matching"
+  updatedBy String?             // User.id of admin who last changed it
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 }
 
 // ─── Audit Log ───────────────────────────────────────────────────────────────

@@ -9,8 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.106.0",
     "@nia/shared": "workspace:*",
     "@nia/shared-ui": "workspace:*",
+    "@vercel/blob": "^2.5.0",
+    "libphonenumber-js": "^1.13.7",
     "next": "^14.2.0",
     "next-auth": "^5.0.0-beta.28",
     "pusher-js": "^8.4.0",

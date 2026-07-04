@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { put } from '@vercel/blob';
 import { db } from '@nia/shared/src/db';
-import { Prisma } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
 
@@ -132,7 +132,8 @@ function extractClinics(text: string): { clean: string; showClinics: boolean } {
 type HistoryItem = { role: 'user' | 'assistant'; content: string };
 type PhotoItem = { base64: string; mediaType: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp' };
 
-async function logTurn(sessionId: string, patientMessage: string, niaResponse: string, metadata?: Prisma.InputJsonValue) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function logTurn(sessionId: string, patientMessage: string, niaResponse: string, metadata?: any) {
   try {
     // Upsert an anonymous web session — no patient account required
     await db.nIASession.upsert({
@@ -189,6 +190,22 @@ export async function POST(req: Request) {
 
   if (!message?.trim() && photos.length === 0) {
     return new Response('Bad request', { status: 400 });
+  }
+
+  // Upload photos to Vercel Blob and collect URLs for storage
+  const photoUrls: string[] = [];
+  for (const photo of photos) {
+    try {
+      const bytes = Buffer.from(photo.base64, 'base64');
+      const ext = photo.mediaType.split('/')[1] ?? 'jpg';
+      const blob = await put(`patient-photos/${sessionId ?? 'anon'}/${Date.now()}.${ext}`, bytes, {
+        access: 'public',
+        contentType: photo.mediaType,
+      });
+      photoUrls.push(blob.url);
+    } catch (err) {
+      console.error('[chat:blob]', err);
+    }
   }
 
   // Build the current user message content — may include images
@@ -259,9 +276,11 @@ export async function POST(req: Request) {
         ));
 
         // Log the turn async — do not await so stream closes immediately
-        if (sessionId && message?.trim()) {
-          const patientText = message.trim();
-          const logMeta = json ? { intakeComplete: true, ...json } as Prisma.InputJsonValue : undefined;
+        if (sessionId && (message?.trim() || photoUrls.length > 0)) {
+          const patientText = message.trim() || `[${photoUrls.length} photo${photoUrls.length > 1 ? 's' : ''} shared]`;
+          const logMeta = json
+            ? { intakeComplete: true, ...json, photoUrls }
+            : photoUrls.length > 0 ? { photoUrls } : undefined;
           logTurn(sessionId, patientText, clean, logMeta);
         }
       } catch (err) {

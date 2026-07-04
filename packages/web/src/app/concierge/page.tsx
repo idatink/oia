@@ -1,5 +1,10 @@
+import { Suspense } from 'react';
 import ConciergeShell from '@/components/concierge/ConciergeShell';
 
 export default function ConciergePage() {
-  return <ConciergeShell />;
+  return (
+    <Suspense>
+      <ConciergeShell />
+    </Suspense>
+  );
 }

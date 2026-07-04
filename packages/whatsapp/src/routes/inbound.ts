@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { IntentPipeline } from '@nia/agent';
+import { NiaWhatsAppAgent } from '@nia/agent';
 import type { MessagingProvider, WebhookValidator } from '../lib/messaging.js';
 
 const InboundSchema = z.object({
@@ -12,7 +12,7 @@ const InboundSchema = z.object({
   MediaContentType0: z.string().optional(),
 });
 
-const pipeline = new IntentPipeline();
+const agent = new NiaWhatsAppAgent();
 
 export interface InboundRouteOptions {
   sender: MessagingProvider;
@@ -41,15 +41,18 @@ export async function inboundRoute(
     fastify.log.info({ from: From, body: Body, mediaUrl: MediaUrl0 }, 'inbound WA message');
 
     try {
-      const result = await pipeline.run({ from: From, body: Body, mediaUrl: MediaUrl0 });
+      const result = await agent.run(From, Body, MediaUrl0);
 
-      fastify.log.info({ intent: result.intent, escalate: result.escalate }, 'pipeline result');
+      fastify.log.info({ intakeComplete: result.intakeComplete, replyCount: result.replies.length }, 'agent result');
 
-      await sender.send(From, result.replyText);
-
-      // TODO: if result.escalate — persist escalation + notify coordinator via Pusher
+      // Send each reply as a separate WA message
+      for (const reply of result.replies) {
+        if (reply.trim()) {
+          await sender.send(From, reply);
+        }
+      }
     } catch (err) {
-      fastify.log.error(err, 'pipeline error');
+      fastify.log.error(err, 'agent error');
       await sender
         .send(From, "I'm having a moment — please try again in a few seconds. 🤍")
         .catch(() => {});

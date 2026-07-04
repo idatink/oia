@@ -46,7 +46,7 @@ export default function BottomTabNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest border-t border-outline-variant/30">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest border-t border-outline-variant/30">
       <div className="flex items-center justify-around h-16 px-2">
         {tabs.map(tab => {
           const active = pathname === tab.href;

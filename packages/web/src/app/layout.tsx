@@ -1,12 +1,19 @@
 import type { Metadata } from 'next';
-import { EB_Garamond, Work_Sans } from 'next/font/google';
-import BottomTabNav from '@/components/concierge/BottomTabNav';
+import { EB_Garamond, Work_Sans, Cinzel } from 'next/font/google';
+import { SiteConfigProvider } from '@/components/SiteComponents';
 import './globals.css';
 
 const ebGaramond = EB_Garamond({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-eb-garamond',
+  display: 'swap',
+});
+
+const cinzel = Cinzel({
+  subsets: ['latin'],
+  weight: ['400', '600'],
+  variable: '--font-cinzel',
   display: 'swap',
 });
 
@@ -24,10 +31,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${ebGaramond.variable} ${workSans.variable}`}>
+    <html lang="en" className={`${ebGaramond.variable} ${workSans.variable} ${cinzel.variable}`}>
       <body>
-        {children}
-        <BottomTabNav />
+        <SiteConfigProvider>
+          {children}
+        </SiteConfigProvider>
       </body>
     </html>
   );
