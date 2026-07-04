@@ -798,7 +798,7 @@ export default function Home() {
       <footer className="bg-surface border-t border-outline-variant/30 px-6 py-12">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-start gap-8">
           <div>
-            <div className="font-display text-xl text-primary mb-2">NIA</div>
+            <div className="font-display text-xl text-primary mb-2">OIA</div>
             <p className="font-body text-body-sm text-on-surface-variant max-w-xs">AI-matched surgical journeys for the modern woman.</p>
           </div>
           <div className="flex gap-12">

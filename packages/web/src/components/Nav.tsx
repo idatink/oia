@@ -36,7 +36,7 @@ export default function Nav({ onCTAClick }: NavProps) {
 
           {/* Logo */}
           <Link href="/" className="text-primary select-none" style={{ fontFamily: 'var(--font-cinzel), serif', fontSize: '1.25rem', fontWeight: 600, letterSpacing: '0.22em' }}>
-            NIA
+            OIA
           </Link>
 
           {/* Desktop nav links */}
@@ -105,7 +105,7 @@ export default function Nav({ onCTAClick }: NavProps) {
 
             {/* Logo inside drawer */}
             <span className="text-primary mb-10 select-none" style={{ fontFamily: 'var(--font-cinzel), serif', fontSize: '1.2rem', fontWeight: 600, letterSpacing: '0.22em' }}>
-              NIA
+              OIA
             </span>
 
             <nav className="flex flex-col gap-7">
