@@ -16,10 +16,10 @@ export default function ConciergeShell() {
       {/* Desktop nav */}
       <header className="hidden md:flex items-center justify-between px-[64px] h-16 border-b border-outline-variant/10 bg-surface/80 nav-blur shrink-0 fixed top-0 left-0 right-0 z-40">
         <Link href="/" className="font-display text-display-sm text-primary tracking-tight">
-          Nia Medical Concierge
+          Oia Medical Concierge
         </Link>
         <nav className="flex items-center gap-10">
-          {[{ label: 'Treatments', href: '/treatments' }, { label: 'The Nia Way', href: '/about' }, { label: 'Clinics', href: '/clinics' }].map(item => (
+          {[{ label: 'Treatments', href: '/treatments' }, { label: 'The Oia Way', href: '/about' }, { label: 'Clinics', href: '/clinics' }].map(item => (
             <Link key={item.label} href={item.href} className="font-body text-label-caps uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors">
               {item.label}
             </Link>
@@ -35,7 +35,7 @@ export default function ConciergeShell() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
           </svg>
         </Link>
-        <span className="font-display text-display-sm text-primary">Nia AI</span>
+        <span className="font-display text-display-sm text-primary">Oia AI</span>
         <div className="w-10" />
       </div>
 
@@ -49,8 +49,8 @@ export default function ConciergeShell() {
             intents={detectedProcedures}
             conciergeStatus={
               detectedProcedures.length > 0
-                ? `Nia has identified your interest in ${detectedProcedures.join(' & ')}. Your personalised clinic match will be ready once consultation is complete.`
-                : 'Nia is gathering your information. Your personalised match will be prepared once your consultation is complete.'
+                ? `Oia has identified your interest in ${detectedProcedures.join(' & ')}. Your personalised clinic match will be ready once consultation is complete.`
+                : 'Oia is gathering your information. Your personalised match will be prepared once your consultation is complete.'
             }
           />
         </div>

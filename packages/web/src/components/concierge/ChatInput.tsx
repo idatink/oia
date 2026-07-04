@@ -82,7 +82,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
       </div>
 
       <p className="font-body text-[11px] text-on-surface-variant text-center mt-2 opacity-60">
-        Nia AI provides estimates and planning support. Always consult a licensed surgeon before procedures.
+        Oia AI provides estimates and planning support. Always consult a licensed surgeon before procedures.
       </p>
     </div>
   );

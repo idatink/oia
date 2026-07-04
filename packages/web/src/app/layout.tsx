@@ -25,7 +25,7 @@ const workSans = Work_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Nia Medical Concierge',
+  title: 'Oia Medical Concierge',
   description: 'Bespoke surgical journeys, managed by intelligence.',
 };
 

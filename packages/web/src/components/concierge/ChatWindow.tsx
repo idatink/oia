@@ -8,8 +8,8 @@ import TriageWidget, { type TriageAnswers } from './TriageWidget';
 import type { ClinicCardData } from './ClinicCard';
 
 const INITIAL_QUICK_REPLIES = [
-  'How does Nia work?',
-  'Why should I book with Nia?',
+  'How does Oia work?',
+  'Why should I book with Oia?',
   'What procedures do you cover?',
 ];
 
@@ -80,8 +80,8 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
     if (greeted.current) return;
     greeted.current = true;
     const greeting = patientName && patientName !== 'there'
-      ? `Hello ${patientName}! I'm Nia, your personal medical concierge. I'm here to help you explore your options and connect you with the right clinic. What procedure are you interested in?`
-      : "Hello! I'm Nia, your personal medical concierge. I'm here to help you explore cosmetic and reconstructive surgery options at world-class international clinics. What procedure are you considering?";
+      ? `Hello ${patientName}! I'm Oia, your personal medical concierge. I'm here to help you explore your options and connect you with the right clinic. What procedure are you interested in?`
+      : "Hello! I'm Oia, your personal medical concierge. I'm here to help you explore cosmetic and reconstructive surgery options at world-class international clinics. What procedure are you considering?";
     setMessages([{ id: 'greeting', role: 'nia', content: greeting, timestamp: new Date() }]);
     setHistory([{ role: 'assistant', content: greeting }]);
   }, [patientName]);
@@ -175,7 +175,7 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
                 { role: 'user', content: displayText },
                 { role: 'assistant', content: finalText },
               ]);
-              // Attach gallery or clinic cards to the Nia message
+              // Attach gallery or clinic cards to the Oia message
               if (event.gallery || event.showClinics) {
                 setMessages(m => m.map(msg =>
                   msg.id === niaMsgId
@@ -253,11 +253,11 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
             </svg>
           </div>
           <div>
-            <p className="font-body font-semibold text-on-surface">Nia AI Advisor</p>
+            <p className="font-body font-semibold text-on-surface">Oia AI Advisor</p>
             <div className="flex items-center gap-1.5">
               <div className={`w-2 h-2 rounded-full ${loading ? 'bg-yellow-400 animate-pulse' : 'bg-green-500'}`} />
               <p className="font-body text-body-sm text-on-surface-variant">
-                {loading ? 'Nia is typing…' : intakeComplete ? 'Consultation complete' : 'Online & Ready to Assist'}
+                {loading ? 'Oia is typing…' : intakeComplete ? 'Consultation complete' : 'Online & Ready to Assist'}
               </p>
             </div>
           </div>

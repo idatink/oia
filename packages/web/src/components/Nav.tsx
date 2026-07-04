@@ -9,7 +9,7 @@ interface NavProps {
 
 const NAV_LINKS = [
   { label: 'Treatments', href: '/treatments' },
-  { label: 'The Nia Way', href: '/about' },
+  { label: 'The Oia Way', href: '/about' },
   { label: 'Results Gallery', href: '/results' },
 ];
 
@@ -57,16 +57,16 @@ export default function Nav({ onCTAClick }: NavProps) {
             onClick={onCTAClick}
             className="hidden md:block bg-primary text-on-primary px-6 py-2.5 rounded-lg font-body font-semibold text-label-caps uppercase tracking-widest hover:opacity-90 active:opacity-80 transition-all"
           >
-            Ask Nia
+            Ask Oia
           </button>
 
-          {/* Mobile: Ask Nia + burger */}
+          {/* Mobile: Ask Oia + burger */}
           <div className="flex md:hidden items-center gap-3">
             <button
               onClick={onCTAClick}
               className="bg-primary text-on-primary px-4 py-2 rounded-lg font-body font-semibold text-[10px] uppercase tracking-widest"
             >
-              Ask Nia
+              Ask Oia
             </button>
             <button
               onClick={() => setDrawerOpen(true)}
@@ -126,7 +126,7 @@ export default function Nav({ onCTAClick }: NavProps) {
                 onClick={() => { setDrawerOpen(false); onCTAClick(); }}
                 className="w-full bg-primary text-on-primary py-3 rounded-lg font-body font-semibold text-label-caps uppercase tracking-widest"
               >
-                Ask Nia
+                Ask Oia
               </button>
             </div>
           </div>

@@ -25,7 +25,7 @@ const PILLARS = [
   },
   {
     title: 'Human Oversight',
-    body: 'Nia AI handles analysis and coordination. Every clinical decision and patient communication is owned by a real, medically-trained coordinator. You always have a human to call.',
+    body: 'Oia AI handles analysis and coordination. Every clinical decision and patient communication is owned by a real, medically-trained coordinator. You always have a human to call.',
     accent: 'bg-primary/10 text-primary',
   },
 ];
@@ -53,7 +53,7 @@ const QA_VIDEOS: QAVideo[] = [
   },
   {
     id: 'q2',
-    question: "How does Nia’s AI decide which surgeon is right for me?",
+    question: "How does Oia’s AI decide which surgeon is right for me?",
     platform: 'instagram',
     reelCode: 'C7example01',
     thumb: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&q=80',
@@ -101,7 +101,7 @@ const QA_VIDEOS: QAVideo[] = [
   },
   {
     id: 'q8',
-    question: 'What does a Nia coordinator actually do for you?',
+    question: 'What does a Oia coordinator actually do for you?',
     platform: 'instagram',
     reelCode: 'C7example04',
     thumb: 'https://images.unsplash.com/photo-1614859324967-bdf413c35b5a?w=400&q=80',
@@ -110,12 +110,12 @@ const QA_VIDEOS: QAVideo[] = [
 ];
 
 const STEPS = [
-  { n: '01', title: 'You share your goals', body: 'Nia asks you about the procedure you\'re considering, your aesthetic goals, timeline, and medical history — one natural conversation, no forms to fill.' },
-  { n: '02', title: 'Nia builds your clinical profile', body: 'Your answers, photos, and screening data are processed to create a precise suitability profile — analysed against 50,000+ outcomes to assess candidacy and identify your optimal match.' },
+  { n: '01', title: 'You share your goals', body: 'Oia asks you about the procedure you\'re considering, your aesthetic goals, timeline, and medical history — one natural conversation, no forms to fill.' },
+  { n: '02', title: 'Oia builds your clinical profile', body: 'Your answers, photos, and screening data are processed to create a precise suitability profile — analysed against 50,000+ outcomes to assess candidacy and identify your optimal match.' },
   { n: '03', title: 'Your coordinator reviews & claims', body: 'A human coordinator at your matched clinic reviews your profile and claims your case. They prepare a fully itemised quote — surgeon fee, anaesthesia, hospital stay, aftercare — within 24–48 hours.' },
   { n: '04', title: 'You choose, we plan', body: 'Once you select your clinic, the full concierge service activates. Flights, private transfers, luxury accommodation and pre-op appointments are all coordinated for you.' },
   { n: '05', title: 'Your procedure & recovery', body: 'You arrive to a private pre-op consultation, surgery at your matched clinic, and 24/7 nursing-supported recovery. Every detail has been confirmed weeks in advance.' },
-  { n: '06', title: 'Post-op follow-up', body: 'Nia schedules structured post-operative check-ins at Day 3, 7, 30 and 90. Your coordinator monitors healing and manages any follow-up care remotely or in-clinic.' },
+  { n: '06', title: 'Post-op follow-up', body: 'Oia schedules structured post-operative check-ins at Day 3, 7, 30 and 90. Your coordinator monitors healing and manages any follow-up care remotely or in-clinic.' },
 ];
 
 // ─── Page ────────────────────────────────────────────────────────────────────
@@ -152,13 +152,13 @@ export default function AboutPage() {
                 Meets <span className="italic text-primary">Concierge Care.</span>
               </h1>
               <p className="font-body text-body-lg text-on-surface-variant max-w-md leading-relaxed mb-8">
-                Nia was built on a single conviction: that the world&apos;s most advanced surgical expertise should be accessible to anyone, anywhere — managed with the rigour of a private family office.
+                Oia was built on a single conviction: that the world&apos;s most advanced surgical expertise should be accessible to anyone, anywhere — managed with the rigour of a private family office.
               </p>
               <button
                 onClick={() => setModalOpen(true)}
                 className="bg-primary text-on-primary px-8 py-4 rounded-lg font-body font-semibold text-label-caps uppercase tracking-widest hover:shadow-float transition-all flex items-center gap-3 w-fit"
               >
-                Experience the Nia Way
+                Experience the Oia Way
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7H7M17 7v10"/></svg>
               </button>
             </div>
@@ -169,7 +169,7 @@ export default function AboutPage() {
                 {activeVideo === 'hero' ? (
                   <iframe
                     src="https://www.youtube.com/embed/J3Nss_H4wh0?autoplay=1&rel=0&modestbranding=1"
-                    title="Nia — The Medical Tourism Revolution"
+                    title="Oia — The Medical Tourism Revolution"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                     className="w-full h-full"
@@ -180,7 +180,7 @@ export default function AboutPage() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={simg('about-hero-video', 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=900&q=80')}
-                      alt="Nia — The Nia Way"
+                      alt="Oia — The Oia Way"
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-black/30" />
@@ -196,7 +196,7 @@ export default function AboutPage() {
                         </svg>
                       </div>
                       <div className="text-center">
-                        <p className="font-display text-white text-lg font-semibold drop-shadow">The Nia Way</p>
+                        <p className="font-display text-white text-lg font-semibold drop-shadow">The Oia Way</p>
                         <p className="font-body text-white/70 text-sm">Watch our story — 2 min</p>
                       </div>
                     </button>
@@ -211,7 +211,7 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <p className="font-body text-[10px] font-bold text-on-surface uppercase tracking-wider">2,400+ patients</p>
-                  <p className="font-body text-[10px] text-on-surface-variant">have experienced the Nia Way</p>
+                  <p className="font-body text-[10px] text-on-surface-variant">have experienced the Oia Way</p>
                 </div>
               </div>
             </div>
@@ -225,7 +225,7 @@ export default function AboutPage() {
               <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-4">Our Principles</span>
               <h2 className="font-display text-display-lg text-on-surface">Built on Four Unbreakable Commitments</h2>
               <p className="font-body text-body-md text-on-surface-variant mt-4 max-w-xl mx-auto">
-                These are not aspirations. They are structural features of how Nia works — designed in from the beginning.
+                These are not aspirations. They are structural features of how Oia works — designed in from the beginning.
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-gutter">
@@ -304,7 +304,7 @@ export default function AboutPage() {
               <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-4">Your Journey</span>
               <h2 className="font-display text-display-lg text-on-surface">Six Steps, Zero Uncertainty</h2>
               <p className="font-body text-body-md text-on-surface-variant mt-4 max-w-xl mx-auto">
-                Every Nia patient follows the same structured path. No ambiguity, no chasing clinics, no surprises on the day.
+                Every Oia patient follows the same structured path. No ambiguity, no chasing clinics, no surprises on the day.
               </p>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-gutter">
@@ -391,8 +391,8 @@ export default function AboutPage() {
             </div>
             <div className="grid md:grid-cols-3 gap-gutter">
               {[
-                { quote: 'I had tried two other services before Nia. The difference is night and day — they actually understood what I wanted aesthetically, not just procedurally.', name: 'Elena V.', detail: 'London · Rhinoplasty revision' },
-                { quote: 'The transparency is extraordinary. I could see exactly what each clinic was charging, why Nia recommended them over others, and what the complication rate was for my procedure.', name: 'James K.', detail: 'Dubai · Body contouring' },
+                { quote: 'I had tried two other services before Oia. The difference is night and day — they actually understood what I wanted aesthetically, not just procedurally.', name: 'Elena V.', detail: 'London · Rhinoplasty revision' },
+                { quote: 'The transparency is extraordinary. I could see exactly what each clinic was charging, why Oia recommended them over others, and what the complication rate was for my procedure.', name: 'James K.', detail: 'Dubai · Body contouring' },
                 { quote: 'Having a coordinator who speaks Arabic and understood my cultural preferences made this feel personal, not transactional. I would go back without hesitation.', name: 'Layla M.', detail: 'Riyadh · Blepharoplasty' },
               ].map((t, i) => (
                 <div key={i} className="relative pl-8 border-l-2 border-primary/20">
@@ -418,7 +418,7 @@ export default function AboutPage() {
           <div className="max-w-container mx-auto px-6 md:px-[64px]">
             <div className="bg-primary rounded-card3 p-14 md:p-20 text-center text-on-primary">
               <span className="font-body text-label-caps uppercase tracking-[0.2em] text-on-primary/60 block mb-4">Begin Your Journey</span>
-              <h2 className="font-display text-display-xl mb-6 max-w-xl mx-auto leading-[1.1]">Experience the Nia Way for yourself.</h2>
+              <h2 className="font-display text-display-xl mb-6 max-w-xl mx-auto leading-[1.1]">Experience the Oia Way for yourself.</h2>
               <p className="font-body text-body-lg mb-10 opacity-80 max-w-lg mx-auto leading-relaxed">
                 Your personalised AI consultation takes 10 minutes. Your coordinator responds within 24 hours. Your journey begins the day you decide.
               </p>

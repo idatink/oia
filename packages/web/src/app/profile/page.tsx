@@ -24,7 +24,7 @@ export default function ProfilePage() {
 
           <h1 className="font-display text-display-lg text-on-surface mb-2">Your Profile</h1>
           <p className="font-body text-body-md text-on-surface-variant mb-10 max-w-sm mx-auto">
-            Sign in to track your consultation, view your matches, and manage your journey with Nia.
+            Sign in to track your consultation, view your matches, and manage your journey with Oia.
           </p>
 
           {/* Quick actions */}
@@ -40,7 +40,7 @@ export default function ProfilePage() {
               </div>
               <div className="flex-1">
                 <p className="font-body text-sm font-semibold text-on-surface">Start AI Assessment</p>
-                <p className="font-body text-[11px] text-on-surface-variant mt-0.5">Let Nia match you with the right clinic and surgeon</p>
+                <p className="font-body text-[11px] text-on-surface-variant mt-0.5">Let Oia match you with the right clinic and surgeon</p>
               </div>
               <svg className="w-4 h-4 text-on-surface-variant group-hover:text-primary transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/>
@@ -57,7 +57,7 @@ export default function ProfilePage() {
                 </svg>
               </div>
               <div className="flex-1">
-                <p className="font-body text-sm font-semibold text-on-surface">Continue with Nia</p>
+                <p className="font-body text-sm font-semibold text-on-surface">Continue with Oia</p>
                 <p className="font-body text-[11px] text-on-surface-variant mt-0.5">Resume your AI consultation</p>
               </div>
               <svg className="w-4 h-4 text-on-surface-variant group-hover:text-primary transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>

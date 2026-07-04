@@ -95,7 +95,7 @@ const PROCEDURES = [
     title: 'Revision & Corrective',
     category: 'Specialist',
     tagline: 'Specialist correction of prior procedures or trauma.',
-    desc: 'A dedicated sub-network of revision specialists for secondary rhinoplasty, breast revision, scar correction and post-traumatic reconstruction — managed with the full Nia concierge service.',
+    desc: 'A dedicated sub-network of revision specialists for secondary rhinoplasty, breast revision, scar correction and post-traumatic reconstruction — managed with the full Oia concierge service.',
     highlights: ['Revision rhinoplasty', 'Breast revision', 'Scar revision', 'Reconstructive surgery'],
     recovery: 'On consultation',
     from: 'On consultation',
@@ -148,7 +148,7 @@ export default function TreatmentsPage() {
                 <span className="italic text-primary">Excellence.</span>
               </h1>
               <p className="font-body text-body-lg text-on-surface-variant max-w-md leading-relaxed mb-8">
-                Every procedure in our portfolio is performed by hand-selected specialists at JCI-accredited partner clinics — matched to your anatomy, goals and timeline by Nia AI.
+                Every procedure in our portfolio is performed by hand-selected specialists at JCI-accredited partner clinics — matched to your anatomy, goals and timeline by Oia AI.
               </p>
               <div className="flex flex-wrap gap-4">
                 <button
@@ -244,10 +244,10 @@ export default function TreatmentsPage() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-gutter">
               {[
-                { n: '01', title: 'AI Assessment', desc: 'Nia collects your goals, medical history, and photos for a precise clinical profile.' },
+                { n: '01', title: 'AI Assessment', desc: 'Oia collects your goals, medical history, and photos for a precise clinical profile.' },
                 { n: '02', title: 'Surgeon Match', desc: 'Our algorithm matches you with the specialist whose expertise aligns with your anatomy.' },
                 { n: '03', title: 'Clinic Offer', desc: 'Receive curated quotes with full inclusions — no hidden fees, no pressure.' },
-                { n: '04', title: 'Concierge Journey', desc: 'Flights, transfers, accommodation and 24/7 recovery support — all handled by your Nia coordinator.' },
+                { n: '04', title: 'Concierge Journey', desc: 'Flights, transfers, accommodation and 24/7 recovery support — all handled by your Oia coordinator.' },
               ].map(step => (
                 <div key={step.n} className="flex flex-col gap-4">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
@@ -271,7 +271,7 @@ export default function TreatmentsPage() {
               Not sure which procedure fits your goals?
             </h2>
             <p className="font-body text-body-lg mb-10 opacity-80 max-w-lg mx-auto">
-              Nia will analyse your goals and match you with the ideal procedure and surgeon in minutes.
+              Oia will analyse your goals and match you with the ideal procedure and surgeon in minutes.
             </p>
             <button
               onClick={() => setModalOpen(true)}
@@ -337,7 +337,7 @@ export default function TreatmentsPage() {
                 <svg className="w-4 h-4 text-primary shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
                 </svg>
-                <p className="font-body text-[11px] text-on-surface leading-relaxed">Pricing includes surgeon fee, anaesthesia and standard hospital stay. Nia will provide a fully itemised quote matched to your specific procedure plan.</p>
+                <p className="font-body text-[11px] text-on-surface leading-relaxed">Pricing includes surgeon fee, anaesthesia and standard hospital stay. Oia will provide a fully itemised quote matched to your specific procedure plan.</p>
               </div>
             </div>
 

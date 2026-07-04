@@ -185,7 +185,7 @@ export default function ClinicsPage() {
                 <span className="italic text-primary">Hand-Selected.</span>
               </h1>
               <p className="font-body text-body-lg text-on-surface-variant leading-relaxed mb-8">
-                Every clinic in the Nia network has passed a rigorous vetting process. We assess surgical outcomes, accreditation status, complication rates, facility standards and patient experience — annually.
+                Every clinic in the Oia network has passed a rigorous vetting process. We assess surgical outcomes, accreditation status, complication rates, facility standards and patient experience — annually.
               </p>
             </div>
 
@@ -350,7 +350,7 @@ export default function ClinicsPage() {
           <div className="grid md:grid-cols-4 gap-gutter">
             {[
               { step: '01', label: 'Application & Credential Review', body: 'Surgeon board certifications, facility licensing and accreditation status are verified against primary sources.' },
-              { step: '02', label: 'On-Site Audit', body: 'A Nia clinical assessor visits in person. Theatre standards, sterilisation, emergency protocols and patient pathways are inspected.' },
+              { step: '02', label: 'On-Site Audit', body: 'A Oia clinical assessor visits in person. Theatre standards, sterilisation, emergency protocols and patient pathways are inspected.' },
               { step: '03', label: 'Outcome Data Analysis', body: 'We review complication rates, revision rates and patient feedback for a minimum 2-year period before approval.' },
               { step: '04', label: 'Annual Re-Certification', body: 'Approval is never permanent. Clinics are re-audited annually and removed immediately if standards fall below our threshold.' },
             ].map(v => (
@@ -372,7 +372,7 @@ export default function ClinicsPage() {
               The right clinic isn&apos;t the most famous one. It&apos;s the one right for you.
             </h2>
             <p className="font-body text-body-lg mb-10 opacity-80 max-w-lg mx-auto">
-              Nia analyses your procedure, anatomy and goals to identify the specific clinic and surgeon in our network whose expertise aligns with what you need.
+              Oia analyses your procedure, anatomy and goals to identify the specific clinic and surgeon in our network whose expertise aligns with what you need.
             </p>
             <button
               onClick={() => setModalOpen(true)}
@@ -457,7 +457,7 @@ export default function ClinicsPage() {
                 <svg className="w-4 h-4 text-primary shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
                 </svg>
-                <p className="font-body text-[11px] text-on-surface leading-relaxed">Nia only shares your full profile with a clinic after you select them. Prior to your selection, only your procedure and AI score are visible to clinic coordinators.</p>
+                <p className="font-body text-[11px] text-on-surface leading-relaxed">Oia only shares your full profile with a clinic after you select them. Prior to your selection, only your procedure and AI score are visible to clinic coordinators.</p>
               </div>
             </div>
 

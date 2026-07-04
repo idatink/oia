@@ -30,7 +30,7 @@ const RESULTS: ResultCard[] = [
     surgerySlug: 'facial-sculpting',
     weeksAfter: 12,
     location: 'Seoul, South Korea',
-    story: 'After years of self-consciousness I finally took the leap. Nia matched me with Dr. Kim and coordinated everything — visa, clinic, recovery villa. The results exceeded every expectation.',
+    story: 'After years of self-consciousness I finally took the leap. Oia matched me with Dr. Kim and coordinated everything — visa, clinic, recovery villa. The results exceeded every expectation.',
     img: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=600&q=80',
     imgAspect: 'tall',
     tags: ['Rhinoplasty', 'Seoul'],
@@ -56,7 +56,7 @@ const RESULTS: ResultCard[] = [
     surgerySlug: 'facial-sculpting',
     weeksAfter: 16,
     location: 'Zurich, Switzerland',
-    story: 'I was sceptical about medical tourism until Nia\'s AI matched me with a Swiss-trained surgeon with 20 years of facelift specialisation. People think I\'ve had an amazing holiday.',
+    story: 'I was sceptical about medical tourism until Oia\'s AI matched me with a Swiss-trained surgeon with 20 years of facelift specialisation. People think I\'ve had an amazing holiday.',
     img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&q=80',
     imgAspect: 'tall',
     tags: ['Facelift', 'Switzerland'],
@@ -69,7 +69,7 @@ const RESULTS: ResultCard[] = [
     surgerySlug: 'skin-regeneration',
     weeksAfter: 6,
     location: 'Bangkok, Thailand',
-    story: 'Acne scarring had defined my face for 15 years. The stem-cell laser protocol at the Nia partner clinic in Bangkok cleared 80% of my scarring in a single session.',
+    story: 'Acne scarring had defined my face for 15 years. The stem-cell laser protocol at the Oia partner clinic in Bangkok cleared 80% of my scarring in a single session.',
     img: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80',
     imgAspect: 'square',
     tags: ['Skin', 'Bangkok'],
@@ -82,7 +82,7 @@ const RESULTS: ResultCard[] = [
     surgerySlug: 'facial-sculpting',
     weeksAfter: 10,
     location: 'Seoul, South Korea',
-    story: 'As a man I felt there was no space to discuss aesthetic surgery. Nia\'s concierge team made the whole process discreet and professional. The jaw definition is extraordinary.',
+    story: 'As a man I felt there was no space to discuss aesthetic surgery. Oia\'s concierge team made the whole process discreet and professional. The jaw definition is extraordinary.',
     img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&q=80',
     imgAspect: 'wide',
     tags: ['Jaw', 'Seoul'],
@@ -95,7 +95,7 @@ const RESULTS: ResultCard[] = [
     surgerySlug: 'corrective-care',
     weeksAfter: 20,
     location: 'Dubai, UAE',
-    story: 'A previous rhinoplasty had left asymmetry I\'d lived with for 7 years. Dr. Al Rashidi at the Dubai clinic corrected everything in a single procedure. I wish I\'d found Nia sooner.',
+    story: 'A previous rhinoplasty had left asymmetry I\'d lived with for 7 years. Dr. Al Rashidi at the Dubai clinic corrected everything in a single procedure. I wish I\'d found Oia sooner.',
     img: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=600&q=80',
     imgAspect: 'tall',
     tags: ['Revision', 'Dubai'],
@@ -108,7 +108,7 @@ const RESULTS: ResultCard[] = [
     surgerySlug: 'body-contouring',
     weeksAfter: 14,
     location: 'Istanbul, Turkey',
-    story: 'Despite rigorous training I could never shift certain fat deposits. The high-def lipo at my Nia-matched Istanbul clinic revealed muscle definition I didn\'t know I had.',
+    story: 'Despite rigorous training I could never shift certain fat deposits. The high-def lipo at my Oia-matched Istanbul clinic revealed muscle definition I didn\'t know I had.',
     img: 'https://images.unsplash.com/photo-1583500178690-594ce74b4618?w=600&q=80',
     imgAspect: 'square',
     tags: ['Liposuction', 'Istanbul'],
@@ -121,7 +121,7 @@ const RESULTS: ResultCard[] = [
     surgerySlug: 'facial-sculpting',
     weeksAfter: 24,
     location: 'Montreux, Switzerland',
-    story: 'Blepharoplasty, brow lift, and fat grafting — Nia coordinated a comprehensive plan across three specialists. The recovery suite overlooking Lake Geneva made healing feel like a retreat.',
+    story: 'Blepharoplasty, brow lift, and fat grafting — Oia coordinated a comprehensive plan across three specialists. The recovery suite overlooking Lake Geneva made healing feel like a retreat.',
     img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&q=80',
     imgAspect: 'tall',
     tags: ['Full Facial', 'Switzerland'],
@@ -134,7 +134,7 @@ const RESULTS: ResultCard[] = [
     surgerySlug: 'skin-regeneration',
     weeksAfter: 4,
     location: 'Tokyo, Japan',
-    story: 'Melasma from pregnancy had resisted every topical treatment. The Japanese stem-cell protocol the Nia AI recommended was entirely non-invasive. My skin hasn\'t looked this even since I was 18.',
+    story: 'Melasma from pregnancy had resisted every topical treatment. The Japanese stem-cell protocol the Oia AI recommended was entirely non-invasive. My skin hasn\'t looked this even since I was 18.',
     img: 'https://images.unsplash.com/photo-1614859324967-bdf413c35b5a?w=600&q=80',
     imgAspect: 'square',
     tags: ['Skin', 'Tokyo'],
@@ -175,14 +175,14 @@ export default function ResultsGallery() {
             <h3 className="font-display text-display-sm text-on-surface mb-1">{clinicModalCard.surgery}</h3>
             <p className="font-body text-body-sm text-on-surface-variant mb-6">{clinicModalCard.location}</p>
             <p className="font-body text-body-sm text-on-surface-variant mb-6 leading-relaxed">
-              Nia will send you the clinic name, accreditation details, surgeon profiles, pricing guide, and availability for this procedure type — privately and with no obligation.
+              Oia will send you the clinic name, accreditation details, surgeon profiles, pricing guide, and availability for this procedure type — privately and with no obligation.
             </p>
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => { setClinicModalCard(null); setModalOpen(true); }}
                 className="w-full bg-primary text-on-primary py-3.5 rounded-lg font-body font-semibold text-label-caps uppercase tracking-widest hover:opacity-90 transition-opacity"
               >
-                Start via Nia AI
+                Start via Oia AI
               </button>
               <button onClick={() => setClinicModalCard(null)} className="text-center font-body text-body-sm text-on-surface-variant hover:text-on-surface transition-colors py-1">
                 Cancel
@@ -203,7 +203,7 @@ export default function ResultsGallery() {
               <span className="text-primary italic">Real Stories.</span>
             </h1>
             <p className="font-body text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-10 leading-relaxed">
-              Every case below is a verified Nia patient outcome. No filters, no retouching — just the transformations our global network of accredited surgeons achieves every day.
+              Every case below is a verified Oia patient outcome. No filters, no retouching — just the transformations our global network of accredited surgeons achieves every day.
             </p>
 
             {/* Stats bar */}
@@ -274,7 +274,7 @@ export default function ResultsGallery() {
             <span className="font-body text-[10px] uppercase tracking-[0.2em] text-primary font-semibold block mb-4">Your Journey Starts Here</span>
             <h2 className="font-display text-display-lg text-on-surface mb-4">Ready to See Your Outcome?</h2>
             <p className="font-body text-body-md text-on-surface-variant mb-8 leading-relaxed">
-              Tell Nia your goals and she will match you with the surgeon whose results most closely align with your vision — from this very gallery.
+              Tell Oia your goals and she will match you with the surgeon whose results most closely align with your vision — from this very gallery.
             </p>
             <button
               onClick={() => setModalOpen(true)}

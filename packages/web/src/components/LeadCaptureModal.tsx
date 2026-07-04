@@ -100,7 +100,7 @@ export default function LeadCaptureModal({ open, onClose }: LeadCaptureModalProp
 
   function chooseWhatsApp() {
     const firstName = form.name.trim().split(' ')[0];
-    const message = `Hi Nia, I'm ${firstName}. I'm interested in exploring medical aesthetics abroad and would love to find out what's possible for me.`;
+    const message = `Hi Oia, I'm ${firstName}. I'm interested in exploring medical aesthetics abroad and would love to find out what's possible for me.`;
     const waUrl = `https://wa.me/${WA_NUMBER.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
     window.open(waUrl, '_blank', 'noopener');
     onClose();
@@ -139,7 +139,7 @@ export default function LeadCaptureModal({ open, onClose }: LeadCaptureModalProp
               </div>
               <h2 className="font-display text-display-md text-on-surface">Begin Your Journey</h2>
               <p className="font-body text-body-sm text-on-surface-variant mt-2">
-                Tell us a little about yourself and Nia will personalise your experience.
+                Tell us a little about yourself and Oia will personalise your experience.
               </p>
             </div>
 
@@ -229,7 +229,7 @@ export default function LeadCaptureModal({ open, onClose }: LeadCaptureModalProp
             </form>
 
             <p className="font-body text-[11px] text-on-surface-variant text-center mt-6 opacity-70">
-              Your data is encrypted and never shared. Nia AI provides planning support only — always consult a licensed surgeon before any procedure.
+              Your data is encrypted and never shared. Oia AI provides planning support only — always consult a licensed surgeon before any procedure.
             </p>
           </>
         )}
@@ -240,7 +240,7 @@ export default function LeadCaptureModal({ open, onClose }: LeadCaptureModalProp
               <div className="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center mb-4">
                 <svg className="w-5 h-5 text-primary fill-current" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
               </div>
-              <h2 className="font-display text-display-md text-on-surface">How would you like to chat with Nia?</h2>
+              <h2 className="font-display text-display-md text-on-surface">How would you like to chat with Oia?</h2>
               <p className="font-body text-body-sm text-on-surface-variant mt-2">
                 Hi {form.name.trim().split(' ')[0]} — choose where you&apos;d like your AI consultation to take place.
               </p>
@@ -258,7 +258,7 @@ export default function LeadCaptureModal({ open, onClose }: LeadCaptureModalProp
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-body font-semibold text-on-surface">Continue on WhatsApp</p>
-                  <p className="font-body text-body-sm text-on-surface-variant mt-0.5">Chat with Nia directly from your WhatsApp — works on any device</p>
+                  <p className="font-body text-body-sm text-on-surface-variant mt-0.5">Chat with Oia directly from your WhatsApp — works on any device</p>
                 </div>
                 <svg className="w-4 h-4 text-on-surface-variant group-hover:text-on-surface shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/>
@@ -285,7 +285,7 @@ export default function LeadCaptureModal({ open, onClose }: LeadCaptureModalProp
             </div>
 
             <p className="font-body text-[11px] text-on-surface-variant text-center mt-6 opacity-70">
-              Both channels are fully private. Your details are only seen by Nia and the clinical team.
+              Both channels are fully private. Your details are only seen by Oia and the clinical team.
             </p>
           </>
         )}

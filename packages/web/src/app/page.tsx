@@ -83,7 +83,7 @@ function ChatHeader() {
         <NiaStar size={13} />
       </div>
       <div className="flex-1">
-        <p className="font-body text-[11px] font-semibold text-on-surface">Nia</p>
+        <p className="font-body text-[11px] font-semibold text-on-surface">Oia</p>
         <div className="flex items-center gap-1">
           <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
           <p className="font-body text-[9px] text-on-surface-variant">Online now</p>
@@ -191,7 +191,7 @@ function ItineraryScreen() {
     { day: 'Jun 22', icon: '🏨', title: 'Kempinski · Suite 412', sub: 'Check-in 3pm · nurse on call overnight', status: 'Booked', sc: 'text-primary bg-primary/8' },
     { day: 'Jun 23', icon: '🏥', title: 'Pre-op · Dr. Demir', sub: 'Estetik International · 9:00am', status: 'Confirmed', sc: 'text-green-700 bg-green-50' },
     { day: 'Jun 24', icon: '⚕️', title: 'Surgery day', sub: 'Tummy tuck + breast lift · 4 hrs', status: 'Scheduled', sc: 'text-amber-700 bg-amber-50' },
-    { day: 'Jun 25–29', icon: '🌿', title: 'Recovery & daily check-ins', sub: 'Private nursing · Nia monitoring', status: 'Planned', sc: 'text-on-surface-variant bg-surface-container' },
+    { day: 'Jun 25–29', icon: '🌿', title: 'Recovery & daily check-ins', sub: 'Private nursing · Oia monitoring', status: 'Planned', sc: 'text-on-surface-variant bg-surface-container' },
     { day: 'Jul 2', icon: '🏠', title: 'Fly home', sub: 'IST → LHR · medical clearance issued', status: 'Planned', sc: 'text-on-surface-variant bg-surface-container' },
   ];
   return (
@@ -406,7 +406,7 @@ function ChatScreenStatic() {
     <>
       <ChatHeader />
       <div className="flex-1 overflow-hidden px-3 py-3 flex flex-col gap-2">
-        <NiaMsg>Hi, I&apos;m Nia, your personal surgery concierge. What&apos;s brought you here today?</NiaMsg>
+        <NiaMsg>Hi, I&apos;m Oia, your personal surgery concierge. What&apos;s brought you here today?</NiaMsg>
         <PatientMsg>Body contouring — after pregnancy and losing weight, my body has changed a lot.</PatientMsg>
         <NiaMsg>Skin and tissue changes are simply beyond what training can reach. What would feeling at home in your body look like for you?</NiaMsg>
         <div className="flex justify-end">
@@ -448,7 +448,7 @@ function PhoneCarousel() {
   const [dragStartX, setDragStartX] = useState<number | null>(null);
 
   const screens: { label: string; content: React.ReactNode }[] = [
-    { label: 'Meet Nia',       content: <ChatScreenStatic /> },
+    { label: 'Meet Oia',       content: <ChatScreenStatic /> },
     { label: 'Your matches',   content: <MatchesScreenStatic /> },
     { label: 'Your itinerary', content: <ItineraryScreen /> },
     { label: 'Recovery kit',   content: <SurgeryShopScreen /> },
@@ -584,7 +584,7 @@ function RefPhoto({ delay = 0 }: { delay?: number }) {
 function HeroChat() {
   return (
     <div className="flex-1 overflow-hidden px-3 py-3 flex flex-col gap-2">
-      <NiaMsg delay={0.3}>Hi, I&apos;m Nia, your personal surgery concierge. What&apos;s brought you here today?</NiaMsg>
+      <NiaMsg delay={0.3}>Hi, I&apos;m Oia, your personal surgery concierge. What&apos;s brought you here today?</NiaMsg>
       <TypingDots from="patient" delay={1.0} duration={0.8} />
       <PatientMsg delay={1.7}>I&apos;m researching body contouring and a tummy tuck — after pregnancy and losing weight, my body has changed a lot.</PatientMsg>
       <TypingDots from="nia" delay={2.5} duration={0.9} />
@@ -627,18 +627,18 @@ export default function Home() {
             <span className="text-primary italic">found by AI.</span>
           </h1>
           <p className="font-body text-body-md text-on-surface-variant max-w-sm mx-auto mb-8 leading-relaxed">
-            Tell Nia your goals, timeline, and budget. She matches you to an accredited surgeon — available when you are.
+            Tell Oia your goals, timeline, and budget. She matches you to an accredited surgeon — available when you are.
           </p>
           <button onClick={() => setModalOpen(true)}
             className="bg-primary text-on-primary px-8 py-4 rounded-lg font-body font-semibold text-label-caps uppercase tracking-widest hover:opacity-90 active:opacity-80 transition-all mb-14">
-            Talk to Nia
+            Talk to Oia
           </button>
 
           {/* Carousel — single phone, swipeable screens */}
           <PhoneCarousel />
         </section>
 
-        {/* ── How Nia works ───────────────────────────────────────── */}
+        {/* ── How Oia works ───────────────────────────────────────── */}
         <section className="py-24 md:py-32 bg-surface-container-low">
           <div className="max-w-3xl mx-auto px-6 text-center mb-16">
             <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-4">How it works</span>
@@ -651,9 +651,9 @@ export default function Home() {
             <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20">
               <div className="md:w-1/2 text-center md:text-left order-2 md:order-1">
                 <span className="font-body text-[11px] text-primary uppercase tracking-[0.2em] font-semibold block mb-4">01</span>
-                <h3 className="font-display text-3xl md:text-4xl text-on-surface mb-5">Tell Nia your goals</h3>
+                <h3 className="font-display text-3xl md:text-4xl text-on-surface mb-5">Tell Oia your goals</h3>
                 <p className="font-body text-body-md text-on-surface-variant leading-relaxed max-w-md">
-                  No forms. Just talk — about what you want, your timeline, your budget. Nia pulls before/after cases that match your goals so you can see what&apos;s realistic.
+                  No forms. Just talk — about what you want, your timeline, your budget. Oia pulls before/after cases that match your goals so you can see what&apos;s realistic.
                 </p>
               </div>
               <div className="md:w-1/2 flex justify-center order-1 md:order-2">
@@ -698,7 +698,7 @@ export default function Home() {
                 <span className="font-body text-[11px] text-primary uppercase tracking-[0.2em] font-semibold block mb-4">02</span>
                 <h3 className="font-display text-3xl md:text-4xl text-on-surface mb-5">She finds your clinic</h3>
                 <p className="font-body text-body-md text-on-surface-variant leading-relaxed max-w-md">
-                  Nia filters by accreditation, your budget, real patient reviews, and surgeon availability — and shows you what the same procedure costs in the UK so you can see exactly what you save.
+                  Oia filters by accreditation, your budget, real patient reviews, and surgeon availability — and shows you what the same procedure costs in the UK so you can see exactly what you save.
                 </p>
               </div>
             </div>
@@ -725,7 +725,7 @@ export default function Home() {
                 <span className="font-body text-[11px] text-primary uppercase tracking-[0.2em] font-semibold block mb-4">04</span>
                 <h3 className="font-display text-3xl md:text-4xl text-on-surface mb-5">Your recovery kit, delivered</h3>
                 <p className="font-body text-body-md text-on-surface-variant leading-relaxed max-w-md">
-                  Nia curates everything you need — compression garments, scar treatment, supplements — selected by your surgeon and shipped to your hotel before you arrive. Nothing to think about.
+                  Oia curates everything you need — compression garments, scar treatment, supplements — selected by your surgeon and shipped to your hotel before you arrive. Nothing to think about.
                 </p>
               </div>
               <div className="md:w-1/2 flex justify-center order-1 md:order-2">
@@ -744,7 +744,7 @@ export default function Home() {
               </div>
               <div className="md:w-1/2 text-center md:text-left">
                 <span className="font-body text-[11px] text-primary uppercase tracking-[0.2em] font-semibold block mb-4">05</span>
-                <h3 className="font-display text-3xl md:text-4xl text-on-surface mb-5">Nia stays with you after</h3>
+                <h3 className="font-display text-3xl md:text-4xl text-on-surface mb-5">Oia stays with you after</h3>
                 <p className="font-body text-body-md text-on-surface-variant leading-relaxed max-w-md">
                   Daily post-op check-ins, symptom tracking, and direct access to your surgical team — all through the same chat. Recovery, managed.
                 </p>
@@ -780,14 +780,14 @@ export default function Home() {
         <section className="py-20 md:py-28 bg-surface-container-low px-6 text-center">
           <p className="font-body text-label-caps text-primary uppercase tracking-[0.2em] mb-4">Start your journey</p>
           <h2 className="font-display text-3xl md:text-5xl text-on-surface mb-6 max-w-xl mx-auto">
-            We&apos;re inviting patients to speak with Nia early.
+            We&apos;re inviting patients to speak with Oia early.
           </h2>
           <p className="font-body text-body-md text-on-surface-variant max-w-md mx-auto mb-8">
             No commitment. Just a conversation about what&apos;s possible for you.
           </p>
           <button onClick={() => setModalOpen(true)}
             className="bg-primary text-on-primary px-8 py-4 rounded-lg font-body font-semibold text-label-caps uppercase tracking-widest hover:opacity-90 active:opacity-80 transition-all">
-            Talk to Nia
+            Talk to Oia
           </button>
           <p className="font-body text-[11px] text-on-surface-variant mt-4 italic opacity-60">Informed, not overwhelmed.</p>
         </section>
@@ -803,7 +803,7 @@ export default function Home() {
           </div>
           <div className="flex gap-12">
             {[
-              { title: 'Explore', links: ['Treatments', 'Results Gallery', 'The Nia Way'] },
+              { title: 'Explore', links: ['Treatments', 'Results Gallery', 'The Oia Way'] },
               { title: 'Legal', links: ['Privacy Policy', 'Terms of Service'] },
             ].map(col => (
               <div key={col.title}>
@@ -818,13 +818,13 @@ export default function Home() {
           </div>
         </div>
         <div className="max-w-5xl mx-auto mt-10 pt-6 border-t border-outline-variant/20">
-          <p className="font-body text-[11px] text-on-surface-variant opacity-50">© 2025 Nia Medical Concierge.</p>
+          <p className="font-body text-[11px] text-on-surface-variant opacity-50">© 2025 Oia Medical Concierge.</p>
         </div>
       </footer>
 
-      {/* ── Floating Nia orb ─────────────────────────────────────── */}
+      {/* ── Floating Oia orb ─────────────────────────────────────── */}
       <div className="nia-orb-wrap fixed bottom-5 right-5 md:bottom-8 md:right-8 z-50" style={{ width: 60, height: 60 }}>
-        <button onClick={() => setModalOpen(true)} aria-label="Chat with Nia" className="nia-orb absolute inset-0 rounded-full overflow-hidden active:scale-95" style={{ transform: 'translateZ(0)' }}>
+        <button onClick={() => setModalOpen(true)} aria-label="Chat with Oia" className="nia-orb absolute inset-0 rounded-full overflow-hidden active:scale-95" style={{ transform: 'translateZ(0)' }}>
           <span className="absolute inset-0" style={{ background: 'radial-gradient(circle at 44% 40%, rgba(255,249,247,0.35) 0%, rgba(253,218,208,0.28) 40%, rgba(245,185,168,0.18) 70%, rgba(229,142,122,0.08) 100%)', backdropFilter: 'blur(8px) saturate(1.2)', WebkitBackdropFilter: 'blur(8px) saturate(1.2)' }} />
           <span className="nia-core absolute animate-[niaCore_3.6s_ease-in-out_infinite]" style={{ top: '18%', left: '12%', width: '75%', height: '64%', background: 'radial-gradient(ellipse at 42% 52%, rgba(235,90,50,0.45) 0%, rgba(220,68,80,0.3) 32%, rgba(210,55,90,0.12) 58%, transparent 80%)', filter: 'blur(7px)', borderRadius: '50%' }} />
           <span className="nia-sweep absolute animate-[niaSweep_3.6s_ease-in-out_infinite]" style={{ top: '28%', left: '-12%', width: '124%', height: '44%', background: 'radial-gradient(ellipse at 38% 58%, rgba(215,50,95,0.35) 0%, rgba(228,80,60,0.22) 28%, rgba(240,115,65,0.08) 58%, transparent 78%)', filter: 'blur(5px)', borderRadius: '50%' }} />
