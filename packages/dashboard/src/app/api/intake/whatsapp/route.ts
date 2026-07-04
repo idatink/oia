@@ -97,13 +97,14 @@ export async function POST(req: Request) {
   };
 
   // Parse transcript into individual message rows so the coordinator view can
-  // render a proper chat thread. Format expected: "Patient: ...\nNia: ...\n\n"
+  // render a proper chat thread. Format expected: "Patient: ...\nOia: ...\n\n"
+  // (accepts legacy "Nia:" too so older records still parse). NIA is the DB enum.
   const transcriptMessages: { sessionId: string; role: 'PATIENT' | 'NIA'; content: string }[] = [];
   if (body.conversationTranscript) {
     const turns = body.conversationTranscript.split(/\n{1,2}/).filter(Boolean);
     for (const turn of turns) {
       const patientMatch = turn.match(/^Patient:\s*([\s\S]+)/i);
-      const niaMatch = turn.match(/^Nia:\s*([\s\S]+)/i);
+      const niaMatch = turn.match(/^(?:Oia|Nia):\s*([\s\S]+)/i);
       if (patientMatch) {
         transcriptMessages.push({ sessionId: session.id, role: 'PATIENT', content: patientMatch[1].trim() });
       } else if (niaMatch) {

@@ -149,7 +149,7 @@ export default function AdminSessionsPage() {
               </div>
               {s.lastMessage && (
                 <p className="text-[11px] text-[#5c5f5c] line-clamp-1">
-                  <span className="font-medium">{s.lastMessage.role === 'NIA' ? 'Nia: ' : 'Patient: '}</span>
+                  <span className="font-medium">{s.lastMessage.role === 'NIA' ? 'Oia: ' : 'Patient: '}</span>
                   {s.lastMessage.content}
                 </p>
               )}
@@ -208,6 +208,8 @@ export default function AdminSessionsPage() {
                     const sameRole = prev?.role === msg.role;
                     // Skip internal intake-complete system messages from display
                     if (msg.content.startsWith('Intake completed:') && msg.metadata) return null;
+                    const photoUrls: string[] = (msg.metadata as Record<string, unknown> | null)?.photoUrls as string[] ?? [];
+                    const intakeMeta = msg.metadata && !msg.content.startsWith('Intake') ? msg.metadata : null;
                     return (
                       <div key={msg.id} className={`flex gap-2 ${isNia ? '' : 'flex-row-reverse'} ${sameRole ? '-mt-1' : ''}`}>
                         {!sameRole ? (
@@ -218,14 +220,29 @@ export default function AdminSessionsPage() {
                           </div>
                         ) : <div className="w-7 shrink-0" />}
                         <div className={`max-w-[72%] ${isNia ? '' : 'items-end flex flex-col'}`}>
+                          {/* Photo thumbnails — shown above the bubble */}
+                          {photoUrls.length > 0 && (
+                            <div className={`flex flex-wrap gap-1.5 mb-1.5 ${isNia ? '' : 'justify-end'}`}>
+                              {photoUrls.map((url, pi) => (
+                                <a key={pi} href={url} target="_blank" rel="noopener noreferrer">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img
+                                    src={url}
+                                    alt={`Patient photo ${pi + 1}`}
+                                    className="w-28 h-28 object-cover rounded-xl border border-[#dcc0ba]/30 hover:opacity-90 transition-opacity"
+                                  />
+                                </a>
+                              ))}
+                            </div>
+                          )}
                           <div className={`rounded-2xl px-4 py-2.5 ${
                             isNia ? 'bg-white border border-[#dcc0ba]/20 text-[#1b1c1b] rounded-tl-sm' : 'bg-[#99402b] text-white rounded-tr-sm'
                           }`}>
                             <p className="text-[12px] leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-                            {msg.metadata && !msg.content.startsWith('Intake') && (
+                            {intakeMeta && (
                               <details className="mt-2">
                                 <summary className="text-[9px] opacity-40 cursor-pointer">intake data</summary>
-                                <pre className="text-[9px] opacity-60 mt-1 overflow-x-auto whitespace-pre-wrap">{JSON.stringify(msg.metadata, null, 2)}</pre>
+                                <pre className="text-[9px] opacity-60 mt-1 overflow-x-auto whitespace-pre-wrap">{JSON.stringify(intakeMeta, null, 2)}</pre>
                               </details>
                             )}
                           </div>
