@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import { db } from '@nia/shared/src/db';
-import { getCoordinatorFromRequest } from '@/lib/api-auth';
+import { getAdminOrCoordinatorFromRequest } from '@/lib/api-auth';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
-  const coordinator = await getCoordinatorFromRequest(req);
-  if (!coordinator) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const user = await getAdminOrCoordinatorFromRequest(req);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
   const surface = searchParams.get('surface'); // 'web' | 'whatsapp' | null (all)
