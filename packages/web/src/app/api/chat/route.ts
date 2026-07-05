@@ -289,13 +289,16 @@ export async function POST(req: Request) {
           `data: ${JSON.stringify({ type: 'done', intakeComplete: !!json, showTriage, gallery, showClinics, fullText: clean, intake: json })}\n\n`
         ));
 
-        // Log the turn async — do not await so stream closes immediately
+        // Persist the turn BEFORE closing the stream. On serverless (Vercel) the
+        // function is frozen once the response ends, so a fire-and-forget write
+        // often never lands — which broke conversation resume. Awaiting guarantees
+        // the messages are saved so the chat can be reloaded after a close/refresh.
         if (sessionId && (message?.trim() || photoUrls.length > 0)) {
           const patientText = message.trim() || `[${photoUrls.length} photo${photoUrls.length > 1 ? 's' : ''} shared]`;
           const logMeta = json
             ? { intakeComplete: true, ...json, photoUrls }
             : photoUrls.length > 0 ? { photoUrls } : undefined;
-          logTurn(sessionId, patientText, clean, logMeta);
+          await logTurn(sessionId, patientText, clean, logMeta);
         }
       } catch (err) {
         console.error('[chat]', err);
