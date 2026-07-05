@@ -16,6 +16,8 @@ const INITIAL_QUICK_REPLIES = [
   'What procedures do you cover?',
 ];
 
+const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '';
+
 async function fetchMatchedClinics(procedure: string): Promise<ClinicCardData[]> {
   try {
     const res = await fetch(`/api/clinics?procedure=${encodeURIComponent(procedure)}`);
@@ -59,8 +61,10 @@ interface ChatWindowProps {
 function getOrCreateSessionId(): string {
   if (typeof window === 'undefined') return crypto.randomUUID();
   const key = 'nia_web_session_id';
-  let id = sessionStorage.getItem(key);
-  if (!id) { id = crypto.randomUUID(); sessionStorage.setItem(key, id); }
+  // localStorage (not sessionStorage) so the conversation survives a tab close or
+  // accidental navigation — the id persists and we reload the saved messages.
+  let id = localStorage.getItem(key);
+  if (!id) { id = crypto.randomUUID(); localStorage.setItem(key, id); }
   return id;
 }
 
@@ -88,12 +92,41 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
   useEffect(() => {
     if (greeted.current) return;
     greeted.current = true;
-    const greeting = patientName && patientName !== 'there'
-      ? `Hello ${patientName}! I'm Oia, your personal medical concierge. I'm here to help you explore your options and connect you with the right clinic. What procedure are you interested in?`
-      : "Hello! I'm Oia, your personal medical concierge. I'm here to help you explore cosmetic and reconstructive surgery options at world-class international clinics. What procedure are you considering?";
-    setMessages([{ id: 'greeting', role: 'nia', content: greeting, timestamp: new Date() }]);
-    setHistory([{ role: 'assistant', content: greeting }]);
-  }, [patientName]);
+
+    (async () => {
+      // Resume a saved conversation (same browser) before greeting fresh — so an
+      // accidental close/refresh never makes the patient repeat themselves.
+      try {
+        const res = await fetch(`/api/chat/history?sessionId=${encodeURIComponent(sessionId)}`);
+        if (res.ok) {
+          const data = await res.json() as {
+            messages: { role: 'PATIENT' | 'NIA'; content: string; photoUrls?: string[] }[];
+          };
+          if (data.messages?.length) {
+            setMessages(data.messages.map((m, i) => ({
+              id: `restored-${i}`,
+              role: m.role === 'NIA' ? 'nia' : 'patient',
+              content: m.content,
+              timestamp: new Date(),
+              ...(m.photoUrls?.length ? { photoPreviewUrls: m.photoUrls } : {}),
+            })));
+            setHistory(data.messages.map(m => ({
+              role: m.role === 'NIA' ? 'assistant' : 'user',
+              content: m.content,
+            })));
+            setSuggestions([]);
+            return;
+          }
+        }
+      } catch { /* fall through to a fresh greeting */ }
+
+      const greeting = patientName && patientName !== 'there'
+        ? `Hello ${patientName}! I'm Oia, your personal medical concierge. I'm here to help you explore your options and connect you with the right clinic. What procedure are you interested in?`
+        : "Hello! I'm Oia, your personal medical concierge. I'm here to help you explore cosmetic and reconstructive surgery options at world-class international clinics. What procedure are you considering?";
+      setMessages([{ id: 'greeting', role: 'nia', content: greeting, timestamp: new Date() }]);
+      setHistory([{ role: 'assistant', content: greeting }]);
+    })();
+  }, [patientName, sessionId]);
 
   const sendMessage = useCallback(async (text: string, files?: File[]) => {
     if (loading) return;
@@ -315,6 +348,22 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
             </div>
           </div>
         </div>
+
+        {WA_NUMBER && (
+          <button
+            onClick={() => {
+              const msg = "Hi Oia, I'd like to continue our conversation here on WhatsApp.";
+              window.open(`https://wa.me/${WA_NUMBER.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+            }}
+            title="Continue this conversation on WhatsApp"
+            className="flex items-center gap-1.5 text-[#25D366] border border-[#25D366]/40 hover:bg-[#25D366]/10 rounded-full px-3 py-1.5 transition-all shrink-0"
+          >
+            <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/>
+            </svg>
+            <span className="font-body text-[11px] font-semibold hidden sm:inline">Continue on WhatsApp</span>
+          </button>
+        )}
       </div>
 
       {/* Messages */}
