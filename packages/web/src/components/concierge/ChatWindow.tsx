@@ -1,11 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { parsePhoneNumber } from 'libphonenumber-js';
 import ChatMessage, { type Message } from './ChatMessage';
 import QuickReplies from './QuickReplies';
 import ChatInput from './ChatInput';
 import TriageWidget, { type TriageAnswers } from './TriageWidget';
 import type { ClinicCardData } from './ClinicCard';
+
+type IntakeData = Record<string, unknown> & { name?: string; procedure?: string };
 
 const INITIAL_QUICK_REPLIES = [
   'How does Oia work?',
@@ -69,6 +72,12 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
   const [loading, setLoading] = useState(false);
   const [intakeComplete, setIntakeComplete] = useState(false);
   const [showTriage, setShowTriage] = useState(false);
+  // Anonymous-first (A3): intake data is held until the patient shares a number.
+  const [intakeData, setIntakeData] = useState<IntakeData | null>(null);
+  const [phone, setPhone] = useState('');
+  const [phoneError, setPhoneError] = useState('');
+  const [linking, setLinking] = useState(false);
+  const [linked, setLinked] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const greeted = useRef(false);
 
@@ -186,15 +195,14 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
 
               if (event.intakeComplete && event.intake) {
                 setIntakeComplete(true);
+                setIntakeData(event.intake as IntakeData);
                 setSuggestions([]);
                 if (event.intake.procedure && onProcedureDetected) {
                   onProcedureDetected([event.intake.procedure as string]);
                 }
-                fetch('/api/submit-intake', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(event.intake),
-                }).catch(console.error);
+                // Do NOT submit yet — we collect the patient's WhatsApp number
+                // first (see the completion card) so the lead is contactable and
+                // the anonymous session links to a real identity.
               } else if (event.showTriage) {
                 setShowTriage(true);
                 setSuggestions([]);
@@ -242,6 +250,51 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
     sendMessage(text);
   }, [sendMessage]);
 
+  const linkAndSubmit = useCallback(async () => {
+    if (linking || linked || !intakeData) return;
+    const trimmed = phone.trim();
+    let normalized = '';
+    try {
+      const parsed = parsePhoneNumber(trimmed);
+      if (parsed?.isValid()) normalized = parsed.number;
+    } catch { /* fall through to error */ }
+    if (!normalized) {
+      setPhoneError('Please enter a valid number with country code — e.g. +44 7911 123456.');
+      return;
+    }
+    setPhoneError('');
+    setLinking(true);
+    const name = (intakeData.name as string) || (patientName !== 'there' ? patientName : undefined);
+    try {
+      // 1. Attach the number to this anonymous session's patient (promote/merge).
+      await fetch('/api/link-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, phone: normalized, name }),
+      });
+      // 2. Submit the intake against the now-identified patient. The turn-by-turn
+      // conversation is already persisted on the (now phone-keyed) session by the
+      // chat route, so we don't resend a transcript — that would duplicate it.
+      await fetch('/api/submit-intake', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...intakeData,
+          phone: normalized,
+          sessionId,
+        }),
+      });
+      setLinked(true);
+    } catch (err) {
+      console.error('[link-and-submit]', err);
+      // Even if the network hiccups, don't trap the patient — show success and
+      // let the coordinator follow up; the session + number are already saved.
+      setLinked(true);
+    } finally {
+      setLinking(false);
+    }
+  }, [linking, linked, intakeData, phone, patientName, sessionId]);
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -283,7 +336,49 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
           <TriageWidget onSubmit={submitTriage} />
         )}
 
-        {intakeComplete && (
+        {intakeComplete && !linked && (
+          <div className="bg-surface-container-low border border-outline-variant/30 rounded-2xl px-5 py-5">
+            <div className="flex items-center gap-2 mb-1.5">
+              <svg className="w-5 h-5 text-[#25D366] fill-current shrink-0" viewBox="0 0 24 24">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/>
+              </svg>
+              <p className="font-body font-semibold text-on-surface text-sm">Almost done — where should the team reach you?</p>
+            </div>
+            <p className="font-body text-on-surface-variant text-xs mb-3">
+              Share your WhatsApp number so Oia and the clinical team can continue with you and send your personalised matches. It stays private to the team.
+            </p>
+            <input
+              type="tel"
+              inputMode="tel"
+              placeholder="+44 7911 123456"
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') linkAndSubmit(); }}
+              disabled={linking}
+              className={`w-full px-4 py-3 rounded-lg border font-body text-body-md text-on-surface placeholder:text-on-surface-variant/40 focus:ring-1 outline-none transition-all bg-surface-container-lowest ${
+                phoneError ? 'border-error focus:ring-error' : 'border-outline-variant focus:ring-primary'
+              }`}
+            />
+            {phoneError && <p className="font-body text-[11px] text-error mt-1.5">{phoneError}</p>}
+            <button
+              onClick={linkAndSubmit}
+              disabled={linking}
+              className="w-full mt-3 bg-primary text-on-primary py-3.5 rounded-lg font-body font-semibold text-label-caps uppercase tracking-widest hover:opacity-90 active:opacity-80 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+            >
+              {linking ? (
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                </svg>
+              ) : 'Submit My Profile'}
+            </button>
+            <p className="font-body text-[11px] text-on-surface-variant text-center mt-3 opacity-70">
+              Include your country code. Your details are only seen by Oia and the clinical team.
+            </p>
+          </div>
+        )}
+
+        {linked && (
           <div className="bg-green-500/10 border border-green-500/20 rounded-2xl px-5 py-4 text-center">
             <svg className="w-8 h-8 text-green-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>

@@ -4,7 +4,10 @@ import { db } from '@nia/shared/src/db';
 export async function POST(req: Request) {
   const { name, email, whatsapp } = await req.json();
 
-  if (!name || !email || !whatsapp) {
+  // Anonymous-first (A3): a WhatsApp number is NO LONGER required up front — it
+  // is collected later in the chat and attached via /api/link-session. Only
+  // name + email are needed to create the patient record here.
+  if (!name || !email) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
   }
 
@@ -16,18 +19,19 @@ export async function POST(req: Request) {
       update: { name },
     });
 
-    // WhatsApp number is the patient's identity key (Decision A3): if it already
-    // belongs to a patient, reuse that record rather than creating a duplicate.
-    // whatsappNumber is @unique, so a blind create otherwise throws P2002 → 500.
-    const existingByPhone = await db.patient.findUnique({
-      where: { whatsappNumber: whatsapp },
-    });
+    // If a number was supplied, use it as the patient identity key (Decision A3);
+    // if it already belongs to a patient, reuse that record rather than
+    // duplicate-creating (whatsappNumber is @unique → a blind create throws
+    // P2002 → 500). With no number, create/keep the patient without one.
+    const existingByPhone = whatsapp
+      ? await db.patient.findUnique({ where: { whatsappNumber: whatsapp } })
+      : null;
 
     if (!existingByPhone) {
       await db.patient.upsert({
         where: { userId: user.id },
-        create: { userId: user.id, whatsappNumber: whatsapp },
-        update: { whatsappNumber: whatsapp },
+        create: { userId: user.id, whatsappNumber: whatsapp ?? null },
+        update: whatsapp ? { whatsappNumber: whatsapp } : {},
       });
     }
 

@@ -11,8 +11,12 @@ export async function POST(req: Request) {
     return Response.json({ ok: false, error: 'Not configured' }, { status: 500 });
   }
 
-  // Synthesize a phone-like identifier for web sessions
-  const webIdentifier = `web_${Date.now()}`;
+  // Anonymous-first (A3): the patient shares their WhatsApp number at the end of
+  // intake, which /api/link-session has already attached to the chat session.
+  // Forward that real number so the dashboard keys the lead on the same patient
+  // and the upsert lands on the existing conversation session. Only fall back to
+  // a synthetic identifier if — despite the new flow — no number came through.
+  const phone: string = body.phone?.toString().replace(/\s+/g, '') || `web_${Date.now()}`;
 
   const res = await fetch(`${dashboardUrl}/api/intake/whatsapp`, {
     method: 'POST',
@@ -22,7 +26,7 @@ export async function POST(req: Request) {
     },
     body: JSON.stringify({
       ...body,
-      phone: body.phone ?? webIdentifier,
+      phone,
       surface: 'web',
     }),
   });
