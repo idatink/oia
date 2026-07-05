@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 
 type Session = {
   id: string;
-  surface: 'web' | 'whatsapp';
+  surface: 'web' | 'whatsapp' | 'clinic';
   patientName: string;
   patientEmail: string;
   messageCount: number;
@@ -69,7 +69,7 @@ function groupByDay(messages: Message[]) {
 export default function AdminSessionsPage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [selected, setSelected] = useState<SessionDetail | null>(null);
-  const [filter, setFilter] = useState<'all' | 'web' | 'whatsapp'>('all');
+  const [filter, setFilter] = useState<'all' | 'web' | 'whatsapp' | 'clinic'>('all');
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(false);
@@ -99,10 +99,10 @@ export default function AdminSessionsPage() {
       <div className="w-80 shrink-0 bg-white border-r border-[#dcc0ba]/30 flex flex-col">
         <div className="px-5 py-5 border-b border-[#dcc0ba]/20">
           <h1 className="text-xl font-serif text-[#1b1c1b] mb-0.5">All Conversations</h1>
-          <p className="text-[11px] text-[#5c5f5c]">Every Nia session — web & WhatsApp</p>
+          <p className="text-[11px] text-[#5c5f5c]">Every Oia session — web, WhatsApp & clinic</p>
 
           <div className="flex gap-1.5 mt-3">
-            {(['all', 'web', 'whatsapp'] as const).map(f => (
+            {(['all', 'web', 'whatsapp', 'clinic'] as const).map(f => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
@@ -110,7 +110,7 @@ export default function AdminSessionsPage() {
                   filter === f ? 'bg-[#99402b] text-white' : 'bg-[#f6f3f1] text-[#5c5f5c]'
                 }`}
               >
-                {f === 'all' ? 'All' : f === 'web' ? 'Web' : 'WA'}
+                {f === 'all' ? 'All' : f === 'web' ? 'Web' : f === 'whatsapp' ? 'WA' : 'Clinic'}
               </button>
             ))}
           </div>
@@ -140,16 +140,16 @@ export default function AdminSessionsPage() {
                 <span className="font-semibold text-[#1b1c1b] text-sm truncate">{s.patientName}</span>
                 <div className="flex items-center gap-1.5 shrink-0">
                   <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
-                    s.surface === 'whatsapp' ? 'bg-green-100 text-green-700' : 'bg-blue-50 text-blue-600'
+                    s.surface === 'whatsapp' ? 'bg-green-100 text-green-700' : s.surface === 'clinic' ? 'bg-amber-100 text-amber-700' : 'bg-blue-50 text-blue-600'
                   }`}>
-                    {s.surface === 'whatsapp' ? 'WA' : 'Web'}
+                    {s.surface === 'whatsapp' ? 'WA' : s.surface === 'clinic' ? 'Clinic' : 'Web'}
                   </span>
                   <span className="text-[10px] text-[#5c5f5c]">{timeAgo(s.lastActiveAt)}</span>
                 </div>
               </div>
               {s.lastMessage && (
                 <p className="text-[11px] text-[#5c5f5c] line-clamp-1">
-                  <span className="font-medium">{s.lastMessage.role === 'NIA' ? 'Oia: ' : 'Patient: '}</span>
+                  <span className="font-medium">{s.lastMessage.role === 'NIA' ? 'Oia: ' : s.surface === 'clinic' ? 'Clinic: ' : 'Patient: '}</span>
                   {s.lastMessage.content}
                 </p>
               )}
@@ -181,8 +181,8 @@ export default function AdminSessionsPage() {
                     {selected.patientEmail}
                     {selected.patientPhone ? ` · ${selected.patientPhone}` : ''}
                     {' · '}
-                    <span className={`font-semibold ${selected.surface === 'whatsapp' ? 'text-green-600' : 'text-blue-500'}`}>
-                      {selected.surface === 'whatsapp' ? 'WhatsApp' : 'Web'}
+                    <span className={`font-semibold ${selected.surface === 'whatsapp' ? 'text-green-600' : selected.surface === 'clinic' ? 'text-amber-600' : 'text-blue-500'}`}>
+                      {selected.surface === 'whatsapp' ? 'WhatsApp' : selected.surface === 'clinic' ? 'Clinic negotiation' : 'Web'}
                     </span>
                     {' · '}{selected.messages.length} messages
                   </p>
@@ -209,7 +209,7 @@ export default function AdminSessionsPage() {
                     // Skip internal intake-complete system messages from display
                     if (msg.content.startsWith('Intake completed:') && msg.metadata) return null;
                     const photoUrls: string[] = (msg.metadata as Record<string, unknown> | null)?.photoUrls as string[] ?? [];
-                    const intakeMeta = msg.metadata && !msg.content.startsWith('Intake') ? msg.metadata : null;
+                    const intakeMeta = msg.metadata && !msg.content.startsWith('Intake') && (msg.metadata as Record<string, unknown>).type !== 'clinic_quote' ? msg.metadata : null;
                     return (
                       <div key={msg.id} className={`flex gap-2 ${isNia ? '' : 'flex-row-reverse'} ${sameRole ? '-mt-1' : ''}`}>
                         {!sameRole ? (

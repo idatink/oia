@@ -480,12 +480,35 @@ function CloseCaseModal({
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
+interface ClinicQuoteData {
+  clinicName: string | null;
+  clinicPhone: string;
+  procedure: string;
+  currency: string | null;
+  headlinePrice: number | null;
+  inclusions: string[];
+  exclusions: string[];
+  validUntil: string | null;
+  negotiationStatus: string;
+  notes: string | null;
+  patientName: string | null;
+  linked: boolean;
+}
+interface ClinicQuote {
+  sessionId: string;
+  lastActiveAt: string;
+  quote: ClinicQuoteData | null;
+  transcript: { role: string; content: string; createdAt: string }[];
+}
+
 export default function FullCasePage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [detail, setDetail] = useState<LeadDetail | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [offer, setOffer] = useState<Offer | null>(null);
+  const [clinicQuotes, setClinicQuotes] = useState<ClinicQuote[]>([]);
+  const [expandedQuote, setExpandedQuote] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [showOffer, setShowOffer] = useState(false);
   const [showClose, setShowClose] = useState(false);
@@ -495,11 +518,12 @@ export default function FullCasePage() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [detailRes, bookingsRes, offerRes, proposalRes] = await Promise.all([
+    const [detailRes, bookingsRes, offerRes, proposalRes, clinicQuotesRes] = await Promise.all([
       fetch(`/api/leads/${id}`),
       fetch(`/api/leads/${id}/bookings`),
       fetch(`/api/leads/${id}/offer`),
       fetch(`/api/leads/${id}/proposal`),
+      fetch(`/api/leads/${id}/clinic-quotes`),
     ]);
     if (detailRes.ok) setDetail(await detailRes.json());
     if (bookingsRes.ok) setBookings(await bookingsRes.json());
@@ -507,6 +531,7 @@ export default function FullCasePage() {
       const offers: Offer[] = await offerRes.json();
       setOffer(offers[0] ?? null);
     }
+    if (clinicQuotesRes.ok) setClinicQuotes(await clinicQuotesRes.json());
     if (proposalRes.ok) {
       const p = await proposalRes.json();
       setProposal(p);
@@ -860,6 +885,65 @@ export default function FullCasePage() {
                 </div>
               )}
               {offer.notes && <p className="mt-2 font-body text-[11px] text-green-700 italic">{offer.notes}</p>}
+            </div>
+          )}
+
+          {/* Clinic negotiations — Oia ↔ clinic quotes */}
+          {clinicQuotes.length > 0 && (
+            <div className="bg-white rounded-2xl border border-black/8 px-5 py-4">
+              <p className="font-body text-[9px] text-on-surface-variant uppercase tracking-widest font-semibold mb-3">Clinic Negotiations (Oia)</p>
+              <div className="space-y-3">
+                {clinicQuotes.map(cq => {
+                  const q = cq.quote;
+                  const open = expandedQuote === cq.sessionId;
+                  const status = q?.negotiationStatus ?? 'in_progress';
+                  return (
+                    <div key={cq.sessionId} className="border border-outline-variant/30 rounded-xl px-4 py-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-body text-sm font-semibold text-on-surface">{q?.clinicName || q?.clinicPhone || 'Clinic'}</p>
+                          <p className="font-body text-[11px] text-on-surface-variant mt-0.5">{q?.procedure}{q?.validUntil ? ` · valid ${q.validUntil}` : ''}</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          {q?.headlinePrice != null && (
+                            <p className="font-display text-xl font-bold text-on-surface">{q.currency ? `${q.currency} ` : ''}{q.headlinePrice.toLocaleString()}</p>
+                          )}
+                          <span className={`font-body text-[9px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full ${status === 'agreed' ? 'bg-green-100 text-green-700' : status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>{status.replace('_', ' ')}</span>
+                        </div>
+                      </div>
+                      {q?.inclusions && q.inclusions.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {q.inclusions.map(item => (
+                            <span key={item} className="font-body text-[9px] text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full">{item}</span>
+                          ))}
+                        </div>
+                      )}
+                      {q?.exclusions && q.exclusions.length > 0 && (
+                        <p className="mt-2 font-body text-[10px] text-on-surface-variant">Excludes: {q.exclusions.join(', ')}</p>
+                      )}
+                      {q?.notes && <p className="mt-2 font-body text-[11px] text-on-surface-variant italic">{q.notes}</p>}
+                      {!q?.linked && <p className="mt-2 font-body text-[10px] text-amber-700">⚠ Not auto-linked to this patient — matched manually.</p>}
+                      {cq.transcript.length > 0 && (
+                        <>
+                          <button onClick={() => setExpandedQuote(open ? null : cq.sessionId)} className="mt-2 font-body text-[10px] text-primary font-semibold hover:underline">
+                            {open ? 'Hide' : 'View'} negotiation ({cq.transcript.length} messages)
+                          </button>
+                          {open && (
+                            <div className="mt-2 space-y-2 border-t border-outline-variant/20 pt-2">
+                              {cq.transcript.map((m, i) => (
+                                <div key={i} className={m.role === 'NIA' ? 'text-right' : 'text-left'}>
+                                  <span className="font-body text-[9px] uppercase tracking-wider text-on-surface-variant">{m.role === 'NIA' ? 'Oia' : 'Clinic'}</span>
+                                  <p className={`font-body text-[12px] inline-block px-3 py-1.5 rounded-xl ${m.role === 'NIA' ? 'bg-primary/10 text-on-surface' : 'bg-surface-container text-on-surface'}`}>{m.content}</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

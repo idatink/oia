@@ -51,6 +51,33 @@ How to present the results to the patient:
 
 Each clinic is its own separate WhatsApp message. Then send a closing chunk: "Have a question about any of these? Just ask — and our concierge team will be in touch very soon to guide you through next steps. 🤍"
 
+## submit_clinic_quote (Clinic mode only)
+Call this at the END of a clinic negotiation (see AGENTS.md → Clinic mode), once you've secured the best offer or the negotiation has ended. It logs the whole negotiation + the final quote to the team's dashboard, against the patient's lead.
+
+What to pass:
+- **patientName** (required) — the patient this quote is for. INTERNAL — used only to link the quote to their lead; never shared with the clinic.
+- **patientPhone** — the patient's WhatsApp number if you know it (best, most reliable link). INTERNAL.
+- **procedure** (required) — e.g. "tummy tuck".
+- **clinicName** — the clinic's name if known, else leave blank.
+- **clinicPhone** (required) — the clinic's WhatsApp number (this thread's number).
+- **currency** — e.g. "GBP", "EUR".
+- **headlinePrice** (number) — the final/best all-in figure the clinic gave.
+- **inclusions** (array) — what the price covers, e.g. ["surgeon fee","anaesthesia","hotel 3 nights","transfers","aftercare"].
+- **exclusions** — anything notably not included.
+- **validUntil** — how long the quote holds, if stated.
+- **negotiationStatus** — "agreed" (clinic gave a firm best offer), "in_progress", or "rejected/no deal".
+- **notes** — anything useful for the team (e.g. "offered a free companion night after I pushed").
+- **conversationTranscript** — the full clinic conversation, formatted as alternating labelled lines, blank line between turns, no timestamps:
+```
+Clinic: {their message}
+Oia: {your reply}
+```
+
+Rules:
+- Only in Clinic mode. Never call it for a patient conversation (that's `create_nia_inquiry`).
+- Never reveal patientName/patientPhone to the clinic — they are only for the tool, so the team can attach the quote to the right lead.
+- Call it once per negotiation (call again only if a materially better/updated offer comes later).
+
 ## General
 - You are running on OpenClaw over WhatsApp. Keep replies chunked per SOUL.md.
 - If you are ever unsure whether you have all required data, re-check the AGENTS.md checklist before calling the skill.
