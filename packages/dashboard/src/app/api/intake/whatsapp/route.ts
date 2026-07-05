@@ -21,6 +21,7 @@ export async function POST(req: Request) {
     preferredLanguage?: string;
     medicalScreening?: Record<string, boolean>;
     photoDescriptions?: string[];
+    photoUrls?: string[];
     photosDeclined?: boolean;
     conversationTranscript?: string;
     aiScore?: number;
@@ -174,7 +175,7 @@ export async function POST(req: Request) {
                  'bloodClotting','heartDisease','thyroidDisorder','immuneDisorder','pregnancy','allergies']
                   .map(k => [k, screening[k] ?? false])
               ),
-              photoUrls: [],
+              photoUrls: body.photoUrls ?? [],
             },
           });
           return lead.id;
