@@ -1,21 +1,17 @@
-app = "nia-whatsapp-gateway"
+app = "oia-whatsapp"
 primary_region = "lhr"
 
 [build]
 
 [env]
-  NIA_API_URL = "https://nia-medtourism-dashboard.vercel.app"
-  NIA_WEB_URL = "https://nia-medtourism-web.vercel.app"
+  NIA_API_URL = "https://oia-dashboard-beryl.vercel.app"
+  NIA_WEB_URL = "https://oia-web-eight.vercel.app"
+  OPENCLAW_STATE_DIR = "/data"
 
 [[mounts]]
   source = "openclaw_data"
   destination = "/data"
 
-[[services]]
-  internal_port = 3000
-  protocol = "tcp"
-
-  [[services.ports]]
-    port = 443
-    handlers = ["tls", "http"]
-
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb"
