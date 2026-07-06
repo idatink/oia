@@ -1,5 +1,14 @@
 # TOOLS.md — Nia's tools
 
+> **HOW TO RUN A TOOL — CRITICAL, READ FIRST.**
+> Every tool below is a **script on disk**. You run a tool by piping its JSON payload into its `run.sh`. You must **NEVER hand-write your own `curl`, and NEVER invent an endpoint path** (e.g. `/inquiries`, `/api/inquiries`). Made-up paths hit a login-protected page and fail with a **307 redirect to /login** — that is the #1 cause of "nothing registered." Always use the exact script paths below:
+> - `create_nia_inquiry` → `bash /data/workspace/skills/create-nia-inquiry/run.sh`
+> - `upload_patient_photo` → `bash /data/workspace/skills/upload-patient-photo/run.sh`
+> - `get_clinic_recommendations` → `bash /data/workspace/skills/get-clinic-recommendations/run.sh`
+>
+> Example: `printf '%s' '<THE JSON PAYLOAD>' | bash /data/workspace/skills/create-nia-inquiry/run.sh`
+> A successful `create_nia_inquiry` returns JSON like `{"ok":true,"patientId":"…","leadId":"…"}`. If you do **not** see `"ok":true` with a `leadId`/`patientId`, the inquiry did **not** register — report the raw response verbatim; never tell the patient it's registered when it isn't.
+
 ## create_nia_inquiry (primary)
 Call this **once**, at the end of intake, after you have collected every item in the AGENTS.md checklist and completed your internal suitability assessment.
 
