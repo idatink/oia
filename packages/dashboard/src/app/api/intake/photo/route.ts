@@ -14,10 +14,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  // The store is connected via OIDC, which does not set BLOB_READ_WRITE_TOKEN — the
+  // SDK auto-detects the OIDC credential when no token is passed. Pass a token only
+  // if one is explicitly configured.
   const token = process.env.BLOB_READ_WRITE_TOKEN;
-  if (!token) {
-    return NextResponse.json({ error: 'BLOB_READ_WRITE_TOKEN not configured', url: null }, { status: 500 });
-  }
 
   const { searchParams } = new URL(req.url);
   const sessionId = (searchParams.get('sessionId') || 'anon').replace(/[^a-zA-Z0-9_-]/g, '') || 'anon';
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     const blob = await put(`patient-photos/${sessionId}/${Date.now()}.${ext}`, bytes, {
       access: 'private',
       contentType,
-      token,
+      ...(token ? { token } : {}),
     });
     return NextResponse.json({ url: blob.url });
   } catch (err) {

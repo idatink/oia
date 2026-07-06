@@ -29,8 +29,9 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     return NextResponse.redirect(blobUrl, { status: 302 });
   }
 
+  // OIDC-connected store: the SDK auto-detects the credential when no token is
+  // passed. Pass a token only if one is explicitly configured.
   const token = process.env.BLOB_READ_WRITE_TOKEN;
-  if (!token) return NextResponse.json({ error: 'No blob token' }, { status: 500 });
 
   const respond = (data: ArrayBuffer, contentType: string) =>
     new Response(data, {
@@ -43,16 +44,18 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 
   // Preferred: a short-lived signed download URL from head().
   try {
-    const meta = await head(blobUrl, { token });
+    const meta = await head(blobUrl, token ? { token } : undefined);
     const dl = await fetch(meta.downloadUrl);
     if (dl.ok) return respond(await dl.arrayBuffer(), meta.contentType ?? 'image/jpeg');
   } catch { /* fall through */ }
 
-  // Fallback: authenticated direct fetch.
-  try {
-    const r = await fetch(blobUrl, { headers: { Authorization: `Bearer ${token}` } });
-    if (r.ok) return respond(await r.arrayBuffer(), r.headers.get('Content-Type') ?? 'image/jpeg');
-  } catch { /* fall through */ }
+  // Fallback: authenticated direct fetch (only possible with an explicit token).
+  if (token) {
+    try {
+      const r = await fetch(blobUrl, { headers: { Authorization: `Bearer ${token}` } });
+      if (r.ok) return respond(await r.arrayBuffer(), r.headers.get('Content-Type') ?? 'image/jpeg');
+    } catch { /* fall through */ }
+  }
 
   return NextResponse.json({ error: 'Blob unavailable' }, { status: 502 });
 }
