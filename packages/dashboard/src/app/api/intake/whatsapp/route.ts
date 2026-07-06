@@ -97,11 +97,19 @@ export async function POST(req: Request) {
     aiRationale: body.aiRationale ?? null,
   };
 
+  // If the real-time syncer already streamed this conversation's turns
+  // (metadata.realtime === true), do NOT re-parse the transcript into messages —
+  // that would duplicate the whole thread. In that case we only append the
+  // structured "intake completed" summary below.
+  const alreadyStreamed = await db.nIAMessage.count({
+    where: { sessionId: session.id, metadata: { path: ['realtime'], equals: true } },
+  });
+
   // Parse transcript into individual message rows so the coordinator view can
   // render a proper chat thread. Format expected: "Patient: ...\nOia: ...\n\n"
   // (accepts legacy "Nia:" too so older records still parse). NIA is the DB enum.
   const transcriptMessages: { sessionId: string; role: 'PATIENT' | 'NIA'; content: string }[] = [];
-  if (body.conversationTranscript) {
+  if (body.conversationTranscript && alreadyStreamed === 0) {
     const turns = body.conversationTranscript.split(/\n{1,2}/).filter(Boolean);
     for (const turn of turns) {
       const patientMatch = turn.match(/^Patient:\s*([\s\S]+)/i);

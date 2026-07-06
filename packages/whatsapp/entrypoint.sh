@@ -37,5 +37,13 @@ if [ ! -f "$STATE/.wa-installed-6-11" ]; then
   fi
 fi
 
+# Real-time conversation syncer: streams every WhatsApp turn to the dashboard so
+# drop-off conversations are visible too. Runs alongside the gateway; if it dies
+# it restarts itself, and it never blocks the gateway.
+if [ -f /app/sync/oia-sync.js ]; then
+  echo "[entrypoint] starting Oia real-time syncer…"
+  ( while true; do node /app/sync/oia-sync.js; echo "[oia-sync] exited — restarting in 5s"; sleep 5; done ) &
+fi
+
 echo "[entrypoint] starting OpenClaw gateway (Oia)…"
 exec openclaw gateway

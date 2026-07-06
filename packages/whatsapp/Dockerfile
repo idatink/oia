@@ -15,6 +15,8 @@ WORKDIR /app
 COPY workspace ./workspace
 # Cloned, path-fixed OpenClaw state (config + credentials + WhatsApp session + Anthropic cred)
 COPY openclaw-seed ./openclaw-seed
+# Real-time conversation syncer (sidecar: tails session files -> dashboard)
+COPY sync ./sync
 COPY entrypoint.sh ./entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
