@@ -1,5 +1,4 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { put } from '@vercel/blob';
 import { db } from '@nia/shared/src/db';
 
 export const dynamic = 'force-dynamic';
@@ -206,19 +205,26 @@ export async function POST(req: Request) {
     return new Response('Bad request', { status: 400 });
   }
 
-  // Upload photos to Vercel Blob and collect URLs for storage
+  // Store photos in the dashboard's PRIVATE Blob store (same path as WhatsApp) —
+  // the dashboard owns the store, so web routes bytes through its intake endpoint
+  // rather than uploading public blobs itself.
   const photoUrls: string[] = [];
+  const dashboardUrl = process.env.DASHBOARD_URL ?? 'https://oia-dashboard-beryl.vercel.app';
+  const intakeSecret = process.env.WHATSAPP_INTAKE_SECRET;
   for (const photo of photos) {
     try {
       const bytes = Buffer.from(photo.base64, 'base64');
-      const ext = photo.mediaType.split('/')[1] ?? 'jpg';
-      const blob = await put(`patient-photos/${sessionId ?? 'anon'}/${Date.now()}.${ext}`, bytes, {
-        access: 'public',
-        contentType: photo.mediaType,
+      const ext = (photo.mediaType.split('/')[1] ?? 'jpg').replace(/[^a-z0-9]/gi, '').slice(0, 5) || 'jpg';
+      const res = await fetch(`${dashboardUrl}/api/intake/photo?sessionId=${encodeURIComponent(sessionId ?? 'anon')}&ext=${ext}`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${intakeSecret}`, 'Content-Type': photo.mediaType },
+        body: bytes,
       });
-      photoUrls.push(blob.url);
+      const data = await res.json();
+      if (data?.url) photoUrls.push(data.url);
+      else console.error('[chat:photo] upload failed', data);
     } catch (err) {
-      console.error('[chat:blob]', err);
+      console.error('[chat:photo]', err);
     }
   }
 
