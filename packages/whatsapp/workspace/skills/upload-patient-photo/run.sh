@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Uploads a local media file to Vercel Blob and returns the URL as JSON.
-# Uses jq for JSON parsing — the runtime image (node:22-slim) has no python3.
+# Uploads a patient's photo by POSTing the bytes to the Nia dashboard, which stores
+# it in the PRIVATE Blob store and returns a URL. Parsing uses jq (no python3 in the
+# runtime image). The dashboard owns the Blob store, so no blob token is needed here.
 set -euo pipefail
 
 PAYLOAD=$(cat)
@@ -13,23 +14,14 @@ if [ -z "$FILE_PATH" ] || [ ! -f "$FILE_PATH" ]; then
   exit 0
 fi
 
-if [ -z "${BLOB_READ_WRITE_TOKEN:-}" ]; then
-  echo '{"error":"BLOB_READ_WRITE_TOKEN not set","url":null}'
-  exit 0
-fi
-
 EXT="${FILE_PATH##*.}"
-TIMESTAMP=$(date +%s%3N)
-# Sanitise the session id for use inside the blob pathname (drop +, spaces, etc.)
 SAFE_SESSION=$(printf '%s' "$SESSION_ID" | tr -cd '[:alnum:]_-')
 [ -z "$SAFE_SESSION" ] && SAFE_SESSION="anon"
-PATHNAME="patient-photos/${SAFE_SESSION}/${TIMESTAMP}.${EXT}"
 
-RESPONSE=$(curl -s -X PUT \
-  "https://blob.vercel-storage.com/${PATHNAME}" \
-  -H "Authorization: Bearer ${BLOB_READ_WRITE_TOKEN}" \
-  -H "x-api-version: 7" \
-  -H "x-content-type: ${MEDIA_TYPE}" \
+RESPONSE=$(curl -s -X POST \
+  "${NIA_API_URL}/api/intake/photo?sessionId=${SAFE_SESSION}&ext=${EXT}" \
+  -H "Authorization: Bearer ${NIA_WHATSAPP_SECRET}" \
+  -H "Content-Type: ${MEDIA_TYPE}" \
   --data-binary "@${FILE_PATH}")
 
 URL=$(printf '%s' "$RESPONSE" | jq -r '.url // ""' 2>/dev/null || echo "")

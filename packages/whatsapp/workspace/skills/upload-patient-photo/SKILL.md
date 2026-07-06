@@ -8,9 +8,11 @@ metadata:
   openclaw:
     requires:
       env:
-        - BLOB_READ_WRITE_TOKEN
+        - NIA_API_URL
+        - NIA_WHATSAPP_SECRET
       bins:
         - curl
+        - jq
 ---
 
 # upload_patient_photo

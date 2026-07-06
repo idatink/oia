@@ -811,8 +811,9 @@ export default function FullCasePage() {
                 {detail.photoUrls.map((url, i) => (
                   <div key={i} className="relative aspect-square rounded-xl border border-black/8 overflow-hidden bg-surface-container-low/40">
                     {detail.claimedAt ? (
+                      // Private blob — served only through the coordinator-authed proxy.
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={url} alt={`Treatment area ${i + 1}`} className="w-full h-full object-cover" />
+                      <img src={`/api/leads/${id}/photo?i=${i}`} alt={`Treatment area ${i + 1}`} className="w-full h-full object-cover" />
                     ) : (
                       <>
                         <div className="absolute inset-0 bg-surface-container/70 backdrop-blur-md flex flex-col items-center justify-center gap-1.5 z-10">
