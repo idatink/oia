@@ -30,3 +30,14 @@
     box-shadow: 0 32px 64px -12px rgba(153, 64, 43, 0.08);
   }
 }
+
+/* Channel-selection modal (LeadCaptureModal) entrance animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sheetUp {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
