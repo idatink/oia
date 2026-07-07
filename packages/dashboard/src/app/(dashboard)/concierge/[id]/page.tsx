@@ -500,6 +500,15 @@ interface ClinicQuote {
   quote: ClinicQuoteData | null;
   transcript: { role: string; content: string; createdAt: string }[];
 }
+interface MatchItem {
+  id: string; rank: number; score: number; reasons: string[]; negotiationStatus: string;
+  provider: {
+    id: string; surgeonName: string; clinicName: string | null; city: string | null; country: string;
+    accreditations: string[]; reviewRating: number | null; reviewCount: number | null;
+    website: string | null; instagram: string | null; whatsapp: string | null; verified: boolean;
+  };
+}
+interface ProviderMatch { id: string; treatmentName: string; cluster: string | null; createdAt: string; items: MatchItem[]; }
 
 export default function FullCasePage() {
   const { id } = useParams<{ id: string }>();
@@ -508,6 +517,7 @@ export default function FullCasePage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [offer, setOffer] = useState<Offer | null>(null);
   const [clinicQuotes, setClinicQuotes] = useState<ClinicQuote[]>([]);
+  const [matches, setMatches] = useState<ProviderMatch[]>([]);
   const [expandedQuote, setExpandedQuote] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [showOffer, setShowOffer] = useState(false);
@@ -518,12 +528,13 @@ export default function FullCasePage() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [detailRes, bookingsRes, offerRes, proposalRes, clinicQuotesRes] = await Promise.all([
+    const [detailRes, bookingsRes, offerRes, proposalRes, clinicQuotesRes, matchesRes] = await Promise.all([
       fetch(`/api/leads/${id}`),
       fetch(`/api/leads/${id}/bookings`),
       fetch(`/api/leads/${id}/offer`),
       fetch(`/api/leads/${id}/proposal`),
       fetch(`/api/leads/${id}/clinic-quotes`),
+      fetch(`/api/leads/${id}/matches`),
     ]);
     if (detailRes.ok) setDetail(await detailRes.json());
     if (bookingsRes.ok) setBookings(await bookingsRes.json());
@@ -532,6 +543,7 @@ export default function FullCasePage() {
       setOffer(offers[0] ?? null);
     }
     if (clinicQuotesRes.ok) setClinicQuotes(await clinicQuotesRes.json());
+    if (matchesRes.ok) setMatches((await matchesRes.json()).matches ?? []);
     if (proposalRes.ok) {
       const p = await proposalRes.json();
       setProposal(p);
@@ -886,6 +898,41 @@ export default function FullCasePage() {
                 </div>
               )}
               {offer.notes && <p className="mt-2 font-body text-[11px] text-green-700 italic">{offer.notes}</p>}
+            </div>
+          )}
+
+          {/* SmartMatch — the shortlist Oia sent the patient */}
+          {matches.length > 0 && (
+            <div className="bg-white rounded-2xl border border-black/8 px-5 py-4">
+              <p className="font-body text-[9px] text-on-surface-variant uppercase tracking-widest font-semibold mb-3">Matched Surgeons (SmartMatch)</p>
+              {matches.map(m => (
+                <div key={m.id} className="mb-4 last:mb-0">
+                  <p className="font-body text-[11px] text-on-surface-variant mb-2">{m.treatmentName}{m.cluster ? ` · ${m.cluster}` : ''}</p>
+                  <div className="space-y-2">
+                    {m.items.map(it => (
+                      <div key={it.id} className="border border-black/8 rounded-xl px-3 py-2.5">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="font-body text-[13px] font-semibold text-on-surface truncate">#{it.rank} {it.provider.surgeonName}</p>
+                            <p className="font-body text-[11px] text-on-surface-variant truncate">{it.provider.clinicName ?? '—'} · {it.provider.city ?? '—'}</p>
+                          </div>
+                          <div className="text-right shrink-0">
+                            {it.provider.reviewRating != null && <p className="font-body text-[11px] text-on-surface-variant">{it.provider.reviewRating}★ ({it.provider.reviewCount})</p>}
+                            <span className="inline-block font-body text-[9px] uppercase tracking-wide px-2 py-0.5 rounded-full bg-black/5 text-on-surface-variant mt-0.5">{it.negotiationStatus}</span>
+                          </div>
+                        </div>
+                        <p className="font-body text-[11px] text-on-surface-variant mt-1.5">{it.provider.accreditations.slice(0, 3).join(' · ')}</p>
+                        {it.reasons.length > 0 && <p className="font-body text-[11px] text-on-surface-variant/80 mt-1">{it.reasons[0]}</p>}
+                        <div className="flex items-center gap-3 mt-2">
+                          {it.provider.whatsapp && <a href={`https://wa.me/${it.provider.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener" className="font-body text-[11px] text-[#25D366] font-semibold">WhatsApp ↗</a>}
+                          {it.provider.website && <a href={`https://${it.provider.website.replace(/^https?:\/\//, '')}`} target="_blank" rel="noopener" className="font-body text-[11px] text-on-surface-variant">Website ↗</a>}
+                          {!it.provider.verified && <span className="font-body text-[10px] italic text-on-surface-variant">unverified</span>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 
