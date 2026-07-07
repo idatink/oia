@@ -157,10 +157,20 @@ export async function POST(req: Request) {
         });
       }
 
-      const clinic = await db.clinic.findFirst({
+      let clinic = await db.clinic.findFirst({
         where: { isActive: true, isVerified: true },
         orderBy: { createdAt: 'asc' },
       });
+      if (!clinic) {
+        // Matching now lives in SmartMatch (ProviderMatch); the legacy Lead
+        // still needs a Consultation.clinicId, so use a placeholder so the lead
+        // converts and lands in the pipeline regardless of the old Clinic table.
+        clinic = await db.clinic.upsert({
+          where: { slug: 'oia-concierge' },
+          create: { name: 'Oia Concierge', slug: 'oia-concierge', country: 'GB', city: '—', isActive: true, isVerified: true },
+          update: {},
+        });
+      }
 
       if (clinic) {
         const result = await db.$transaction(async tx => {

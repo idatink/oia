@@ -90,6 +90,7 @@ model Patient {
   consultations Consultation[]
   sessions      NIASession[]
   documents     Document[]
+  providerMatches ProviderMatch[]
 }
 
 // ─── Clinic ──────────────────────────────────────────────────────────────────
@@ -622,9 +623,47 @@ model Provider {
   updatedAt      DateTime @updatedAt
 
   treatments ProviderTreatment[]
+  matchItems ProviderMatchItem[]
 
   @@index([country])
   @@index([isActive])
+}
+
+// ─── SmartMatch results (the shortlist Oia sent a patient) ───────────────────
+// Persists what SmartMatch matched, so the team has a structured record to run
+// the negotiation on — not just chat text.
+
+model ProviderMatch {
+  id            String   @id @default(cuid())
+  patientId     String
+  phone         String?
+  treatmentName String
+  treatmentSlug String?
+  cluster       String?
+  createdAt     DateTime @default(now())
+
+  patient Patient             @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  items   ProviderMatchItem[]
+
+  @@index([patientId])
+}
+
+model ProviderMatchItem {
+  id                String   @id @default(cuid())
+  matchId           String
+  providerId        String
+  rank              Int
+  score             Int
+  reasons           String[]
+  negotiationStatus String   @default("pending") // pending | contacted | quoted | declined
+  quotedPrice       Int?
+  quotedCurrency    String?
+  createdAt         DateTime @default(now())
+
+  match    ProviderMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  provider Provider      @relation(fields: [providerId], references: [id])
+
+  @@index([matchId])
 }
 
 // Which specific techniques a provider offers (enriched over time; coarse

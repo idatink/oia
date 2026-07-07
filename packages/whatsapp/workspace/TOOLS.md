@@ -42,6 +42,7 @@ After `create_nia_inquiry` succeeds, immediately call `smart_match` to get the p
 
 What to pass (JSON):
 - **procedure** — the treatment in plain words ("facelift", "nose job", "tummy tuck").
+- **phone** — the patient's WhatsApp number (E.164, e.g. "+447700900555"). **Always include it** — it's how the match is saved for the team to negotiate.
 - **country** — the patient's country as ISO: **"GB"** for the UK, **"TR"** for Turkey.
 - **ageBand** — optional, e.g. "45-54".
 - **concernTags** — optional array of what she wants addressed, e.g. `["jowls","midface_descent"]`. Improves the match.
