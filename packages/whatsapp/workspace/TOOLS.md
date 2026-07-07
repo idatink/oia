@@ -3,8 +3,9 @@
 > **HOW TO RUN A TOOL — CRITICAL, READ FIRST.**
 > Every tool below is a **script on disk**. You run a tool by piping its JSON payload into its `run.sh`. You must **NEVER hand-write your own `curl`, and NEVER invent an endpoint path** (e.g. `/inquiries`, `/api/inquiries`). Made-up paths hit a login-protected page and fail with a **307 redirect to /login** — that is the #1 cause of "nothing registered." Always use the exact script paths below:
 > - `create_nia_inquiry` → `bash /data/workspace/skills/create-nia-inquiry/run.sh`
+> - `smart_match` → `bash /data/workspace/skills/smart-match/run.sh`
 > - `upload_patient_photo` → `bash /data/workspace/skills/upload-patient-photo/run.sh`
-> - `get_clinic_recommendations` → `bash /data/workspace/skills/get-clinic-recommendations/run.sh`
+> - `get_clinic_recommendations` → `bash /data/workspace/skills/get-clinic-recommendations/run.sh` *(SUPERSEDED by `smart_match` — do not use)*
 >
 > Example: `printf '%s' '<THE JSON PAYLOAD>' | bash /data/workspace/skills/create-nia-inquiry/run.sh`
 > A successful `create_nia_inquiry` returns JSON like `{"ok":true,"patientId":"…","leadId":"…"}`. If you do **not** see `"ok":true` with a `leadId`/`patientId`, the inquiry did **not** register — report the raw response verbatim; never tell the patient it's registered when it isn't.
@@ -36,29 +37,38 @@ When a patient sends a photo, call `upload_patient_photo` immediately with the l
 - Reassure hesitant patients that photos are seen only by the clinical team, never shared publicly.
 - Ask a second time if they decline once; mark `photosDeclined: true` only after two refusals.
 
-## get_clinic_recommendations (call right after create_nia_inquiry)
-After `create_nia_inquiry` succeeds, immediately call this with the patient's procedure to fetch real matched clinics from the Nia database.
+## smart_match (call right after create_nia_inquiry) — THE matching tool
+After `create_nia_inquiry` succeeds, immediately call `smart_match` to get the patient's ranked shortlist of real, vetted surgeons.
 
-What to pass:
-- **procedure:** the procedure slug the patient mentioned (e.g. "rhinoplasty", "breast augmentation", "liposuction")
+What to pass (JSON):
+- **procedure** — the treatment in plain words ("facelift", "nose job", "tummy tuck").
+- **country** — the patient's country as ISO: **"GB"** for the UK, **"TR"** for Turkey.
+- **ageBand** — optional, e.g. "45-54".
+- **concernTags** — optional array of what she wants addressed, e.g. `["jowls","midface_descent"]`. Improves the match.
 
 What it returns:
-- A JSON array of clinics ranked by Nia score, each with: `name`, `city`, `country`, `description`, `niaScore`, `accreditations`, `website`
-
-How to present the results to the patient:
-- If 0 clinics returned: "Our team is personally curating the best options for your profile and will reach out within 24–48 hours with recommendations. 🤍"
-- If clinics returned: send a short intro chunk first ("Here are some clinics that match your profile perfectly:"), then send one chunk per clinic using this format:
-
 ```
-*[Clinic Name]*
-📍 [City], [Country]
-⭐ NIA Score: [score]/10
+{ "treatment": { "name": "Facelift", "cluster": "Face" },
+  "providers": [ { "surgeonName","clinicName","city","accreditations","reviewRating","reviewCount","score","reasons":[...] } ],
+  "note": "..." }   // note present only on a problem
+```
+
+How to present it (WhatsApp):
+- **Intro chunk:** "I've found your matches 🤍" (one line).
+- **One surgeon per message**, in this shape — reveal the surgeon and clinic, lead with the reason:
+```
+*[Surgeon name]*
+📍 [Clinic], [City]
 ✅ [Accreditation 1] · [Accreditation 2]
-[First 100 characters of description]...
-🌐 [website URL]
+⭐ [rating]★ ([count] reviews)      ← only if reviewRating present
+Why they're a match for you: [first item of reasons, in warm plain language]
 ```
+- **Then the anchor chunk (critical):** "Going through me is how you get the partner rate and your whole trip handled — please don't message the clinic directly, you'd just pay their list price."
+- **Then the price chunk:** "I'm securing your exact rate with them now — I'll come straight back to you." **Never state a price** (you have none).
+- **Never show the `score`.** Turn `reasons` into warm sentences; don't paste them raw.
 
-Each clinic is its own separate WhatsApp message. Then send a closing chunk: "Have a question about any of these? Just ask — and our concierge team will be in touch very soon to guide you through next steps. 🤍"
+Handling `note`:
+- `no_matchable_treatment` / `not_in_pilot_scope` / `no_providers_in_scope`: "That's not something we cover just yet — but I've noted your interest and the team is expanding fast. 🤍" Never invent a surgeon or a match.
 
 ## submit_clinic_quote (Clinic mode only)
 Call this at the END of a clinic negotiation (see AGENTS.md → Clinic mode), once you've secured the best offer or the negotiation has ended. It logs the whole negotiation + the final quote to the team's dashboard, against the patient's lead.
