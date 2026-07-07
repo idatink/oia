@@ -320,9 +320,9 @@ export default function AdminLeadDetailPage() {
                   <span className="font-body text-[9px] text-white/30">{lead.photoUrls.length} photo{lead.photoUrls.length !== 1 ? 's' : ''} · clinical use only</span>
                 </div>
                 <div className="grid grid-cols-3 gap-3">
-                  {lead.photoUrls.map((url, i) => (
-                    <a key={i} href={url} target="_blank" rel="noopener" className="block relative aspect-square rounded-xl overflow-hidden border border-white/8 hover:border-white/20 transition-all group">
-                      <img src={url} alt={`Treatment area ${i + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  {lead.photoUrls.map((_url, i) => (
+                    <a key={i} href={`/api/leads/${lead.id}/photo?i=${i}`} target="_blank" rel="noopener" className="block relative aspect-square rounded-xl overflow-hidden border border-white/8 hover:border-white/20 transition-all group">
+                      <img src={`/api/leads/${lead.id}/photo?i=${i}`} alt={`Treatment area ${i + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
                         <svg className="w-5 h-5 text-white drop-shadow" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>

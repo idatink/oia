@@ -1,22 +1,36 @@
 import { NextResponse } from 'next/server';
 import { db } from '@nia/shared/src/db';
-import { getCoordinatorFromRequest } from '@/lib/api-auth';
+import { getAdminOrCoordinatorFromRequest } from '@/lib/api-auth';
 import { head } from '@vercel/blob';
 
 export const dynamic = 'force-dynamic';
 
 // Serve a patient's treatment-area photo. Private blobs are never exposed directly:
-// only the lead's own coordinator can view them, and we stream the bytes through
-// this authed proxy (using a signed download URL) — nothing is publicly reachable.
+// we stream the bytes through this authed proxy (using a signed download URL) —
+// nothing is publicly reachable. Admins can view any lead's photo; coordinators
+// are scoped to leads belonging to their own clinic.
 export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const coordinator = await getCoordinatorFromRequest(req);
-  if (!coordinator) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const actor = await getAdminOrCoordinatorFromRequest(req);
+  if (!actor) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
   const i = parseInt(searchParams.get('i') ?? '', 10);
 
+  // Coordinators only see their own clinic's leads; admins see all.
+  let clinicScope: string | null = null;
+  if (actor.role !== 'ADMIN') {
+    const coordinator = await db.coordinator.findUnique({
+      where: { userId: actor.id },
+      select: { clinicId: true },
+    });
+    if (!coordinator) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    clinicScope = coordinator.clinicId;
+  }
+
   const lead = await db.lead.findFirst({
-    where: { id: params.id, consultation: { clinicId: coordinator.clinicId } },
+    where: clinicScope
+      ? { id: params.id, consultation: { clinicId: clinicScope } }
+      : { id: params.id },
     select: { photoUrls: true },
   });
   if (!lead || Number.isNaN(i) || i < 0 || i >= lead.photoUrls.length) {
