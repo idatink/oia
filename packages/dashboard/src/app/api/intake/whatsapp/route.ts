@@ -143,19 +143,15 @@ export async function POST(req: Request) {
 
   if (!hasHardFlag && score >= 50) {
     try {
-      const procedureName = body.procedure.toLowerCase();
-      let procedure = await db.procedure.findFirst({
-        where: { name: { contains: procedureName, mode: 'insensitive' } },
+      // Upsert by slug (the unique key) — searching by name then creating by
+      // slug could miss an existing row and then collide on the unique slug,
+      // which silently killed lead conversion for any repeated procedure.
+      const procedureSlug = body.procedure.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      const procedure = await db.procedure.upsert({
+        where: { slug: procedureSlug },
+        create: { name: body.procedure, slug: procedureSlug, category: 'OTHER' },
+        update: {},
       });
-      if (!procedure) {
-        procedure = await db.procedure.create({
-          data: {
-            name: body.procedure,
-            slug: body.procedure.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
-            category: 'OTHER',
-          },
-        });
-      }
 
       let clinic = await db.clinic.findFirst({
         where: { isActive: true, isVerified: true },
