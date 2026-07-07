@@ -555,3 +555,88 @@ model AuditLog {
   @@index([entityType, entityId])
   @@index([actorId])
 }
+
+// ─── SmartMatch: Treatments cluster ──────────────────────────────────────────
+// Separate from `Procedure` (which drives the intake/lead flow). This is the
+// rich patient-facing treatment taxonomy + the tags SmartMatch matches on.
+
+model TreatmentCategory {
+  id        String      @id @default(cuid())
+  name      String      @unique // "Face And Neck Lifts"
+  slug      String      @unique // "face-and-neck-lifts"
+  cluster   String?             // provider "Oia cluster" it maps to: Nose|Breast|Face|Body|BBL (null = not a pilot cluster)
+  sortOrder Int         @default(0)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  treatments Treatment[]
+}
+
+model Treatment {
+  id         String  @id @default(cuid())
+  categoryId String
+  name       String  // "Deep Plane Facelift"
+  slug       String  @unique
+  definition String?
+  matchable  Boolean @default(false) // true = surgical pilot subset SmartMatch can match to
+  // Controlled-vocabulary match tags — only meaningful for matchable treatments
+  concernTags String[] // e.g. ["jowls","midface_descent"]
+  severityFit String[] // ["moderate","severe"]
+  ageBandFit  String[] // ["45-54","55-64","65+"]
+  goalFit     String[] // ["natural","refreshed"]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  category  TreatmentCategory   @relation(fields: [categoryId], references: [id])
+  providers ProviderTreatment[]
+
+  @@index([categoryId])
+  @@index([matchable])
+}
+
+// ─── SmartMatch: Providers cluster ───────────────────────────────────────────
+// A provider = a surgeon + their own clinic (almost always 1:1). Separate from
+// the `Clinic`/`Surgeon` models used by the legacy consultation flow.
+
+model Provider {
+  id             String   @id @default(cuid())
+  surgeonName    String
+  clinicName     String?
+  city           String?
+  district       String?
+  country        String // ISO 3166-1 alpha-2: "TR" | "GB"
+  clusters       String[] // ["Nose","Face"] — the sheet's Oia clusters
+  specialisms    String?  // free-text "signature specialisms" from the source
+  accreditations String[] // ["ISAPS","EBOPRAS","TPRECD"]
+  whatsapp       String?  // INTERNAL — outreach only, never shown to a patient
+  instagram      String?
+  website        String?
+  reviewRating   Float?   // e.g. 4.9
+  reviewCount    Int?
+  reviewSource   String?  // "RealSelf" | "Google"
+  photoUrls      String[]
+  notes          String?  // source / provenance notes
+  verified       Boolean  @default(false) // safety-floor board check (deferred to on-ask in the pilot)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  treatments ProviderTreatment[]
+
+  @@index([country])
+  @@index([isActive])
+}
+
+// Which specific techniques a provider offers (enriched over time; coarse
+// cluster-level matching works from Provider.clusters before this is populated).
+model ProviderTreatment {
+  providerId  String
+  treatmentId String
+  yearsExp    Int?
+  caseVolume  Int?
+
+  provider  Provider  @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  treatment Treatment @relation(fields: [treatmentId], references: [id], onDelete: Cascade)
+
+  @@id([providerId, treatmentId])
+}
