@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Nav from '@/components/Nav';
 import LeadCaptureModal from '@/components/LeadCaptureModal';
+import { IcPlane, IcSuite, IcClinic, IcProcedure, IcRecovery, IcHome, IcVest, IcLeggings, IcCapsule, IcSerum, IcPillow, IcSnowflake, IcChevronLeft, IcChevronRight, IcLock } from '@/components/OiaIcons';
 
 function NiaStar({ size = 10, color = 'white' }: { size?: number; color?: string }) {
   return (
@@ -122,15 +123,18 @@ function BeforeAfterCard({ delay = 0 }: { delay?: number }) {
     <div className="ml-7" style={{ animation: `msgIn 0.4s ease-out ${delay}s both` }}>
       <div className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm">
         <div className="flex h-28">
+          {/* One real before/after asset — each pane shows its half, shifted up to crop the baked-in labels */}
           <div className="flex-1 relative overflow-hidden">
-            <img src="https://images.unsplash.com/photo-1609557927087-f9cf8e88de18?w=200&q=70" alt="Before" className="w-full h-full object-cover object-center grayscale" />
+            <img src="/screens/beforeafter-nose.jpg" alt="Before" className="absolute left-0 max-w-none object-cover"
+              style={{ width: '100%', height: '118%', top: '-18%', objectPosition: 'left center' }} />
             <div className="absolute bottom-1 left-1 bg-black/50 rounded px-1.5 py-0.5">
               <p className="font-body text-[8px] text-white uppercase tracking-widest">Before</p>
             </div>
           </div>
           <div className="w-px bg-surface" />
           <div className="flex-1 relative overflow-hidden">
-            <img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=200&q=70" alt="After" className="w-full h-full object-cover object-center" style={{ filter: 'contrast(1.05) brightness(1.05)' }} />
+            <img src="/screens/beforeafter-nose.jpg" alt="After" className="absolute left-0 max-w-none object-cover"
+              style={{ width: '100%', height: '118%', top: '-18%', objectPosition: 'right center' }} />
             <div className="absolute bottom-1 left-1 bg-primary/70 rounded px-1.5 py-0.5">
               <p className="font-body text-[8px] text-white uppercase tracking-widest">After</p>
             </div>
@@ -138,7 +142,7 @@ function BeforeAfterCard({ delay = 0 }: { delay?: number }) {
         </div>
         <div className="px-2.5 py-2 flex items-center justify-between">
           <div>
-            <p className="font-body text-[10px] font-semibold text-on-surface">Body contouring · Istanbul</p>
+            <p className="font-body text-[10px] font-semibold text-on-surface">Rhinoplasty · Istanbul</p>
             <p className="font-body text-[9px] text-on-surface-variant">Dr. Demir · 12 weeks post-op</p>
           </div>
           <div className="flex">
@@ -156,7 +160,7 @@ function ClinicCard({ delay = 0 }: { delay?: number }) {
     <div className="ml-7" style={{ animation: `msgIn 0.4s ease-out ${delay}s both` }}>
       <div className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm">
         <div className="h-20 relative overflow-hidden">
-          <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&q=70" alt="Clinic" className="w-full h-full object-cover" />
+          <img src="/screens/clinic.webp" alt="Clinic" className="w-full h-full object-cover" style={{ objectPosition: 'center 62%' }} />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
           <div className="absolute bottom-2 left-2.5">
             <p className="font-body text-[10px] text-white font-semibold">Estetik International</p>
@@ -187,19 +191,19 @@ function ClinicCard({ delay = 0 }: { delay?: number }) {
 /* ── Itinerary screen ── */
 function ItineraryScreen() {
   const items = [
-    { day: 'Jun 22', icon: '✈️', title: 'Fly to Istanbul', sub: 'LHR 07:45 → IST 14:10 · transfer included', status: 'Confirmed', sc: 'text-green-700 bg-green-50' },
-    { day: 'Jun 22', icon: '🏨', title: 'Kempinski · Suite 412', sub: 'Check-in 3pm · nurse on call overnight', status: 'Booked', sc: 'text-primary bg-primary/8' },
-    { day: 'Jun 23', icon: '🏥', title: 'Pre-op · Dr. Demir', sub: 'Estetik International · 9:00am', status: 'Confirmed', sc: 'text-green-700 bg-green-50' },
-    { day: 'Jun 24', icon: '⚕️', title: 'Surgery day', sub: 'Tummy tuck + breast lift · 4 hrs', status: 'Scheduled', sc: 'text-amber-700 bg-amber-50' },
-    { day: 'Jun 25–29', icon: '🌿', title: 'Recovery & daily check-ins', sub: 'Private nursing · Oia monitoring', status: 'Planned', sc: 'text-on-surface-variant bg-surface-container' },
-    { day: 'Jul 2', icon: '🏠', title: 'Fly home', sub: 'IST → LHR · medical clearance issued', status: 'Planned', sc: 'text-on-surface-variant bg-surface-container' },
+    { day: 'Jun 22', Icon: IcPlane, title: 'Fly to Madrid', sub: 'LHR 07:45 → MAD 11:20 · transfer included', status: 'Confirmed', sc: 'text-green-700 bg-green-50' },
+    { day: 'Jun 22', Icon: IcSuite, title: 'Villa Magna · Suite 412', sub: 'Check-in 3pm · nurse on call overnight', status: 'Booked', sc: 'text-primary bg-primary/8' },
+    { day: 'Jun 23', Icon: IcClinic, title: 'Pre-op · Dr. Navarro', sub: 'Clínica Aurora · 9:00am', status: 'Confirmed', sc: 'text-green-700 bg-green-50' },
+    { day: 'Jun 24', Icon: IcProcedure, title: 'Surgery day', sub: 'Tummy tuck + breast lift · 4 hrs', status: 'Scheduled', sc: 'text-amber-700 bg-amber-50' },
+    { day: 'Jun 25–29', Icon: IcRecovery, title: 'Recovery & daily check-ins', sub: 'Private nursing · Oia monitoring', status: 'Planned', sc: 'text-on-surface-variant bg-surface-container' },
+    { day: 'Jul 2', Icon: IcHome, title: 'Fly home', sub: 'MAD → LHR · medical clearance issued', status: 'Planned', sc: 'text-on-surface-variant bg-surface-container' },
   ];
   return (
     <>
       <div className="px-4 py-3 bg-surface border-b border-outline-variant/20 shrink-0">
         <div className="flex justify-between items-start">
           <div>
-            <p className="font-body text-[12px] font-semibold text-on-surface">Istanbul Journey</p>
+            <p className="font-body text-[12px] font-semibold text-on-surface">Madrid Journey</p>
             <p className="font-body text-[9px] text-primary">Jun 22 – Jul 2 · 10 nights</p>
           </div>
           <div className="bg-primary/8 rounded-lg px-2 py-1 text-center">
@@ -209,11 +213,11 @@ function ItineraryScreen() {
         </div>
       </div>
       <div className="px-3 py-2 flex gap-2 border-b border-outline-variant/10 shrink-0">
-        {[['✈️', 'Flights', 'Confirmed'], ['🏨', 'Hotel', 'Booked'], ['⚕️', 'Surgery', 'Jun 24']].map(([icon, label, val]) => (
-          <div key={label} className="flex-1 bg-surface-container rounded-xl p-1.5 text-center">
-            <span className="text-sm">{icon}</span>
-            <p className="font-body text-[8px] font-semibold text-on-surface">{label}</p>
-            <p className="font-body text-[7px] text-primary">{val}</p>
+        {[{ Icon: IcPlane, label: 'Flights', val: 'Confirmed' }, { Icon: IcSuite, label: 'Hotel', val: 'Booked' }, { Icon: IcProcedure, label: 'Surgery', val: 'Jun 24' }].map(c => (
+          <div key={c.label} className="flex-1 bg-surface-container rounded-xl p-1.5 flex flex-col items-center gap-0.5">
+            <c.Icon size={15} className="text-primary" />
+            <p className="font-body text-[8px] font-semibold text-on-surface">{c.label}</p>
+            <p className="font-body text-[7px] text-primary">{c.val}</p>
           </div>
         ))}
       </div>
@@ -221,7 +225,7 @@ function ItineraryScreen() {
         {items.map((item, i) => (
           <div key={i} className="flex gap-2.5 items-center p-2 rounded-xl bg-surface border border-outline-variant/20"
             style={{ animation: `msgIn 0.35s ease-out ${0.15 + i * 0.1}s both` }}>
-            <span className="text-sm shrink-0">{item.icon}</span>
+            <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center shrink-0 text-primary"><item.Icon size={16} /></div>
             <div className="flex-1 min-w-0">
               <p className="font-body text-[10px] font-semibold text-on-surface truncate">{item.title}</p>
               <p className="font-body text-[8px] text-on-surface-variant truncate">{item.sub}</p>
@@ -247,12 +251,12 @@ function PostOpScreen() {
     { name: 'Energy',   scores: [1, 1, 2, 2, 3, null, null] },
     { name: 'Mobility', scores: [1, 1, 2, 2, 3, null, null] },
   ];
-  const severityColor = (s: number | null, name: string) => {
-    if (s === null) return 'bg-surface-container';
+  /* One cohesive, earthy scale: terracotta = discomfort, sage = vitality. Intensity = level. */
+  const sevBg = (s: number | null, name: string) => {
+    if (s === null || s === 0) return '#efeae7';
     const good = name === 'Energy' || name === 'Mobility';
-    if (s === 0) return 'bg-surface-container';
-    if (good) return s === 3 ? 'bg-green-400' : s === 2 ? 'bg-amber-300' : 'bg-surface-container-highest';
-    return s === 3 ? 'bg-red-400' : s === 2 ? 'bg-amber-300' : 'bg-green-300';
+    const a = s === 3 ? 0.85 : s === 2 ? 0.5 : 0.24;
+    return good ? `rgba(107,138,99,${a})` : `rgba(153,64,43,${a})`;
   };
   return (
     <>
@@ -268,10 +272,10 @@ function PostOpScreen() {
       </div>
 
       {/* Week nav */}
-      <div className="px-4 pt-3 pb-1 shrink-0 flex items-center justify-between">
-        <span className="font-body text-[9px] text-on-surface-variant">←</span>
+      <div className="px-4 pt-3 pb-1 shrink-0 flex items-center justify-between text-on-surface-variant">
+        <IcChevronLeft size={13} />
         <p className="font-body text-[10px] font-semibold text-on-surface">This week</p>
-        <span className="font-body text-[9px] text-on-surface-variant">→</span>
+        <IcChevronRight size={13} />
       </div>
 
       {/* Grid */}
@@ -287,16 +291,20 @@ function PostOpScreen() {
           <div key={si} className="grid mb-1.5 items-center" style={{ gridTemplateColumns: '52px repeat(7, 1fr)', gap: '3px', animation: `msgIn 0.3s ease-out ${0.1 + si * 0.08}s both` }}>
             <p className="font-body text-[9px] text-on-surface-variant">{s.name}</p>
             {s.scores.map((score, di) => (
-              <div key={di} className={`rounded aspect-square ${severityColor(score, s.name)}`} style={{ minHeight: 14 }} />
+              <div key={di} className="rounded aspect-square" style={{ minHeight: 14, background: sevBg(score, s.name) }} />
             ))}
           </div>
         ))}
-        {/* Legend */}
-        <div className="flex gap-3 mt-1 mb-2">
-          {[['Not logged', 'bg-surface-container'], ['Mild', 'bg-green-300'], ['Moderate', 'bg-amber-300'], ['High', 'bg-red-400']].map(([label, cls]) => (
-            <div key={label} className="flex items-center gap-1">
-              <div className={`w-2 h-2 rounded-sm ${cls}`} />
+        {/* Legend — two earthy valences */}
+        <div className="flex items-center justify-between mt-1.5 mb-2 px-0.5">
+          {([['Discomfort', '153,64,43'], ['Vitality', '107,138,99']] as const).map(([label, rgb]) => (
+            <div key={label} className="flex items-center gap-1.5">
               <p className="font-body text-[7px] text-on-surface-variant">{label}</p>
+              <div className="flex gap-0.5">
+                {[0.24, 0.5, 0.85].map(a => (
+                  <div key={a} className="w-2 h-2 rounded-sm" style={{ background: `rgba(${rgb},${a})` }} />
+                ))}
+              </div>
             </div>
           ))}
         </div>
@@ -326,7 +334,10 @@ function PostOpScreen() {
           <NiaStar size={8} />
         </div>
         <div className="bg-surface-container rounded-xl rounded-tl-sm px-2.5 py-2">
-          <p className="font-body text-[9px] text-on-surface leading-snug">Next check-in tomorrow 9am. Keep the compression garment on and ice 15 min every 2h 🧊</p>
+          <p className="font-body text-[9px] text-on-surface leading-snug flex items-start gap-1">
+            <IcSnowflake size={11} className="text-primary shrink-0 mt-px" />
+            <span>Next check-in tomorrow 9am. Keep the compression garment on and ice 15 min every 2h.</span>
+          </p>
         </div>
       </div>
     </>
@@ -336,18 +347,18 @@ function PostOpScreen() {
 /* ── Surgery Shop screen ── */
 function SurgeryShopScreen() {
   const products = [
-    { icon: '🩺', name: 'Medical compression vest', brand: 'Marena Recovery · Post-surgery grade', price: '£49', tag: 'Essential', tagColor: 'text-primary bg-primary/10' },
-    { icon: '🩲', name: 'Compression leggings', brand: 'Solidea Medical · 18–21 mmHg', price: '£34', tag: 'Post-op', tagColor: 'text-primary bg-primary/10' },
-    { icon: '💊', name: 'Arnica supplements', brand: '60 capsules · bruising & swelling', price: '£16', tag: null, tagColor: '' },
-    { icon: '🧴', name: 'Scar treatment serum', brand: 'Mederma Advanced · 2-month supply', price: '£28', tag: 'Recommended', tagColor: 'text-green-700 bg-green-50' },
-    { icon: '🛏️', name: 'Recovery wedge pillow', brand: 'Memory foam · elevation support', price: '£44', tag: null, tagColor: '' },
+    { Icon: IcVest, name: 'Medical compression vest', brand: 'Marena Recovery · Post-surgery grade', price: '£49', tag: 'Essential', tagColor: 'text-primary bg-primary/10' },
+    { Icon: IcLeggings, name: 'Compression leggings', brand: 'Solidea Medical · 18–21 mmHg', price: '£34', tag: 'Post-op', tagColor: 'text-primary bg-primary/10' },
+    { Icon: IcCapsule, name: 'Arnica supplements', brand: '60 capsules · bruising & swelling', price: '£16', tag: null, tagColor: '' },
+    { Icon: IcSerum, name: 'Scar treatment serum', brand: 'Mederma Advanced · 2-month supply', price: '£28', tag: 'Recommended', tagColor: 'text-green-700 bg-green-50' },
+    { Icon: IcPillow, name: 'Recovery wedge pillow', brand: 'Memory foam · elevation support', price: '£44', tag: null, tagColor: '' },
   ];
   return (
     <>
       <div className="px-4 py-3 bg-surface border-b border-outline-variant/20 shrink-0 flex justify-between items-center">
         <div>
           <p className="font-body text-[12px] font-semibold text-on-surface">Recovery Kit</p>
-          <p className="font-body text-[9px] text-primary">Curated by Dr. Demir · 5 items</p>
+          <p className="font-body text-[9px] text-primary">Curated by Dr. Navarro · 5 items</p>
         </div>
         <div className="bg-primary/8 rounded-lg px-2 py-1 text-center">
           <p className="font-body text-[9px] font-semibold text-on-surface">£171</p>
@@ -366,8 +377,8 @@ function SurgeryShopScreen() {
         {products.map((p, i) => (
           <div key={i} className="flex items-center gap-2.5 p-2 bg-surface rounded-xl border border-outline-variant/20"
             style={{ animation: `msgIn 0.3s ease-out ${0.15 + i * 0.09}s both` }}>
-            <div className="w-9 h-9 rounded-lg bg-surface-container shrink-0 flex items-center justify-center text-lg">
-              {p.icon}
+            <div className="w-9 h-9 rounded-lg bg-surface-container shrink-0 flex items-center justify-center text-primary">
+              <p.Icon size={19} />
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-body text-[10px] font-semibold text-on-surface truncate">{p.name}</p>
@@ -407,16 +418,28 @@ function ChatScreenStatic() {
       <ChatHeader />
       <div className="flex-1 overflow-hidden px-3 py-3 flex flex-col gap-2">
         <NiaMsg>Hi, I&apos;m Oia, your personal surgery concierge. What&apos;s brought you here today?</NiaMsg>
-        <PatientMsg>Body contouring — after pregnancy and losing weight, my body has changed a lot.</PatientMsg>
-        <NiaMsg>Skin and tissue changes are simply beyond what training can reach. What would feeling at home in your body look like for you?</NiaMsg>
+        <PatientMsg>My nose — I&apos;ve never liked my profile. There&apos;s a bump I&apos;ve been hiding in photos since I was a teenager.</PatientMsg>
+        <NiaMsg>Thank you for trusting me with that. The best rhinoplasty keeps your face completely yours — just quieter about the one thing you notice. What would feeling at ease in photos look like?</NiaMsg>
         <div className="flex justify-end">
           <div className="rounded-2xl rounded-br-sm overflow-hidden border border-primary/20 relative" style={{ width: 90, height: 110 }}>
-            <img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=200&q=70" alt="Reference" className="w-full h-full object-cover" />
+            <img src="/screens/reference-profile.webp" alt="Reference" className="w-full h-full object-cover" style={{ objectPosition: 'center 22%' }} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
             <p className="absolute bottom-1 left-1.5 font-body text-[7px] text-white/80">Reference photo</p>
           </div>
         </div>
         <PatientMsg>Something like this. Natural — I don&apos;t want to look &quot;done&quot;.</PatientMsg>
+        {/* Oia is composing the reveal — a perpetual, subtle sign of life */}
+        <div className="flex gap-1.5 items-end" style={{ animation: 'typingLoop 6.5s ease-in-out 1.2s infinite' }}>
+          <div className="w-5 h-5 rounded-full bg-primary shrink-0 flex items-center justify-center mb-0.5">
+            <NiaStar size={8} />
+          </div>
+          <div className="bg-surface-container rounded-2xl rounded-bl-sm px-3 py-2.5 flex gap-1 items-center">
+            {[0, 1, 2].map(i => (
+              <span key={i} className="w-1.5 h-1.5 rounded-full inline-block bg-on-surface-variant/35"
+                style={{ animation: `typingDot 1.2s ease-in-out ${i * 0.2}s infinite` }} />
+            ))}
+          </div>
+        </div>
         <NiaMsg>Found them. 3 specialists whose real results match yours. Ready to see your shortlist?</NiaMsg>
         <BeforeAfterCard />
       </div>
@@ -425,14 +448,51 @@ function ChatScreenStatic() {
 }
 
 function MatchesScreenStatic() {
+  const alsoMatched = [
+    { name: 'Kalos Aesthetics', where: 'Athens · EU Accredited', rating: '4.8', from: '£7,200' },
+    { name: 'Clínica Aurora', where: 'Madrid · EU Accredited', rating: '4.8', from: '£7,900' },
+  ];
   return (
     <>
       <ChatHeader />
       <div className="flex-1 overflow-hidden px-3 py-3 flex flex-col gap-2">
-        <NiaMsg>3 surgeons in Istanbul specialising in post-pregnancy body contouring — all within your budget. From June 22nd?</NiaMsg>
+        <NiaMsg>I&apos;ve matched you across Istanbul, Athens and Madrid — all within your budget. From June 22nd?</NiaMsg>
         <PatientMsg>Yes! June 22nd is perfect. 🙌</PatientMsg>
         <NiaMsg>Your top match — JCI accredited, 1,200+ body contouring cases:</NiaMsg>
-        <ClinicCard />
+        <div className="ml-7">
+          <div className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+            <div className="h-14 relative overflow-hidden">
+              <img src="/screens/clinic.webp" alt="Clinic" className="w-full h-full object-cover" style={{ objectPosition: 'center 62%' }} />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              <div className="absolute bottom-1.5 left-2.5">
+                <p className="font-body text-[10px] text-white font-semibold">Estetik International</p>
+                <p className="font-body text-[8px] text-white/80">Istanbul · JCI Accredited</p>
+              </div>
+              <div className="absolute top-1.5 right-2 bg-white/20 backdrop-blur-sm rounded-full px-2 py-0.5">
+                <p className="font-body text-[9px] text-white font-semibold">★ 4.9</p>
+              </div>
+            </div>
+            <div className="px-2.5 py-1.5 flex justify-between items-center">
+              <p className="font-body text-[9px] text-on-surface-variant">Body contouring package from</p>
+              <p className="font-body text-[11px] font-semibold text-primary">£6,800</p>
+            </div>
+          </div>
+        </div>
+        <NiaMsg>Also matched for you:</NiaMsg>
+        <div className="ml-7 space-y-1.5">
+          {alsoMatched.map(c => (
+            <div key={c.name} className="bg-surface rounded-xl border border-outline-variant px-2.5 py-1.5 shadow-sm">
+              <div className="flex items-center justify-between">
+                <p className="font-body text-[10px] font-semibold text-on-surface">{c.name}</p>
+                <p className="font-body text-[8px] text-primary font-semibold">★ {c.rating}</p>
+              </div>
+              <div className="flex items-center justify-between mt-0.5">
+                <p className="font-body text-[8px] text-on-surface-variant">{c.where}</p>
+                <p className="font-body text-[9px] font-semibold text-primary">from {c.from}</p>
+              </div>
+            </div>
+          ))}
+        </div>
         <NiaMsg>The UK equivalent costs £18–22k. Want me to hold Jun 22nd with your coordinator?</NiaMsg>
         <PatientMsg>Please hold it! 🙏</PatientMsg>
       </div>
@@ -448,9 +508,9 @@ function PhoneCarousel() {
   const [dragStartX, setDragStartX] = useState<number | null>(null);
 
   const screens: { label: string; content: React.ReactNode }[] = [
-    { label: 'Meet Oia',       content: <ChatScreenStatic /> },
     { label: 'Your matches',   content: <MatchesScreenStatic /> },
     { label: 'Your itinerary', content: <ItineraryScreen /> },
+    { label: 'Meet Oia',       content: <ChatScreenStatic /> },
     { label: 'Recovery kit',   content: <SurgeryShopScreen /> },
     { label: 'Post-op care',   content: <PostOpScreen /> },
   ];
@@ -623,8 +683,8 @@ export default function Home() {
         {/* ── Hero ────────────────────────────────────────────────── */}
         <section className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center text-center px-6 pt-14 pb-0 bg-surface overflow-hidden">
           <h1 className="font-display text-[2.6rem] leading-[1.06] sm:text-6xl md:text-7xl text-on-surface max-w-2xl mx-auto mb-5">
-            Your surgeon,{' '}
-            <span className="text-primary italic">found by AI.</span>
+            Your treatment,{' '}
+            <span className="text-primary italic">managed by Aesthetic&nbsp;Intelligence.</span>
           </h1>
           <p className="font-body text-body-md text-on-surface-variant max-w-sm mx-auto mb-8 leading-relaxed">
             Tell Oia your goals, timeline, and budget. She matches you to an accredited surgeon — available when you are.
@@ -662,10 +722,26 @@ export default function Home() {
                   <div className="flex-1 overflow-hidden px-3 py-3 flex flex-col gap-2">
                     <NiaMsg delay={0.2}>Hi! What are you hoping to achieve?</NiaMsg>
                     <TypingDots from="patient" delay={0.8} duration={0.7} />
-                    <PatientMsg delay={1.4}>I had two kids and lost a lot of weight. I want a tummy tuck and breast lift. I just want to feel like myself again.</PatientMsg>
+                    <PatientMsg delay={1.4}>I&apos;ve had two kids and I feel great — I&apos;d just love a tummy tuck and a bit of contouring. Purely for my own confidence.</PatientMsg>
                     <TypingDots from="nia" delay={2.1} duration={0.7} />
-                    <NiaMsg delay={2.7}>That makes complete sense — and you deserve this. Here&apos;s what our surgeons achieve for similar journeys:</NiaMsg>
-                    <BeforeAfterCard delay={3.1} />
+                    <NiaMsg delay={2.7}>And that&apos;s the best reason of all — doing this for you. A tummy tuck with gentle contouring is one of the most rewarding journeys we plan. Here&apos;s what our surgeons achieve:</NiaMsg>
+                    {/* Consent-first results card — body imagery stays private, and that IS the product */}
+                    <div className="ml-7" style={{ animation: 'msgIn 0.4s ease-out 3.1s both' }}>
+                      <div className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+                        <div className="px-3 py-2.5 flex items-start gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center shrink-0 text-primary"><IcLock size={16} /></div>
+                          <div className="flex-1">
+                            <p className="font-body text-[10px] font-semibold text-on-surface">Body-contouring results</p>
+                            <p className="font-body text-[8.5px] text-on-surface-variant leading-snug mt-0.5">Shared privately in your consultation — every photo consent-signed by the patient.</p>
+                          </div>
+                        </div>
+                        <div className="px-3 pb-2.5">
+                          <div className="bg-primary rounded-lg py-1.5 text-center">
+                            <p className="font-body text-[9px] font-semibold text-on-primary">View in consultation</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                     <TypingDots from="nia" delay={3.8} duration={0.6} />
                     <NiaMsg delay={4.3}>What&apos;s your rough budget and when could you travel?</NiaMsg>
                     <TypingDots from="patient" delay={5.0} duration={0.6} />
@@ -681,7 +757,7 @@ export default function Home() {
                 <PhoneFrame>
                   <ChatHeader />
                   <div className="flex-1 overflow-hidden px-3 py-3 flex flex-col gap-2">
-                    <NiaMsg delay={0.2}>Perfect. I found 3 surgeons in Istanbul who specialise in post-pregnancy body contouring, all within your budget. From June 22nd?</NiaMsg>
+                    <NiaMsg delay={0.2}>Perfect. I&apos;ve matched you across Istanbul, Athens and Madrid — all within your budget. From June 22nd?</NiaMsg>
                     <TypingDots from="patient" delay={0.9} duration={0.6} />
                     <PatientMsg delay={1.4}>Yes! June 22nd is perfect.</PatientMsg>
                     <TypingDots from="nia" delay={2.0} duration={0.7} />
@@ -758,21 +834,9 @@ export default function Home() {
         <section className="py-20 md:py-28 bg-surface px-6">
           <div className="max-w-3xl mx-auto text-center mb-14">
             <h2 className="font-display text-3xl md:text-5xl text-on-surface italic">
-              &ldquo;A standard of care that exceeds the finest private hospitals in the West.&rdquo;
+              &ldquo;I asked Oia things at 2am I would never have said out loud in a consultation room. By the time I flew, there were no surprises left.&rdquo;
             </h2>
-            <p className="font-body text-body-sm text-on-surface-variant mt-6 uppercase tracking-widest">— Elena V., London · Facial Revision</p>
-          </div>
-          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            {[
-              { value: '98', label: 'Patient NPS' },
-              { value: '85+', label: 'Accredited clinics' },
-              { value: '12', label: 'Countries' },
-            ].map(s => (
-              <div key={s.label}>
-                <p className="font-display text-5xl text-primary mb-2">{s.value}</p>
-                <p className="font-body text-label-caps text-on-surface-variant uppercase tracking-widest text-[11px]">{s.label}</p>
-              </div>
-            ))}
+            <p className="font-body text-body-sm text-on-surface-variant mt-6 uppercase tracking-widest">— Amara T., Manchester · Post-pregnancy contouring</p>
           </div>
         </section>
 
@@ -780,10 +844,10 @@ export default function Home() {
         <section className="py-20 md:py-28 bg-surface-container-low px-6 text-center">
           <p className="font-body text-label-caps text-primary uppercase tracking-[0.2em] mb-4">Start your journey</p>
           <h2 className="font-display text-3xl md:text-5xl text-on-surface mb-6 max-w-xl mx-auto">
-            We&apos;re inviting patients to speak with Oia early.
+            We&apos;re inviting a limited number of patients to plan their journey with Oia.
           </h2>
           <p className="font-body text-body-md text-on-surface-variant max-w-md mx-auto mb-8">
-            No commitment. Just a conversation about what&apos;s possible for you.
+            Early patients receive special partner discounts and a dedicated concierge — no commitment, just a conversation.
           </p>
           <button onClick={() => setModalOpen(true)}
             className="bg-primary text-on-primary px-8 py-4 rounded-lg font-body font-semibold text-label-caps uppercase tracking-widest hover:opacity-90 active:opacity-80 transition-all">
@@ -803,14 +867,14 @@ export default function Home() {
           </div>
           <div className="flex gap-12">
             {[
-              { title: 'Explore', links: ['Treatments', 'Results Gallery', 'The Oia Way'] },
-              { title: 'Legal', links: ['Privacy Policy', 'Terms of Service'] },
+              { title: 'Explore', links: [['Why Oia', '/why-oia'], ['Careers', '/careers'], ['FAQ', '/faq'], ['News', '/news']] },
+              { title: 'Legal', links: [['Privacy Policy', '#'], ['Terms of Service', '#']] },
             ].map(col => (
               <div key={col.title}>
                 <h5 className="font-body text-[10px] text-on-surface uppercase tracking-widest font-bold mb-4">{col.title}</h5>
                 <ul className="space-y-3">
-                  {col.links.map(link => (
-                    <li key={link}><a href="#" className="font-body text-body-sm text-on-surface-variant hover:text-primary transition-colors">{link}</a></li>
+                  {col.links.map(([label, href]) => (
+                    <li key={label}><a href={href} className="font-body text-body-sm text-on-surface-variant hover:text-primary transition-colors">{label}</a></li>
                   ))}
                 </ul>
               </div>
@@ -818,7 +882,7 @@ export default function Home() {
           </div>
         </div>
         <div className="max-w-5xl mx-auto mt-10 pt-6 border-t border-outline-variant/20">
-          <p className="font-body text-[11px] text-on-surface-variant opacity-50">© 2025 Oia Medical Concierge.</p>
+          <p className="font-body text-[11px] text-on-surface-variant opacity-50">© 2026 Oia Medical Concierge.</p>
         </div>
       </footer>
 
@@ -842,6 +906,12 @@ export default function Home() {
       <style>{`
         @keyframes msgIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
         @keyframes typingDot { 0%,60%,100% { transform:translateY(0); opacity:0.4; } 30% { transform:translateY(-4px); opacity:1; } }
+        /* Perpetual gentle typing loop — visible ~3s, resting ~3s */
+        @keyframes typingLoop {
+          0%, 10%   { opacity:0; transform:translateY(4px); }
+          16%, 60%  { opacity:1; transform:translateY(0); }
+          66%, 100% { opacity:0; transform:translateY(4px); }
+        }
         /* Appear, hold, then disappear — fill-mode:both leaves it at opacity:0 after */
         @keyframes typingBubble {
           0%   { opacity:0; transform:translateY(6px); }

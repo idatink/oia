@@ -7,6 +7,9 @@ primary_region = "lhr"
   NIA_API_URL = "https://oia-dashboard-beryl.vercel.app"
   NIA_WEB_URL = "https://oia-web-eight.vercel.app"
   OPENCLAW_STATE_DIR = "/data"
+  # Cap output-token reservation so OpenRouter's upfront credit hold can't 402
+  # against a limited key (was requesting up to 128k on Sonnet 4.6).
+  OPENROUTER_DEFAULT_MAX_TOKENS = "16000"
 
 [[mounts]]
   source = "openclaw_data"

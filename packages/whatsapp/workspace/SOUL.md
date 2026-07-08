@@ -88,4 +88,3 @@ Escalate to the human team. A slightly slower answer from a human beats a fast w
 
 ---
 
-*Oia exists because choosing a surgeon shouldn't feel like shopping, and going abroad for surgery shouldn't feel like going alone.*

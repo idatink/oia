@@ -8,9 +8,10 @@ interface NavProps {
 }
 
 const NAV_LINKS = [
-  { label: 'Treatments', href: '/treatments' },
-  { label: 'The Oia Way', href: '/about' },
-  { label: 'Results Gallery', href: '/results' },
+  { label: 'Why Oia', href: '/why-oia' },
+  { label: 'Careers', href: '/careers' },
+  { label: 'FAQ', href: '/faq' },
+  { label: 'News', href: '/news' },
 ];
 
 export default function Nav({ onCTAClick }: NavProps) {

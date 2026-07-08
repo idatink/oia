@@ -66,7 +66,7 @@ export default function ProfilePage() {
             </Link>
 
             <Link
-              href="/treatments"
+              href="/why-oia"
               className="w-full flex items-center gap-4 bg-surface-container-lowest rounded-xl border border-outline-variant/20 px-5 py-4 text-left hover:border-primary/40 hover:bg-primary-fixed/20 transition-all group"
             >
               <div className="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
