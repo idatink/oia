@@ -16,7 +16,7 @@ export default function ConciergeShell() {
       {/* Desktop nav */}
       <header className="hidden md:flex items-center justify-between px-[64px] h-16 border-b border-outline-variant/10 bg-surface/80 nav-blur shrink-0 fixed top-0 left-0 right-0 z-40">
         <Link href="/" className="font-display text-display-sm text-primary tracking-tight">
-          Oia Medical Concierge
+          Oia — Your Bespoke Treatment Planner
         </Link>
         <nav className="flex items-center gap-10">
           {[{ label: 'Treatments', href: '/treatments' }, { label: 'The Oia Way', href: '/about' }, { label: 'Clinics', href: '/clinics' }].map(item => (

@@ -134,7 +134,7 @@ export default function FaqPage() {
 
       <footer className="bg-surface border-t border-outline-variant/30 px-6 py-10 text-center">
         <p className="font-display italic text-xl text-on-surface mb-3">The decision of a lifetime, <span className="text-primary">held gently.</span></p>
-        <p className="font-body text-[11px] text-on-surface-variant opacity-50">© 2026 Oia Medical Concierge.</p>
+        <p className="font-body text-[11px] text-on-surface-variant opacity-50">© 2026 Oia — Your Bespoke Treatment Planner.</p>
       </footer>
 
       <LeadCaptureModal open={modalOpen} onClose={() => setModalOpen(false)} />

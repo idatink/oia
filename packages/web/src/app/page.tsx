@@ -879,7 +879,7 @@ export default function Home() {
           </div>
         </div>
         <div className="max-w-5xl mx-auto mt-10 pt-6 border-t border-outline-variant/20">
-          <p className="font-body text-[11px] text-on-surface-variant opacity-50">© 2026 Oia Medical Concierge.</p>
+          <p className="font-body text-[11px] text-on-surface-variant opacity-50">© 2026 Oia — Your Bespoke Treatment Planner.</p>
         </div>
       </footer>
 
