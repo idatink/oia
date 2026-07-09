@@ -5,6 +5,12 @@ export const dynamic = 'force-dynamic';
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+// Provider switch. Default 'anthropic' (Sonnet 4.6) so nothing changes until the
+// env flips. Set WEB_LLM_PROVIDER=qwen (+ OPENROUTER_API_KEY) to run Oia on
+// Qwen3-VL 235B via OpenRouter — vision-capable, far cheaper than Sonnet.
+const WEB_LLM = (process.env.WEB_LLM_PROVIDER ?? 'anthropic').toLowerCase();
+const QWEN_MODEL = 'qwen/qwen3-vl-235b-a22b-instruct';
+
 const SYSTEM_PROMPT = `You are Oia, a warm, honest, discreet concierge for cosmetic and plastic surgery. You are the knowing friend who happens to live in this world — the person someone would message when they're nervous, or excited, without ever feeling judged.
 
 ## Who you are
@@ -106,6 +112,11 @@ Then follow with one sentence: "These are a few of our top-rated partner clinics
 
 You can show a gallery or clinics at any point during the conversation — before or after intake. These do NOT block intake.
 
+## Control tags — output them EXACTLY, literally (CRITICAL)
+- <TRIAGE/>, <CLINICS/>, <GALLERY procedure="..."/> and the <INTAKE>…</INTAKE> block are literal control tokens the app parses.
+- Write them verbatim, on their own, with NO markdown, NO code fences, NO backticks, and NO explanation around the tag itself.
+- The <INTAKE> block must contain raw JSON between the tags — never wrapped in \`\`\` fences.
+
 ## What NOT to do
 - Never output <INTAKE> until ALL checklist items are done — no exceptions
 - Never output <TRIAGE/> more than once
@@ -144,6 +155,67 @@ function extractClinics(text: string): { clean: string; showClinics: boolean } {
 
 type HistoryItem = { role: 'user' | 'assistant'; content: string };
 type PhotoItem = { base64: string; mediaType: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp' };
+
+// ── LLM providers ────────────────────────────────────────────────────────────
+// Both yield plain text deltas so the streaming + tag-parsing loop below is
+// provider-agnostic. Anthropic path is byte-identical to before.
+
+async function* anthropicDeltas(system: string, messages: Anthropic.MessageParam[]) {
+  const claudeStream = await anthropic.messages.stream({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 1024,
+    system,
+    messages,
+  });
+  for await (const event of claudeStream) {
+    if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+      yield event.delta.text;
+    }
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function* qwenDeltas(system: string, openaiMessages: any[]) {
+  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: QWEN_MODEL,
+      max_tokens: 1024,
+      stream: true,
+      messages: [{ role: 'system', content: system }, ...openaiMessages],
+    }),
+  });
+  if (!res.ok || !res.body) {
+    throw new Error(`OpenRouter ${res.status}: ${await res.text().catch(() => '')}`);
+  }
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = '';
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    const lines = buf.split('\n');
+    buf = lines.pop() ?? '';
+    for (const line of lines) {
+      const t = line.trim();
+      if (!t.startsWith('data:')) continue;
+      const data = t.slice(5).trim();
+      if (data === '[DONE]') return;
+      try {
+        const j = JSON.parse(data);
+        const piece = j.choices?.[0]?.delta?.content;
+        if (piece) yield piece as string;
+      } catch {
+        // keepalive / partial line — ignore
+      }
+    }
+  }
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function logTurn(sessionId: string, patientMessage: string, niaResponse: string, metadata?: any) {
@@ -228,35 +300,47 @@ export async function POST(req: Request) {
     }
   }
 
-  // Build the current user message content — may include images
-  const userContent: Anthropic.ContentBlockParam[] = [];
-
-  for (const photo of photos) {
-    userContent.push({
-      type: 'image',
-      source: {
-        type: 'base64',
-        media_type: photo.mediaType,
-        data: photo.base64,
-      },
-    });
-  }
-
-  if (message?.trim()) {
-    userContent.push({ type: 'text', text: message });
-  } else if (photos.length > 0) {
-    userContent.push({ type: 'text', text: `[Patient shared ${photos.length} photo${photos.length > 1 ? 's' : ''} of their treatment area]` });
-  }
-
-  // Build messages array from client-provided history
-  const messages: Anthropic.MessageParam[] = [
-    ...history.map(h => ({ role: h.role, content: h.content })),
-    { role: 'user', content: userContent },
-  ];
+  const photoNote = photos.length > 0
+    ? `[Patient shared ${photos.length} photo${photos.length > 1 ? 's' : ''} of their treatment area]`
+    : '';
 
   const systemPrompt = patientName && patientName !== 'there'
     ? `${SYSTEM_PROMPT}\n\nNote: This patient's name is ${patientName}. You already have their name — greet them warmly by name and skip the name question.`
     : SYSTEM_PROMPT;
+
+  // Build the provider-specific message list + delta stream.
+  let deltas: AsyncGenerator<string>;
+  if (WEB_LLM === 'qwen') {
+    // OpenAI/OpenRouter shape. Images ride as data-URI image_url parts (Qwen-VL).
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const current: any = photos.length > 0
+      ? {
+          role: 'user',
+          content: [
+            ...photos.map(p => ({ type: 'image_url', image_url: { url: `data:${p.mediaType};base64,${p.base64}` } })),
+            { type: 'text', text: message?.trim() || photoNote },
+          ],
+        }
+      : { role: 'user', content: message };
+    const openaiMessages = [...history.map(h => ({ role: h.role, content: h.content })), current];
+    deltas = qwenDeltas(systemPrompt, openaiMessages);
+  } else {
+    const userContent: Anthropic.ContentBlockParam[] = [];
+    for (const photo of photos) {
+      userContent.push({
+        type: 'image',
+        source: { type: 'base64', media_type: photo.mediaType, data: photo.base64 },
+      });
+    }
+    if (message?.trim()) userContent.push({ type: 'text', text: message });
+    else if (photos.length > 0) userContent.push({ type: 'text', text: photoNote });
+
+    const messages: Anthropic.MessageParam[] = [
+      ...history.map(h => ({ role: h.role, content: h.content })),
+      { role: 'user', content: userContent },
+    ];
+    deltas = anthropicDeltas(systemPrompt, messages);
+  }
 
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
@@ -264,26 +348,17 @@ export async function POST(req: Request) {
       let fullText = '';
 
       try {
-        const claudeStream = await anthropic.messages.stream({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 1024,
-          system: systemPrompt,
-          messages,
-        });
-
-        for await (const event of claudeStream) {
-          if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-            fullText += event.delta.text;
-            // Hide all sentinel tags from the streaming text shown to the patient
-            const visibleText = fullText
-              .replace(/<INTAKE>[\s\S]*$/, '')
-              .replace(/<TRIAGE\s*\/>/, '')
-              .replace(/<GALLERY\s+procedure="[^"]+"\s*\/>/, '')
-              .replace(/<CLINICS\s*\/>/, '');
-            controller.enqueue(encoder.encode(
-              `data: ${JSON.stringify({ type: 'delta', text: event.delta.text, visibleLength: visibleText.length })}\n\n`
-            ));
-          }
+        for await (const piece of deltas) {
+          fullText += piece;
+          // Hide all sentinel tags from the streaming text shown to the patient
+          const visibleText = fullText
+            .replace(/<INTAKE>[\s\S]*$/, '')
+            .replace(/<TRIAGE\s*\/>/, '')
+            .replace(/<GALLERY\s+procedure="[^"]+"\s*\/>/, '')
+            .replace(/<CLINICS\s*\/>/, '');
+          controller.enqueue(encoder.encode(
+            `data: ${JSON.stringify({ type: 'delta', text: piece, visibleLength: visibleText.length })}\n\n`
+          ));
         }
 
         const { clean: cleanIntake, json } = extractIntake(fullText);
