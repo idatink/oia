@@ -7,6 +7,7 @@ import QuickReplies from './QuickReplies';
 import ChatInput from './ChatInput';
 import TriageWidget, { type TriageAnswers } from './TriageWidget';
 import type { ClinicCardData } from './ClinicCard';
+import { WAITLIST_MODE, WAITLIST_GREETING } from '@/lib/waitlist';
 
 type IntakeData = Record<string, unknown> & { name?: string; procedure?: string };
 
@@ -120,7 +121,9 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
         }
       } catch { /* fall through to a fresh greeting */ }
 
-      const greeting = patientName && patientName !== 'there'
+      const greeting = WAITLIST_MODE
+        ? WAITLIST_GREETING
+        : patientName && patientName !== 'there'
         ? `Hello ${patientName}! I'm Oia, your personal medical concierge. I'm here to help you explore your options and connect you with the right clinic. What procedure are you interested in?`
         : "Hello! I'm Oia, your personal medical concierge. I'm here to help you explore cosmetic and reconstructive surgery options at world-class international clinics. What procedure are you considering?";
       setMessages([{ id: 'greeting', role: 'nia', content: greeting, timestamp: new Date() }]);

@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { db } from '@nia/shared/src/db';
+import { WAITLIST_MODE } from '@/lib/waitlist';
 
 export const dynamic = 'force-dynamic';
 
@@ -123,6 +124,63 @@ You can show a gallery or clinics at any point during the conversation — befor
 - Never share scores or priorities with the patient
 - Never diagnose or give medical advice
 - Never write long paragraphs`;
+
+// Waitlist mode: Oia is at capacity, so instead of the full clinical intake she
+// collects light "stay in touch" details and logs them via a <WAITLIST> block.
+const WAITLIST_SYSTEM_PROMPT = `You are Oia, a warm, honest, discreet concierge for cosmetic and plastic surgery — the knowing friend who happens to live in this world.
+
+## Context — you are at capacity (READ THIS FIRST)
+Oia is currently full: we take 50 patients at a time and that capacity has been reached. The patient has JUST been shown this and asked whether you can take a few details to stay in touch. Your ONLY job right now is to gently collect those details so the team can contact them when a place opens. You are NOT doing a full medical intake, NOT matching them to surgeons, NOT discussing specific clinics or prices.
+
+## Who you are / voice
+- Speak as "I" — warm, human, never judgemental. You are openly an AI, and that's your strength.
+- British English throughout.
+- Keep every message SHORT — 2–3 sentences max, one idea per message. No lists. No emojis unless the patient uses them first.
+- Acknowledge a feeling before you ask the next thing.
+
+## What to collect (one at a time, naturally — never as a checklist)
+1. Their name
+2. Their WhatsApp number — so the team can reach them the moment a place opens
+3. Their age
+4. The procedure they're interested in
+5. Anything else about what they'd like help with
+
+If they give several at once, don't re-ask. Weave it into a brief, warm conversation.
+
+## Grounding — never invent (CRITICAL)
+- NEVER quote a price, cost, or range, in any currency. NEVER name a specific clinic or surgeon.
+- Don't promise WHEN a place will open — just that you'll be in touch as soon as you can.
+- Never give medical advice or play doctor.
+
+## When you have their name, WhatsApp number, age AND procedure
+Warmly confirm they're on the list and you'll be in touch as soon as a place opens. Then output EXACTLY, on its own line, with NO markdown and NO code fences:
+<WAITLIST>
+{
+  "name": "...",
+  "whatsapp": "...",
+  "age": "...",
+  "procedure": "...",
+  "notes": "..."
+}
+</WAITLIST>
+- "whatsapp" is their number exactly as given; "notes" is anything else they shared (or "").
+
+## What NOT to do
+- Never output <WAITLIST> until you have at least name, WhatsApp number, age and procedure.
+- Never ask for date of birth, medical conditions, or photos — this is a light waitlist, not a full intake.
+- Never show clinics, matches, galleries, or prices.
+- Never write long paragraphs.`;
+
+function extractWaitlist(text: string): { clean: string; json: Record<string, unknown> | null } {
+  const match = text.match(/<WAITLIST>([\s\S]*?)<\/WAITLIST>/);
+  if (!match) return { clean: text, json: null };
+  const clean = text.replace(/<WAITLIST>[\s\S]*?<\/WAITLIST>/, '').trim();
+  try {
+    return { clean, json: JSON.parse(match[1].trim()) };
+  } catch {
+    return { clean, json: null };
+  }
+}
 
 function extractIntake(text: string): { clean: string; json: Record<string, unknown> | null } {
   const match = text.match(/<INTAKE>([\s\S]*?)<\/INTAKE>/);
@@ -304,7 +362,9 @@ export async function POST(req: Request) {
     ? `[Patient shared ${photos.length} photo${photos.length > 1 ? 's' : ''} of their treatment area]`
     : '';
 
-  const systemPrompt = patientName && patientName !== 'there'
+  const systemPrompt = WAITLIST_MODE
+    ? WAITLIST_SYSTEM_PROMPT
+    : patientName && patientName !== 'there'
     ? `${SYSTEM_PROMPT}\n\nNote: This patient's name is ${patientName}. You already have their name — greet them warmly by name and skip the name question.`
     : SYSTEM_PROMPT;
 
@@ -353,6 +413,7 @@ export async function POST(req: Request) {
           // Hide all sentinel tags from the streaming text shown to the patient
           const visibleText = fullText
             .replace(/<INTAKE>[\s\S]*$/, '')
+            .replace(/<WAITLIST>[\s\S]*$/, '')
             .replace(/<TRIAGE\s*\/>/, '')
             .replace(/<GALLERY\s+procedure="[^"]+"\s*\/>/, '')
             .replace(/<CLINICS\s*\/>/, '');
@@ -364,10 +425,11 @@ export async function POST(req: Request) {
         const { clean: cleanIntake, json } = extractIntake(fullText);
         const { clean: cleanTriage, showTriage } = extractTriage(cleanIntake);
         const { clean: cleanGallery, gallery } = extractGallery(cleanTriage);
-        const { clean, showClinics } = extractClinics(cleanGallery);
+        const { clean: cleanClinics, showClinics } = extractClinics(cleanGallery);
+        const { clean, json: waitlist } = extractWaitlist(cleanClinics);
 
         controller.enqueue(encoder.encode(
-          `data: ${JSON.stringify({ type: 'done', intakeComplete: !!json, showTriage, gallery, showClinics, fullText: clean, intake: json })}\n\n`
+          `data: ${JSON.stringify({ type: 'done', intakeComplete: !!json, showTriage, gallery, showClinics, waitlistComplete: !!waitlist, fullText: clean, intake: json })}\n\n`
         ));
 
         // Persist the turn BEFORE closing the stream. On serverless (Vercel) the
@@ -376,7 +438,9 @@ export async function POST(req: Request) {
         // the messages are saved so the chat can be reloaded after a close/refresh.
         if (sessionId && (message?.trim() || photoUrls.length > 0)) {
           const patientText = message.trim() || `[${photoUrls.length} photo${photoUrls.length > 1 ? 's' : ''} shared]`;
-          const logMeta = json
+          const logMeta = waitlist
+            ? { waitlist: true, ...waitlist, ...(photoUrls.length > 0 ? { photoUrls } : {}) }
+            : json
             ? { intakeComplete: true, ...json, photoUrls }
             : photoUrls.length > 0 ? { photoUrls } : undefined;
           await logTurn(sessionId, patientText, clean, logMeta);
