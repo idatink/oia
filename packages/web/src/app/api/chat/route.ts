@@ -6,9 +6,9 @@ export const dynamic = 'force-dynamic';
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-// Provider switch. Default 'anthropic' (Sonnet 4.6) so nothing changes until the
-// env flips. Set WEB_LLM_PROVIDER=qwen (+ OPENROUTER_API_KEY) to run Oia on
-// Qwen3-VL 235B via OpenRouter — vision-capable, far cheaper than Sonnet.
+// Provider switch. Default 'anthropic' (Sonnet 4.6). Prod runs on Qwen3-VL 235B
+// via OpenRouter (WEB_LLM_PROVIDER=qwen + OPENROUTER_API_KEY set on Vercel, 2026-07-09)
+// — vision-capable, far cheaper than Sonnet. Unset the env to fall back to Sonnet.
 const WEB_LLM = (process.env.WEB_LLM_PROVIDER ?? 'anthropic').toLowerCase();
 const QWEN_MODEL = 'qwen/qwen3-vl-235b-a22b-instruct';
 
