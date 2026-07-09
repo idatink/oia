@@ -5,6 +5,8 @@ import Link from 'next/link';
 
 interface NavProps {
   onCTAClick: () => void;
+  /** Homepage: keep the nav invisible on the first fold, fade it in on scroll */
+  hideUntilScroll?: boolean;
 }
 
 const NAV_LINKS = [
@@ -14,15 +16,27 @@ const NAV_LINKS = [
   { label: 'News', href: '/news' },
 ];
 
-export default function Nav({ onCTAClick }: NavProps) {
+export default function Nav({ onCTAClick, hideUntilScroll = false }: NavProps) {
   const [scrolled, setScrolled] = useState(false);
+  const [pastFold, setPastFold] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20);
+    const handler = () => {
+      setScrolled(window.scrollY > 20);
+      setPastFold(window.scrollY > window.innerHeight * 0.55);
+    };
+    handler();
     window.addEventListener('scroll', handler, { passive: true });
-    return () => window.removeEventListener('scroll', handler);
+    // rAF fallback — some environments move scrollY without firing scroll events;
+    // React bails out when state is unchanged, so this is effectively free.
+    let raf = 0;
+    const loop = () => { handler(); raf = requestAnimationFrame(loop); };
+    raf = requestAnimationFrame(loop);
+    return () => { window.removeEventListener('scroll', handler); cancelAnimationFrame(raf); };
   }, []);
+
+  const navHidden = hideUntilScroll && !pastFold;
 
   // Lock body scroll when drawer open
   useEffect(() => {
@@ -32,7 +46,7 @@ export default function Nav({ onCTAClick }: NavProps) {
 
   return (
     <>
-      <nav className={`w-full fixed top-0 z-50 transition-all duration-300 border-b border-outline-variant/10 nav-blur bg-surface/80 ${scrolled ? 'shadow-card' : ''}`}>
+      <nav className={`w-full fixed top-0 z-50 transition-all duration-500 border-b border-outline-variant/10 nav-blur bg-surface/80 ${scrolled ? 'shadow-card' : ''} ${navHidden ? 'opacity-0 -translate-y-3 pointer-events-none' : 'opacity-100 translate-y-0'}`}>
         <div className="flex justify-between items-center w-full px-6 md:px-[64px] max-w-container mx-auto h-16">
 
           {/* Logo */}

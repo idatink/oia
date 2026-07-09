@@ -417,8 +417,7 @@ function ChatScreenStatic() {
     <>
       <ChatHeader />
       <div className="flex-1 overflow-hidden px-3 py-3 flex flex-col gap-2">
-        <NiaMsg>Hi, I&apos;m Oia, your personal surgery concierge. What&apos;s brought you here today?</NiaMsg>
-        <PatientMsg>My nose — I&apos;ve never liked my profile. There&apos;s a bump I&apos;ve been hiding in photos since I was a teenager.</PatientMsg>
+        <PatientMsg>Hey Oia, tell me about best surgeons for rhinoplasty. I&apos;ve never liked my profile, I want this bump gone.</PatientMsg>
         <NiaMsg>Thank you for trusting me with that. The best rhinoplasty keeps your face completely yours — just quieter about the one thing you notice. What would feeling at ease in photos look like?</NiaMsg>
         <div className="flex justify-end">
           <div className="rounded-2xl rounded-br-sm overflow-hidden border border-primary/20 relative" style={{ width: 90, height: 110 }}>
@@ -440,8 +439,6 @@ function ChatScreenStatic() {
             ))}
           </div>
         </div>
-        <NiaMsg>Found them. 3 specialists whose real results match yours. Ready to see your shortlist?</NiaMsg>
-        <BeforeAfterCard />
       </div>
     </>
   );
@@ -493,7 +490,7 @@ function MatchesScreenStatic() {
             </div>
           ))}
         </div>
-        <NiaMsg>The UK equivalent costs £18–22k. Want me to hold Jun 22nd with your coordinator?</NiaMsg>
+        <NiaMsg>Prefer to stay closer to home? I can show you excellent local options too — the choice is always yours. Want me to hold Jun 22nd with your coordinator?</NiaMsg>
         <PatientMsg>Please hold it! 🙏</PatientMsg>
       </div>
     </>
@@ -603,9 +600,9 @@ function PhoneCarousel() {
 
         {/* Edge fades — peeks dissolve into background */}
         <div className="absolute left-0 top-0 bottom-0 w-20 pointer-events-none z-20"
-          style={{ background: 'linear-gradient(to right, var(--color-surface, #f5f0eb) 30%, transparent)' }} />
+          style={{ background: 'linear-gradient(to right, #ffffff 30%, transparent)' }} />
         <div className="absolute right-0 top-0 bottom-0 w-20 pointer-events-none z-20"
-          style={{ background: 'linear-gradient(to left, var(--color-surface, #f5f0eb) 30%, transparent)' }} />
+          style={{ background: 'linear-gradient(to left, #ffffff 30%, transparent)' }} />
       </div>
 
       {/* ── Dots + label ── */}
@@ -676,12 +673,12 @@ export default function Home() {
 
   return (
     <>
-      <Nav onCTAClick={() => setModalOpen(true)} />
+      <Nav onCTAClick={() => setModalOpen(true)} hideUntilScroll />
 
-      <main className="flex-grow pt-16">
+      <main className="flex-grow pt-16 bg-white">
 
         {/* ── Hero ────────────────────────────────────────────────── */}
-        <section className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center text-center px-6 pt-14 pb-0 bg-surface overflow-hidden">
+        <section className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center text-center px-6 pt-14 pb-0 bg-white overflow-hidden">
           <h1 className="font-display text-[2.6rem] leading-[1.06] sm:text-6xl md:text-7xl text-on-surface max-w-2xl mx-auto mb-5">
             Your treatment,{' '}
             <span className="text-primary italic">managed by Aesthetic&nbsp;Intelligence.</span>
@@ -722,7 +719,7 @@ export default function Home() {
                   <div className="flex-1 overflow-hidden px-3 py-3 flex flex-col gap-2">
                     <NiaMsg delay={0.2}>Hi! What are you hoping to achieve?</NiaMsg>
                     <TypingDots from="patient" delay={0.8} duration={0.7} />
-                    <PatientMsg delay={1.4}>I&apos;ve had two kids and I feel great — I&apos;d just love a tummy tuck and a bit of contouring. Purely for my own confidence.</PatientMsg>
+                    <PatientMsg delay={1.4}>I&apos;ve had two kids and I feel great! I&apos;d just love a tummy tuck and a bit of contouring. Purely for my own confidence.</PatientMsg>
                     <TypingDots from="nia" delay={2.1} duration={0.7} />
                     <NiaMsg delay={2.7}>And that&apos;s the best reason of all — doing this for you. A tummy tuck with gentle contouring is one of the most rewarding journeys we plan. Here&apos;s what our surgeons achieve:</NiaMsg>
                     {/* Consent-first results card — body imagery stays private, and that IS the product */}
@@ -764,7 +761,7 @@ export default function Home() {
                     <NiaMsg delay={2.6}>Here&apos;s your top match — accredited, 1,200+ body contouring cases:</NiaMsg>
                     <ClinicCard delay={3.0} />
                     <TypingDots from="nia" delay={3.7} duration={0.6} />
-                    <NiaMsg delay={4.2}>The UK equivalent would be £18–22k. Want your coordinator to hold this date?</NiaMsg>
+                    <NiaMsg delay={4.2}>I can also show you local options with real prices, so you can compare properly. Want your coordinator to hold this date?</NiaMsg>
                     <TypingDots from="patient" delay={4.9} duration={0.6} />
                     <PatientMsg delay={5.4}>Yes — please hold it! 🙏</PatientMsg>
                   </div>
@@ -774,7 +771,7 @@ export default function Home() {
                 <span className="font-body text-[11px] text-primary uppercase tracking-[0.2em] font-semibold block mb-4">02</span>
                 <h3 className="font-display text-3xl md:text-4xl text-on-surface mb-5">She finds your clinic</h3>
                 <p className="font-body text-body-md text-on-surface-variant leading-relaxed max-w-md">
-                  Oia filters by accreditation, your budget, real patient reviews, and surgeon availability — and shows you what the same procedure costs in the UK so you can see exactly what you save.
+                  Oia filters by accreditation, your budget, real patient reviews, and surgeon availability — then shows you every option side by side, local and global, with real prices for each. Stay close to home or travel for the right surgeon. The choice is always yours.
                 </p>
               </div>
             </div>
@@ -847,7 +844,7 @@ export default function Home() {
             We&apos;re inviting a limited number of patients to plan their journey with Oia.
           </h2>
           <p className="font-body text-body-md text-on-surface-variant max-w-md mx-auto mb-8">
-            Early patients receive special partner discounts and a dedicated concierge — no commitment, just a conversation.
+            Early patients receive special partner discounts and a dedicated concierge — no commitment, just a conversation. Ask Oia if she is available in your country.
           </p>
           <button onClick={() => setModalOpen(true)}
             className="bg-primary text-on-primary px-8 py-4 rounded-lg font-body font-semibold text-label-caps uppercase tracking-widest hover:opacity-90 active:opacity-80 transition-all">
