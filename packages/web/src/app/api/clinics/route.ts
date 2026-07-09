@@ -1,42 +1,36 @@
 import { NextResponse } from 'next/server';
-import { db } from '@nia/shared/src/db';
+import { smartMatch } from '@nia/shared/src/smartmatch';
 
 export const dynamic = 'force-dynamic';
 
+// The web concierge "your matches" gallery now runs the real SmartMatch engine
+// (the same one Oia calls on WhatsApp) against the provider table — deterministic,
+// accreditation-first, every match carrying plain-language reasons. This replaces
+// the old legacy `clinic`-table keyword lookup so web and WhatsApp match identically.
+//
+// Results are mapped into the ClinicCardData shape the concierge UI already renders,
+// so no frontend change is needed: the surgeon is the hero (card title), the clinic
+// name + warm reasons sit in the blurb, and the raw 0–100 score is NEVER surfaced to
+// the patient (niaScore: null) — the reasons carry the "why", per the SmartMatch doctrine.
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const procedure = searchParams.get('procedure')?.toLowerCase() ?? '';
+  const procedure = searchParams.get('procedure') ?? '';
+  const country = searchParams.get('country') ?? undefined;
 
-  const all = await db.clinic.findMany({
-    where: { isActive: true, isVerified: true },
-    select: {
-      id: true, name: true, city: true, country: true,
-      shortDescription: true, description: true,
-      niaScore: true, specialties: true, accreditations: true,
-      website: true, photoUrls: true,
-    },
-    orderBy: { niaScore: 'desc' },
-  });
+  const result = await smartMatch({ procedure, country }, 5);
 
-  // Match by procedure: clinics whose specialties include the procedure (case-insensitive)
-  // Fall back to all active clinics if no match
-  let matched = procedure
-    ? all.filter(c => c.specialties.some(s => s.toLowerCase().includes(procedure) || procedure.includes(s.toLowerCase())))
-    : all;
-
-  if (matched.length === 0) matched = all;
-
-  // Return top 5
-  return NextResponse.json(matched.slice(0, 5).map(c => ({
-    id: c.id,
-    name: c.name,
-    city: c.city,
-    country: c.country,
-    description: c.shortDescription ?? c.description ?? '',
-    niaScore: c.niaScore,
-    accreditations: c.accreditations,
-    specialties: c.specialties,
-    website: c.website,
-    photoUrl: c.photoUrls[0] ?? null,
-  })));
+  return NextResponse.json(
+    result.providers.map(p => ({
+      id: p.id,
+      name: p.surgeonName,
+      city: p.city ?? '',
+      country: p.country,
+      description: [p.clinicName, p.reasons.join(' · ')].filter(Boolean).join(' — '),
+      niaScore: null, // never surface the raw match score to the patient
+      accreditations: p.accreditations,
+      specialties: [],
+      website: p.website,
+      photoUrl: null,
+    })),
+  );
 }
