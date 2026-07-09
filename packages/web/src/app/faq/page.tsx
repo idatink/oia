@@ -105,7 +105,7 @@ export default function FaqPage() {
         <section className="py-20 md:py-28 px-6 text-center">
           <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-4">FAQ</span>
           <h1 className="font-display text-4xl md:text-6xl text-on-surface max-w-2xl mx-auto leading-tight">
-            Every question, <span className="italic text-primary">answered gently.</span>
+            Every question, <span className="italic text-primary">answered honestly.</span>
           </h1>
           <p className="font-body text-body-lg text-on-surface-variant max-w-xl mx-auto mt-6">
             And anything we haven&apos;t covered — just ask Oia. That&apos;s what she&apos;s for.
