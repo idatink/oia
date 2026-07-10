@@ -32,6 +32,29 @@ export function looksComplete(oiaMessage: string): boolean {
   return COMPLETION_SIGNALS.some(sig => s.includes(sig));
 }
 
+// Phrases Oia says when she's confirmed a WhatsApp waitlist signup. Phase-1
+// WhatsApp only does waitlist capture (name + intention), so this is the signal
+// that matters most there — and join_waitlist can be dropped by a flaky model
+// just like create_nia_inquiry, so we back it up the same way.
+const WAITLIST_SIGNALS = [
+  "you're on my list",
+  'on my list now',
+  'hold your place',
+  'hold my place',
+  'holding your place',
+  'the moment a space opens',
+  'the second we',
+  'message you right here',
+  "you're still on my list",
+  'added you to',
+  'on the waitlist',
+];
+
+export function looksWaitlisted(oiaMessage: string): boolean {
+  const s = oiaMessage.toLowerCase();
+  return WAITLIST_SIGNALS.some(sig => s.includes(sig));
+}
+
 const EXTRACT_SCHEMA_HINT = `Return ONLY a JSON object (no prose, no code fence) with these keys:
 {
   "name": string|null,               // patient's first name / name
@@ -175,4 +198,79 @@ export async function reconcileSession(sessionId: string, origin: string): Promi
   }
 
   return { ok: true, action: 'created', leadCreated, matched, procedure: data.procedure };
+}
+
+// ── Waitlist safety net ──────────────────────────────────────────────────────
+// Rescue a WhatsApp waitlist signup into an entry if Oia confirmed it but never
+// fired join_waitlist. Same idea as reconcileSession, lighter payload.
+type ExtractedWaitlist = { name: string | null; procedure: string | null; email: string | null; isWaitlist: boolean };
+
+async function extractWaitlist(transcript: string): Promise<ExtractedWaitlist | null> {
+  const client = new Anthropic();
+  const msg = await client.messages.create({
+    model: 'claude-haiku-4-5',
+    max_tokens: 400,
+    system:
+      'A patient messaged a concierge to join a waitlist. Extract ONLY JSON: ' +
+      '{"name":string|null,"procedure":string|null,"email":string|null,"isWaitlist":boolean}. ' +
+      '"procedure" = what they said they are hoping to do / are interested in. ' +
+      'Set "isWaitlist" false if this is not a real person joining a waitlist (e.g. a clinic, or just a greeting with no intention given).',
+    messages: [{ role: 'user', content: `Transcript:\n\n${transcript}\n\nExtract the JSON now.` }],
+  });
+  const text = msg.content.map(b => (b.type === 'text' ? b.text : '')).join('').trim();
+  const a = text.indexOf('{');
+  const b = text.lastIndexOf('}');
+  if (a < 0 || b < 0) return null;
+  try {
+    return JSON.parse(text.slice(a, b + 1)) as ExtractedWaitlist;
+  } catch {
+    return null;
+  }
+}
+
+export async function reconcileWaitlist(sessionId: string, origin: string): Promise<ReconcileResult> {
+  const session = await db.nIASession.findUnique({
+    where: { id: sessionId },
+    select: {
+      id: true,
+      surface: true,
+      identifier: true,
+      messages: { orderBy: { createdAt: 'asc' }, select: { role: true, content: true, metadata: true } },
+    },
+  });
+  if (!session || session.surface !== 'whatsapp') return { ok: true, action: 'skipped', reason: 'not a whatsapp session' };
+  const phone = session.identifier;
+  if (!phone || !phone.startsWith('+')) return { ok: true, action: 'skipped', reason: 'no phone' };
+
+  // Already have a waitlist entry (from join_waitlist OR a prior reconcile)? done.
+  const alreadyWaitlisted = session.messages.some(m => {
+    const meta = (m.metadata ?? {}) as Record<string, unknown>;
+    return meta.waitlist === true;
+  });
+  if (alreadyWaitlisted) return { ok: true, action: 'skipped', reason: 'already on waitlist' };
+
+  const transcript = session.messages
+    .filter(m => (m.content ?? '').trim())
+    .map(m => `${m.role === 'PATIENT' ? 'Patient' : 'Oia'}: ${m.content.replace(/\s+/g, ' ').trim()}`)
+    .join('\n');
+  if (transcript.length < 30) return { ok: true, action: 'skipped', reason: 'transcript too short' };
+
+  const data = await extractWaitlist(transcript);
+  if (!data || !data.isWaitlist || (!data.name && !data.procedure)) {
+    return { ok: true, action: 'skipped', reason: 'not a waitlist signup' };
+  }
+
+  const secret = process.env.WHATSAPP_INTAKE_SECRET ?? '';
+  const res = await fetch(`${origin}/api/intake/waitlist`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${secret}` },
+    body: JSON.stringify({
+      phone,
+      name: data.name ?? undefined,
+      email: data.email ?? undefined,
+      procedure: data.procedure ?? undefined,
+      notes: 'auto-reconciled: Oia confirmed the waitlist but did not fire join_waitlist',
+    }),
+  });
+  return { ok: true, action: 'created', leadCreated: res.ok, matched: false, procedure: data.procedure ?? '(waitlist)' };
 }

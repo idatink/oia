@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@nia/shared/src/db';
-import { looksComplete, reconcileSession } from '@/lib/reconcile-intake';
+import { looksComplete, looksWaitlisted, reconcileSession, reconcileWaitlist } from '@/lib/reconcile-intake';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // completion turns run the reconciler inline
@@ -118,9 +118,16 @@ export async function POST(req: Request) {
   // mis-names the tool). reconcileSession is idempotent + no-ops when a Lead
   // already exists, so this is safe to run on every completion-signal turn.
   let reconciled: unknown;
-  if (role === 'NIA' && looksComplete(content)) {
+  if (role === 'NIA') {
     try {
-      reconciled = await reconcileSession(session.id, new URL(req.url).origin);
+      const origin = new URL(req.url).origin;
+      if (looksComplete(content)) {
+        // Full intake completed (e.g. web, or a TESTMODE WhatsApp run) → rescue into a Lead.
+        reconciled = await reconcileSession(session.id, origin);
+      } else if (looksWaitlisted(content)) {
+        // Phase-1 WhatsApp: Oia confirmed a waitlist signup → make sure it's saved.
+        reconciled = await reconcileWaitlist(session.id, origin);
+      }
     } catch (e) {
       console.error('[intake/message] reconcile failed', e);
     }
