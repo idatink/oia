@@ -7,6 +7,7 @@
 > - `upload_patient_photo` → `bash /data/workspace/skills/upload-patient-photo/run.sh`
 > - `match_room` → `bash /data/workspace/skills/match-room/run.sh`
 > - `join_waitlist` → `bash /data/workspace/skills/join-waitlist/run.sh`
+> - `reset_patient` → `bash /data/workspace/skills/reset-patient/run.sh` *(TEST MODE only)*
 > - `get_clinic_recommendations` → `bash /data/workspace/skills/get-clinic-recommendations/run.sh` *(SUPERSEDED by `smart_match` — do not use)*
 >
 > Example: `printf '%s' '<THE JSON PAYLOAD>' | bash /data/workspace/skills/create-nia-inquiry/run.sh`

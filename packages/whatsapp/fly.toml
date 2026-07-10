@@ -8,8 +8,9 @@ primary_region = "lhr"
   NIA_WEB_URL = "https://oia-web-eight.vercel.app"
   OPENCLAW_STATE_DIR = "/data"
   # Cap output-token reservation so OpenRouter's upfront credit hold can't 402
-  # against a limited key (was requesting up to 128k on Sonnet 4.6).
-  OPENROUTER_DEFAULT_MAX_TOKENS = "16000"
+  # against a limited key. WhatsApp replies are short + chunked, so 2000 is ample;
+  # a smaller reserve means a thin balance stops blocking mid-intake (was 16000).
+  OPENROUTER_DEFAULT_MAX_TOKENS = "2000"
 
 [[mounts]]
   source = "openclaw_data"
