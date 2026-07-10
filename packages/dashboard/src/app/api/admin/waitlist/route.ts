@@ -30,9 +30,11 @@ export async function GET(req: Request) {
     sessionId: string | null;
     name: string | null;
     whatsapp: string | null;
+    email: string | null;
     age: string | number | null;
     procedure: string | null;
     notes: string | null;
+    source: string | null;
     createdAt: Date;
   }> = [];
 
@@ -46,9 +48,11 @@ export async function GET(req: Request) {
       sessionId: m.session?.id ?? null,
       name: (meta.name as string) ?? null,
       whatsapp: (meta.whatsapp as string) ?? null,
+      email: (meta.email as string) ?? null,
       age: (meta.age as string | number) ?? null,
       procedure: (meta.procedure as string) ?? null,
       notes: (meta.notes as string) ?? null,
+      source: (meta.source as string) ?? (m.session?.surface ?? null),
       createdAt: m.createdAt,
     });
   }

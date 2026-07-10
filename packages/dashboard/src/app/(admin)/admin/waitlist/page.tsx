@@ -7,9 +7,11 @@ type Lead = {
   sessionId: string | null;
   name: string | null;
   whatsapp: string | null;
+  email: string | null;
   age: string | number | null;
   procedure: string | null;
   notes: string | null;
+  source: string | null;
   createdAt: string;
 };
 
@@ -36,8 +38,8 @@ function waLink(num: string | null) {
 
 function toCsv(leads: Lead[]) {
   const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
-  const header = ['Name', 'WhatsApp', 'Age', 'Procedure', 'Notes', 'Joined'];
-  const rows = leads.map(l => [l.name, l.whatsapp, l.age, l.procedure, l.notes, formatDate(l.createdAt)].map(esc).join(','));
+  const header = ['Name', 'WhatsApp', 'Email', 'Procedure', 'Channel', 'Notes', 'Joined'];
+  const rows = leads.map(l => [l.name, l.whatsapp, l.email, l.procedure, l.source, l.notes, formatDate(l.createdAt)].map(esc).join(','));
   return [header.join(','), ...rows].join('\n');
 }
 
@@ -59,7 +61,7 @@ export default function AdminWaitlistPage() {
     const q = search.trim().toLowerCase();
     if (!q) return leads;
     return leads.filter(l =>
-      [l.name, l.whatsapp, l.procedure, l.notes].some(v => (v ?? '').toString().toLowerCase().includes(q)),
+      [l.name, l.whatsapp, l.email, l.procedure, l.notes].some(v => (v ?? '').toString().toLowerCase().includes(q)),
     );
   }, [leads, search]);
 
@@ -117,8 +119,9 @@ export default function AdminWaitlistPage() {
               <tr className="text-left text-[10px] font-bold uppercase tracking-wider text-[#5c5f5c] border-b border-[#dcc0ba]/30">
                 <th className="px-6 py-3">Name</th>
                 <th className="px-4 py-3">WhatsApp</th>
-                <th className="px-4 py-3">Age</th>
+                <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Procedure</th>
+                <th className="px-4 py-3">Channel</th>
                 <th className="px-4 py-3">Notes</th>
                 <th className="px-6 py-3 text-right">Joined</th>
               </tr>
@@ -142,8 +145,15 @@ export default function AdminWaitlistPage() {
                         '—'
                       )}
                     </td>
-                    <td className="px-4 py-3.5 text-sm text-[#5c5f5c]">{l.age ?? '—'}</td>
+                    <td className="px-4 py-3.5 text-sm text-[#5c5f5c] whitespace-nowrap">
+                      {l.email ? <a href={`mailto:${l.email}`} className="text-[#99402b] hover:underline">{l.email}</a> : '—'}
+                    </td>
                     <td className="px-4 py-3.5 text-sm text-[#5c5f5c] capitalize">{l.procedure || '—'}</td>
+                    <td className="px-4 py-3.5">
+                      <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold ${l.source === 'whatsapp' ? 'bg-[#25D366]/15 text-[#128C4A]' : 'bg-[#99402b]/10 text-[#99402b]'}`}>
+                        {l.source === 'whatsapp' ? 'WhatsApp' : 'Web'}
+                      </span>
+                    </td>
                     <td className="px-4 py-3.5 text-[12px] text-[#5c5f5c] max-w-xs">{l.notes || '—'}</td>
                     <td className="px-6 py-3.5 text-right whitespace-nowrap">
                       <span className="text-[12px] text-[#1b1c1b]">{formatDate(l.createdAt)}</span>
