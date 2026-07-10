@@ -119,7 +119,20 @@ async function postMessage(api, secret, payload) {
 // Poll the dashboard for queued "invite back to web" messages and send each via
 // Oia's WhatsApp (the running gateway in this container). Safe: these go only to
 // people who messaged us first (warm reply), never cold outreach.
+// WhatsApp needs E.164. Waitlist numbers arrive in mixed shapes ("07599444386",
+// "+44 7700 900555", "447…") — normalise (UK-aware) before sending.
+function toE164(raw) {
+  let s = String(raw || '').replace(/[^\d+]/g, '');
+  if (!s) return s;
+  if (s.startsWith('+')) return s;
+  if (s.startsWith('00')) return '+' + s.slice(2);
+  if (s.startsWith('44')) return '+' + s;
+  if (s.startsWith('0')) return '+44' + s.slice(1); // UK national
+  return '+' + s;
+}
+
 function sendWhatsApp(phone, message) {
+  phone = toE164(phone);
   return new Promise(resolve => {
     execFile(
       'openclaw',
