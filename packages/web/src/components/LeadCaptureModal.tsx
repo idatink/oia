@@ -13,6 +13,12 @@ interface LeadCaptureModalProps {
 const WA_NUMBER = (process.env.NEXT_PUBLIC_WA_NUMBER || '447752991023').replace(/[^0-9]/g, '');
 const WA_GREETING = "Hi Oia, I'd like to chat about a treatment. 🤍";
 
+// Waitlist launch: skip the web/WhatsApp channel picker and drop straight into
+// the web chat — the patient sees Oia's capacity message + the "Continue on
+// WhatsApp" button there, so the choice lives on that page instead. Flip to
+// false to restore the channel-selection modal.
+const SKIP_CHANNEL_MODAL = true;
+
 /**
  * Channel-selection modal. When a visitor presses any "Talk to Oia" / "Ask Oia"
  * CTA (all of which toggle `open`), they choose how they'd like to chat:
@@ -23,6 +29,15 @@ const WA_GREETING = "Hi Oia, I'd like to chat about a treatment. 🤍";
  */
 export default function LeadCaptureModal({ open, onClose }: LeadCaptureModalProps) {
   const router = useRouter();
+
+  // Waitlist launch: any CTA that opens this modal instead goes straight to the
+  // web chat, where the patient sees Oia's message + the WhatsApp handoff button.
+  useEffect(() => {
+    if (SKIP_CHANNEL_MODAL && open) {
+      onClose();
+      router.push('/concierge');
+    }
+  }, [open, onClose, router]);
 
   const startWeb = useCallback(() => {
     onClose();
@@ -40,7 +55,7 @@ export default function LeadCaptureModal({ open, onClose }: LeadCaptureModalProp
 
   // Close on Escape, and lock background scroll while open.
   useEffect(() => {
-    if (!open) return;
+    if (SKIP_CHANNEL_MODAL || !open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
@@ -53,7 +68,7 @@ export default function LeadCaptureModal({ open, onClose }: LeadCaptureModalProp
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (SKIP_CHANNEL_MODAL || !open) return null;
 
   return (
     <div
