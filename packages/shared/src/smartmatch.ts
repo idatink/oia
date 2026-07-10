@@ -39,7 +39,7 @@ export type MatchResult = {
   note?: string; // e.g. out-of-scope explanation
 };
 
-const PILOT_COUNTRIES = ['GB', 'TR'];
+const PILOT_COUNTRIES = ['GB', 'TR', 'ES', 'GR', 'LT', 'KR'];
 
 // Accreditation → safety tier (0–1). Board / international bodies score highest.
 function accredScore(accreditations: string[]): number {

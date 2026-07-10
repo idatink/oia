@@ -18,7 +18,7 @@ export async function GET(req: Request) {
   const country = searchParams.get('country') ?? undefined;
   // Chat shows a shortlist (default 5); the full "match room" page passes a
   // higher limit to show the patient every surgeon who fits her goals.
-  const limit = Math.min(Number(searchParams.get('limit')) || 5, 24);
+  const limit = Math.min(Number(searchParams.get('limit')) || 5, 200);
 
   const result = await smartMatch({ procedure, country }, limit);
 

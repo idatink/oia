@@ -31,7 +31,7 @@ export default function MatchRoomClient({ procedure, name }: { procedure: string
     (async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/clinics?procedure=${encodeURIComponent(procedure)}&limit=24`);
+        const res = await fetch(`/api/clinics?procedure=${encodeURIComponent(procedure)}&limit=200`);
         setMatches(res.ok ? await res.json() : []);
       } catch { setMatches([]); }
       setLoading(false);
