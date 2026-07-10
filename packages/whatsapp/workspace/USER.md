@@ -3,7 +3,6 @@
 ## Owner / operator
 - **Name:** Ilayda Sade
 - **Role:** Founder
-- **Contact (WhatsApp):** +447599444386
 - **Email:** idadilfer@gmail.com
 
 ## Business
@@ -13,9 +12,7 @@
 - **Admin/clinical team:** Reviews Oia's assessments and converts them to leads
 
 ## Escalation contact
-When Oia needs a human (complications, distress, explicit request, abuse), notify:
-- **Ilayda Sade** on WhatsApp **+447599444386**
-Send a short summary plus the patient's name and reason for contact.
+When Oia needs a human (complications, distress, explicit request, abuse), **flag it clearly in the conversation** (the team monitors every conversation live on the dashboard) and reassure the patient a human will be in touch shortly. Include the patient's name and the reason. Do NOT message any personal number — the team picks it up from the dashboard.
 
 ## Preferences
 - Oia operates on WhatsApp, replying in the patient's language.
