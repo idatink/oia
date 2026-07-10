@@ -14,6 +14,15 @@ const NAV = [
     ),
   },
   {
+    label: 'Conversations',
+    href: '/admin/sessions',
+    icon: (a: boolean) => (
+      <svg className={`w-5 h-5 ${a ? 'text-primary-fixed' : 'text-on-surface-variant'}`} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-2.617.157 4.5 4.5 0 001.582-2.06c.24-.63.135-1.28-.06-1.887C3.147 15.65 2.75 13.874 2.75 12c0-4.556 4.03-8.25 9-8.25s9.25 3.694 9.25 8.25z"/>
+      </svg>
+    ),
+  },
+  {
     label: 'Waitlist',
     href: '/admin/waitlist',
     icon: (a: boolean) => (
