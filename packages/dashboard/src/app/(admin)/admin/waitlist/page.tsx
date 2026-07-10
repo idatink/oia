@@ -12,6 +12,7 @@ type Lead = {
   procedure: string | null;
   notes: string | null;
   source: string | null;
+  inviteStatus: string | null;
   createdAt: string;
 };
 
@@ -47,6 +48,28 @@ export default function AdminWaitlistPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [inviting, setInviting] = useState<string | null>(null);
+
+  async function markReady(l: Lead) {
+    if (!l.whatsapp) { alert('No WhatsApp number on this entry — can’t invite.'); return; }
+    if (!confirm(`Invite ${l.name || l.whatsapp} back to the web experience? Oia will WhatsApp them a private intake link.`)) return;
+    setInviting(l.id);
+    try {
+      const res = await fetch('/api/admin/waitlist/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messageId: l.id }),
+      });
+      if (res.ok) {
+        setLeads(prev => prev.map(x => (x.id === l.id ? { ...x, inviteStatus: 'queued' } : x)));
+      } else {
+        const e = await res.json().catch(() => ({}));
+        alert(`Couldn’t invite: ${e.error ?? res.status}`);
+      }
+    } finally {
+      setInviting(null);
+    }
+  }
 
   useEffect(() => {
     (async () => {
@@ -123,6 +146,7 @@ export default function AdminWaitlistPage() {
                 <th className="px-4 py-3">Procedure</th>
                 <th className="px-4 py-3">Channel</th>
                 <th className="px-4 py-3">Notes</th>
+                <th className="px-4 py-3 text-center">Ready</th>
                 <th className="px-6 py-3 text-right">Joined</th>
               </tr>
             </thead>
@@ -155,6 +179,22 @@ export default function AdminWaitlistPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3.5 text-[12px] text-[#5c5f5c] max-w-xs">{l.notes || '—'}</td>
+                    <td className="px-4 py-3.5 text-center whitespace-nowrap">
+                      {l.inviteStatus === 'sent' ? (
+                        <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#128C4A]/15 text-[#128C4A]">Invited ✓</span>
+                      ) : l.inviteStatus === 'queued' ? (
+                        <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-700">Sending…</span>
+                      ) : (
+                        <button
+                          onClick={() => markReady(l)}
+                          disabled={inviting === l.id || !l.whatsapp}
+                          className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-lg bg-[#99402b] text-white transition-opacity disabled:opacity-40"
+                          title={l.whatsapp ? 'WhatsApp them a link back to the web intake' : 'No WhatsApp number'}
+                        >
+                          {inviting === l.id ? '…' : l.inviteStatus === 'failed' ? 'Retry' : 'Mark ready'}
+                        </button>
+                      )}
+                    </td>
                     <td className="px-6 py-3.5 text-right whitespace-nowrap">
                       <span className="text-[12px] text-[#1b1c1b]">{formatDate(l.createdAt)}</span>
                       <span className="block text-[10px] text-[#5c5f5c]/60">{timeAgo(l.createdAt)}</span>

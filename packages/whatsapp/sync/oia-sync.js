@@ -20,6 +20,7 @@
  */
 const fs = require('fs');
 const path = require('path');
+const { execFile } = require('child_process');
 
 const STATE = process.env.OPENCLAW_STATE_DIR || '/data';
 const CONFIG_PATH = path.join(STATE, 'openclaw.json');
@@ -114,6 +115,60 @@ async function postMessage(api, secret, payload) {
   }
 }
 
+// ── Outbound sender ──────────────────────────────────────────────────────────
+// Poll the dashboard for queued "invite back to web" messages and send each via
+// Oia's WhatsApp (the running gateway in this container). Safe: these go only to
+// people who messaged us first (warm reply), never cold outreach.
+function sendWhatsApp(phone, message) {
+  return new Promise(resolve => {
+    execFile(
+      'openclaw',
+      ['message', 'send', '--channel', 'whatsapp', '--account', 'work', '--target', phone, '--message', message],
+      { env: process.env, timeout: 60000 },
+      (err, stdout, stderr) => {
+        if (err) {
+          console.error(`[oia-outbound] send to ${phone} failed:`, (stderr || err.message || '').slice(0, 300));
+          resolve(false);
+        } else {
+          resolve(true);
+        }
+      },
+    );
+  });
+}
+
+async function outboundTick() {
+  const env = loadConfigEnv();
+  const api = process.env.NIA_API_URL || env.NIA_API_URL;
+  const secret = process.env.NIA_WHATSAPP_SECRET || env.NIA_WHATSAPP_SECRET;
+  if (!api || !secret) return;
+
+  let pending = [];
+  try {
+    const res = await fetch(`${api}/api/outbound/pending`, { headers: { authorization: `Bearer ${secret}` } });
+    if (!res.ok) return;
+    pending = (await res.json()).pending || [];
+  } catch (e) {
+    console.error('[oia-outbound] pending fetch failed:', e.message);
+    return;
+  }
+
+  for (const item of pending) {
+    if (!item || !item.phone || !item.message) continue;
+    const ok = await sendWhatsApp(item.phone, item.message);
+    try {
+      await fetch(`${api}/api/outbound/sent`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', authorization: `Bearer ${secret}` },
+        body: JSON.stringify({ messageId: item.messageId, ok }),
+      });
+    } catch (e) {
+      console.error('[oia-outbound] sent-report failed:', e.message);
+    }
+    if (ok) console.log(`[oia-outbound] invited ${item.phone}`);
+  }
+}
+
 let offsets = readOffsets();
 
 async function tick() {
@@ -182,6 +237,11 @@ async function loop() {
       await tick();
     } catch (e) {
       console.error('[oia-sync] tick error:', e.message);
+    }
+    try {
+      await outboundTick();
+    } catch (e) {
+      console.error('[oia-outbound] tick error:', e.message);
     }
     await new Promise(r => setTimeout(r, POLL_MS));
   }

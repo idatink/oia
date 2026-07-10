@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { db } from '@nia/shared/src/db';
 import { WAITLIST_MODE } from '@/lib/waitlist';
+import { verifyInviteToken } from '@nia/shared/src/inviteToken';
 
 export const dynamic = 'force-dynamic';
 
@@ -327,13 +328,18 @@ async function logTurn(sessionId: string, patientMessage: string, niaResponse: s
 }
 
 export async function POST(req: Request) {
-  const { message, history = [], patientName, photos = [], sessionId } = await req.json() as {
+  const { message, history = [], patientName, photos = [], sessionId, invite } = await req.json() as {
     message: string;
     history?: HistoryItem[];
     patientName?: string;
     photos?: PhotoItem[];
     sessionId?: string;
+    invite?: string;
   };
+
+  // Invited-back-from-waitlist patient: a valid invite token opens the FULL
+  // intake (bypassing WAITLIST_MODE) prefilled with their name + intention.
+  const invited = invite ? verifyInviteToken(invite) : null;
 
   if (!message?.trim() && photos.length === 0) {
     return new Response('Bad request', { status: 400 });
@@ -366,7 +372,9 @@ export async function POST(req: Request) {
     ? `[Patient shared ${photos.length} photo${photos.length > 1 ? 's' : ''} of their treatment area]`
     : '';
 
-  const systemPrompt = WAITLIST_MODE
+  const systemPrompt = invited
+    ? `${SYSTEM_PROMPT}\n\nNote: ${invited.name || 'This patient'} was on the waitlist and a space has now opened for their ${invited.procedure || 'procedure'} — they've followed their private invite link back. You ALREADY know their name (${invited.name || 'unknown'}) and what they want (${invited.procedure || 'unknown'}), so do NOT ask for either. Greet them warmly by name, acknowledge their space opened for their ${invited.procedure || 'procedure'}, and proceed straight into the full intake (goals, timeline, health, photo) to get them matched.`
+    : WAITLIST_MODE
     ? WAITLIST_SYSTEM_PROMPT
     : patientName && patientName !== 'there'
     ? `${SYSTEM_PROMPT}\n\nNote: This patient's name is ${patientName}. You already have their name — greet them warmly by name and skip the name question.`

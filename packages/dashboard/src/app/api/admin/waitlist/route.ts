@@ -35,6 +35,7 @@ export async function GET(req: Request) {
     procedure: string | null;
     notes: string | null;
     source: string | null;
+    inviteStatus: string | null;
     createdAt: Date;
   }> = [];
 
@@ -53,6 +54,7 @@ export async function GET(req: Request) {
       procedure: (meta.procedure as string) ?? null,
       notes: (meta.notes as string) ?? null,
       source: (meta.source as string) ?? (m.session?.surface ?? null),
+      inviteStatus: (meta.inviteStatus as string) ?? null,
       createdAt: m.createdAt,
     });
   }

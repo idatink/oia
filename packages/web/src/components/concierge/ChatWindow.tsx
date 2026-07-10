@@ -71,6 +71,11 @@ function getOrCreateSessionId(): string {
 
 export default function ChatWindow({ patientName, onProcedureDetected }: ChatWindowProps) {
   const sessionId = getOrCreateSessionId();
+  // Invite-back-from-waitlist: a `?invite=<token>` opens the FULL intake (bypassing
+  // the waitlist greeting/gate) prefilled with the patient's name + intention.
+  const [inviteToken] = useState<string | null>(() =>
+    typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('invite') : null,
+  );
   const [messages, setMessages] = useState<Message[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [suggestions, setSuggestions] = useState<string[]>(INITIAL_QUICK_REPLIES);
@@ -121,6 +126,27 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
         }
       } catch { /* fall through to a fresh greeting */ }
 
+      // Invited back from the waitlist? verify the token → warm, personalised
+      // greeting and the FULL intake (not the waitlist message).
+      if (inviteToken) {
+        try {
+          const vr = await fetch('/api/invite/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: inviteToken }),
+          });
+          const v = await vr.json() as { valid: boolean; name?: string | null; procedure?: string | null };
+          if (v.valid) {
+            const nm = v.name ? ` ${v.name}` : '';
+            const proc = v.procedure ? ` for your ${v.procedure}` : '';
+            const g = `Welcome back${nm} 🤍 A space has just opened${proc} — I'm so glad it's your turn. Let's plan everything together now. To start, tell me a little about what you're hoping to achieve?`;
+            setMessages([{ id: 'greeting', role: 'nia', content: g, timestamp: new Date() }]);
+            setHistory([{ role: 'assistant', content: g }]);
+            return;
+          }
+        } catch { /* fall through to normal greeting */ }
+      }
+
       const greeting = WAITLIST_MODE
         ? WAITLIST_GREETING
         : patientName && patientName !== 'there'
@@ -129,7 +155,7 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
       setMessages([{ id: 'greeting', role: 'nia', content: greeting, timestamp: new Date() }]);
       setHistory([{ role: 'assistant', content: greeting }]);
     })();
-  }, [patientName, sessionId]);
+  }, [patientName, sessionId, inviteToken]);
 
   const sendMessage = useCallback(async (text: string, files?: File[]) => {
     if (loading) return;
@@ -180,6 +206,7 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
           history,
           patientName,
           sessionId,
+          invite: inviteToken,
           photos: photos.map(({ base64, mediaType }) => ({ base64, mediaType })),
         }),
       });
@@ -268,7 +295,7 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
     } finally {
       setLoading(false);
     }
-  }, [loading, history, patientName]);
+  }, [loading, history, patientName, inviteToken]);
 
   const submitTriage = useCallback((answers: TriageAnswers) => {
     setShowTriage(false);
@@ -445,7 +472,7 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
 
       {/* Waitlist: primary CTA is to continue on WhatsApp — the patient messages
           Oia first, so the thread is theirs and she can warmly re-engage later. */}
-      {WAITLIST_MODE && (
+      {WAITLIST_MODE && !inviteToken && (
         <div className="px-6 pb-3 pt-1 shrink-0">
           <a
             href={WAITLIST_WHATSAPP_URL}
@@ -462,7 +489,7 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
       )}
 
       {/* Quick replies */}
-      {suggestions.length > 0 && !loading && !intakeComplete && !showTriage && !WAITLIST_MODE && (
+      {suggestions.length > 0 && !loading && !intakeComplete && !showTriage && (!WAITLIST_MODE || inviteToken) && (
         <QuickReplies suggestions={suggestions} onSelect={sendMessage} />
       )}
 
