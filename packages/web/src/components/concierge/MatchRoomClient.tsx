@@ -107,8 +107,9 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
 }
 
 function MatchCard({ m }: { m: Match }) {
-  const clinic = m.description.split(' — ')[0];
-  const reasons = m.description.includes(' — ') ? m.description.split(' — ').slice(1).join(' — ') : m.description;
+  const hasClinic = m.description.includes(' — ');
+  const clinic = hasClinic ? m.description.split(' — ')[0] : '';
+  const reasons = hasClinic ? m.description.split(' — ').slice(1).join(' — ') : m.description;
   return (
     <div className="bg-surface-container-lowest rounded-card2 overflow-hidden border border-outline-variant/20 shadow-card hover:shadow-concierge hover:border-primary/30 transition-all flex flex-col">
       <div className="h-28 bg-gradient-to-br from-secondary-container to-tertiary-fixed relative">
@@ -127,7 +128,7 @@ function MatchCard({ m }: { m: Match }) {
             ))}
           </div>
         )}
-        <p className="font-body text-body-sm text-on-surface-variant leading-relaxed mb-1">{clinic}</p>
+        {clinic && <p className="font-body text-body-sm text-on-surface-variant leading-relaxed mb-1">{clinic}</p>}
         <p className="font-body text-body-sm text-on-surface-variant/80 leading-relaxed flex-1">{reasons}</p>
         {m.website && (
           <a href={m.website.startsWith('http') ? m.website : `https://${m.website}`} target="_blank" rel="noopener noreferrer"
