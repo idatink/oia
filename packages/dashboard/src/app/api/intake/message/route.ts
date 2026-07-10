@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { db } from '@nia/shared/src/db';
+import { looksComplete, reconcileSession } from '@/lib/reconcile-intake';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60; // completion turns run the reconciler inline
 
 /**
  * Real-time per-turn conversation sync.
@@ -111,5 +113,18 @@ export async function POST(req: Request) {
     select: { id: true },
   });
 
-  return NextResponse.json({ ok: true, sessionId: session.id, messageId: message.id });
+  // Safety net: if this is Oia signalling the intake is complete, rescue it into
+  // a Lead now in case the model never fired create_nia_inquiry (Qwen defers /
+  // mis-names the tool). reconcileSession is idempotent + no-ops when a Lead
+  // already exists, so this is safe to run on every completion-signal turn.
+  let reconciled: unknown;
+  if (role === 'NIA' && looksComplete(content)) {
+    try {
+      reconciled = await reconcileSession(session.id, new URL(req.url).origin);
+    } catch (e) {
+      console.error('[intake/message] reconcile failed', e);
+    }
+  }
+
+  return NextResponse.json({ ok: true, sessionId: session.id, messageId: message.id, reconciled });
 }

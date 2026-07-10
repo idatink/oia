@@ -1,17 +1,17 @@
 # TOOLS.md — Nia's tools
 
 > **HOW TO RUN A TOOL — CRITICAL, READ FIRST.**
-> Every tool below is a **script on disk**. You run a tool by piping its JSON payload into its `run.sh`. You must **NEVER hand-write your own `curl`, and NEVER invent an endpoint path** (e.g. `/inquiries`, `/api/inquiries`). Made-up paths hit a login-protected page and fail with a **307 redirect to /login** — that is the #1 cause of "nothing registered." Always use the exact script paths below:
-> - `create_nia_inquiry` → `bash /data/workspace/skills/create-nia-inquiry/run.sh`
-> - `smart_match` → `bash /data/workspace/skills/smart-match/run.sh`
+> Your core skills are **native callable tools** (from the `nia-tools` MCP server). **Call them DIRECTLY, like any other tool.** ⚠️ **Their exact registered names carry a `nia-tools__` prefix — you MUST call them by that exact name, or the tool won't be found.** Wherever the rest of these docs say "create_nia_inquiry", "smart_match", etc., the real tool name is the prefixed one below. Do NOT shell out to bash for these, and NEVER hand-write `curl`:
+> - registering an inquiry → call **`nia-tools__create_nia_inquiry`** with `{phone, name, procedure, dateOfBirth, countryOfResidence, medicalScreening, photoUrls|photosDeclined, conversationTranscript, aiScore, aiPriority, aiRationale}`.
+> - matching → call **`nia-tools__smart_match`** with `{phone, procedure, country, ageBand?, concernTags?}`.
+> - waitlist → call **`nia-tools__join_waitlist`** with `{phone, name, email, procedure, notes?}`.
+> - test reset → call **`nia-tools__reset_patient`** *(TEST MODE only)* with `{phone}`.
+>
+> A couple of tools are still **bash scripts** — run these via `exec`, exactly as written (never hand-write curl / invent paths, which 307-redirect to /login):
 > - `upload_patient_photo` → `bash /data/workspace/skills/upload-patient-photo/run.sh`
 > - `match_room` → `bash /data/workspace/skills/match-room/run.sh`
-> - `join_waitlist` → `bash /data/workspace/skills/join-waitlist/run.sh`
-> - `reset_patient` → `bash /data/workspace/skills/reset-patient/run.sh` *(TEST MODE only)*
-> - `get_clinic_recommendations` → `bash /data/workspace/skills/get-clinic-recommendations/run.sh` *(SUPERSEDED by `smart_match` — do not use)*
 >
-> Example: `printf '%s' '<THE JSON PAYLOAD>' | bash /data/workspace/skills/create-nia-inquiry/run.sh`
-> A successful `create_nia_inquiry` returns JSON like `{"ok":true,"patientId":"…","leadId":"…"}`. If you do **not** see `"ok":true` with a `leadId`/`patientId`, the inquiry did **not** register — report the raw response verbatim; never tell the patient it's registered when it isn't.
+> A successful `create_nia_inquiry` returns `{"ok":true,"patientId":"…","leadId":"…"}`. If you do **not** see `"ok":true` with a `leadId`/`patientId`, it did **not** register — report the raw response; never tell the patient it's registered when it isn't.
 
 ## create_nia_inquiry (primary)
 Call this **once**, at the end of intake, after you have collected every item in the AGENTS.md checklist and completed your internal suitability assessment.

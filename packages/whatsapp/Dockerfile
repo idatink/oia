@@ -17,6 +17,8 @@ COPY workspace ./workspace
 COPY openclaw-seed ./openclaw-seed
 # Real-time conversation syncer (sidecar: tails session files -> dashboard)
 COPY sync ./sync
+# Oia tools MCP server — exposes create_nia_inquiry/smart_match/etc as native tools
+COPY mcp ./mcp
 COPY entrypoint.sh ./entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
