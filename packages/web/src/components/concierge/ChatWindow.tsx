@@ -88,6 +88,9 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
   const [phoneError, setPhoneError] = useState('');
   const [linking, setLinking] = useState(false);
   const [linked, setLinked] = useState(false);
+  // Invited-back patients arrive with their WhatsApp number already in the invite
+  // token — captured here so we can auto-register them without re-asking for it.
+  const [invitedPhone, setInvitedPhone] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const greeted = useRef(false);
 
@@ -135,8 +138,9 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token: inviteToken }),
           });
-          const v = await vr.json() as { valid: boolean; name?: string | null; procedure?: string | null };
+          const v = await vr.json() as { valid: boolean; name?: string | null; procedure?: string | null; phone?: string | null };
           if (v.valid) {
+            if (v.phone) setInvitedPhone(v.phone);
             const nm = v.name ? ` ${v.name}` : '';
             const proc = v.procedure ? ` for your ${v.procedure}` : '';
             const g = `Welcome back${nm} 🤍 A space has just opened${proc} — I'm so glad it's your turn. Let's plan everything together now. To start, tell me a little about what you're hoping to achieve?`;
@@ -313,19 +317,11 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
     sendMessage(text);
   }, [sendMessage]);
 
-  const linkAndSubmit = useCallback(async () => {
+  // Shared registration: link the number to this session's patient and submit the
+  // intake. Used by both the manual phone box (anonymous patients) and the
+  // auto-register effect (invited patients, whose number arrived in their token).
+  const doSubmit = useCallback(async (normalized: string) => {
     if (linking || linked || !intakeData) return;
-    const trimmed = phone.trim();
-    let normalized = '';
-    try {
-      const parsed = parsePhoneNumber(trimmed);
-      if (parsed?.isValid()) normalized = parsed.number;
-    } catch { /* fall through to error */ }
-    if (!normalized) {
-      setPhoneError('Please enter a valid number with country code — e.g. +44 7911 123456.');
-      return;
-    }
-    setPhoneError('');
     setLinking(true);
     const name = (intakeData.name as string) || (patientName !== 'there' ? patientName : undefined);
     try {
@@ -356,7 +352,31 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
     } finally {
       setLinking(false);
     }
-  }, [linking, linked, intakeData, phone, patientName, sessionId]);
+  }, [linking, linked, intakeData, patientName, sessionId]);
+
+  const linkAndSubmit = useCallback(async () => {
+    if (linking || linked || !intakeData) return;
+    const trimmed = phone.trim();
+    let normalized = '';
+    try {
+      const parsed = parsePhoneNumber(trimmed);
+      if (parsed?.isValid()) normalized = parsed.number;
+    } catch { /* fall through to error */ }
+    if (!normalized) {
+      setPhoneError('Please enter a valid number with country code — e.g. +44 7911 123456.');
+      return;
+    }
+    setPhoneError('');
+    await doSubmit(normalized);
+  }, [linking, linked, intakeData, phone, doSubmit]);
+
+  // Invited patients: the moment intake completes, auto-register using the number
+  // already carried in their invite token — no phone box, no re-asking.
+  useEffect(() => {
+    if (intakeComplete && inviteToken && invitedPhone && intakeData && !linked && !linking) {
+      doSubmit(invitedPhone);
+    }
+  }, [intakeComplete, inviteToken, invitedPhone, intakeData, linked, linking, doSubmit]);
 
   return (
     <div className="flex flex-col h-full">
@@ -415,7 +435,19 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
           <TriageWidget onSubmit={submitTriage} />
         )}
 
-        {intakeComplete && !linked && (
+        {/* Invited patients came from WhatsApp — we already hold their number in
+            the token and auto-register on completion, so no phone box. */}
+        {intakeComplete && !linked && inviteToken && (
+          <div className="bg-surface-container-low border border-outline-variant/30 rounded-2xl px-5 py-4 text-center">
+            <svg className="w-5 h-5 animate-spin text-primary mx-auto mb-2" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+            </svg>
+            <p className="font-body text-on-surface-variant text-xs">Putting your personalised surgeon matches together…</p>
+          </div>
+        )}
+
+        {intakeComplete && !linked && !inviteToken && (
           <div className="bg-surface-container-low border border-outline-variant/30 rounded-2xl px-5 py-5">
             <div className="flex items-center gap-2 mb-1.5">
               <svg className="w-5 h-5 text-[#25D366] fill-current shrink-0" viewBox="0 0 24 24">
@@ -463,7 +495,7 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             <p className="font-body font-semibold text-green-400 text-sm">Consultation Registered</p>
-            <p className="font-body text-on-surface-variant text-xs mt-1">Our team will review your profile and reach out within 24–48 hours.</p>
+            <p className="font-body text-on-surface-variant text-xs mt-1">Oia is putting your personalised surgeon matches together now — she&apos;ll bring you your options here and on WhatsApp very soon.</p>
           </div>
         )}
 

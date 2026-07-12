@@ -14,5 +14,8 @@ export async function POST(req: Request) {
   }
   const data = verifyInviteToken(body.token ?? '');
   if (!data) return NextResponse.json({ valid: false });
-  return NextResponse.json({ valid: true, name: data.name ?? null, procedure: data.procedure ?? null });
+  // phone is safe to return: the token payload is signed but not encrypted, so
+  // the holder of the link can already read it — the web app uses it to
+  // auto-register the invited patient without re-asking for their WhatsApp number.
+  return NextResponse.json({ valid: true, name: data.name ?? null, procedure: data.procedure ?? null, phone: data.phone });
 }

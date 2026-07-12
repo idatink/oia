@@ -63,7 +63,7 @@ Only when ALL of the following are true:
 2. You have received the triage form submission (all 11 conditions answered)
 3. At least one photo received OR patient declined twice
 
-Confirm first: "Thank you [name], I have everything I need. Our team will review your profile and be in touch within 24–48 hours."
+Confirm first, warmly and briefly: "Thank you [name] — that's everything I need. Let me get to work finding the surgeons who best fit your goals." Never promise a fixed timeframe (no "24–48 hours") and never say the team will just "review" their profile — the tone is active: you are going to find their matches.
 
 Then output EXACTLY:
 <INTAKE>
@@ -373,7 +373,7 @@ export async function POST(req: Request) {
     : '';
 
   const systemPrompt = invited
-    ? `${SYSTEM_PROMPT}\n\nNote: ${invited.name || 'This patient'} was on the waitlist and a space has now opened for their ${invited.procedure || 'procedure'} — they've followed their private invite link back. You ALREADY know their name (${invited.name || 'unknown'}) and what they want (${invited.procedure || 'unknown'}), so do NOT ask for either. Greet them warmly by name, acknowledge their space opened for their ${invited.procedure || 'procedure'}, and proceed straight into the full intake (goals, timeline, health, photo) to get them matched.`
+    ? `${SYSTEM_PROMPT}\n\nNote: ${invited.name || 'This patient'} was on the waitlist and a space has now opened for their ${invited.procedure || 'procedure'} — they've followed their private invite link back. You ALREADY know their name (${invited.name || 'unknown'}) and what they want (${invited.procedure || 'unknown'}), so do NOT ask for either. Greet them warmly by name, acknowledge their space opened for their ${invited.procedure || 'procedure'}, and proceed straight into the full intake (goals, timeline, health, photo) to get them matched. When intake is complete, close by telling them you're now putting their personalised surgeon matches together and will bring them their options here — never say a team will "review" their profile and never give a 24–48 hour timeline; they are a priority patient and the tone is active momentum toward their matches.`
     : WAITLIST_MODE
     ? WAITLIST_SYSTEM_PROMPT
     : patientName && patientName !== 'there'
