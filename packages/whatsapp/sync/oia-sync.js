@@ -182,6 +182,40 @@ async function outboundTick() {
   }
 }
 
+// TESTMODE reset: when a patient texts "TESTMODE", wipe everything registered for
+// that number (DB) AND clear Oia's conversation memory for the peer, so the same
+// number can run clean back-to-back tests. Deterministic — not model-dependent.
+async function testModeReset(api, secret, phone, file) {
+  try {
+    await fetch(`${api}/api/intake/reset`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${secret}` },
+      body: JSON.stringify({ phone }),
+    });
+  } catch (e) {
+    console.error('[oia-testmode] db reset failed:', e.message);
+  }
+  // Clear the peer's OpenClaw conversation memory (delete the transcript + drop
+  // the sessions.json key so the next message starts a brand-new session).
+  try { fs.unlinkSync(path.join(SESSIONS_DIR, file)); } catch {}
+  try {
+    const sp = path.join(SESSIONS_DIR, 'sessions.json');
+    const map = JSON.parse(fs.readFileSync(sp, 'utf8'));
+    const entries = map.sessions || map;
+    for (const key of Object.keys(entries)) {
+      const m = key.match(PHONE_KEY_RE);
+      if (m && m[1] === phone) delete entries[key];
+    }
+    const tmp = sp + '.tmp';
+    fs.writeFileSync(tmp, JSON.stringify(map));
+    fs.renameSync(tmp, sp);
+  } catch (e) {
+    console.error('[oia-testmode] session clear failed:', e.message);
+  }
+  delete offsets[file];
+  console.log(`[oia-testmode] wiped ${phone} (db + conversation memory)`);
+}
+
 let offsets = readOffsets();
 
 async function tick() {
@@ -215,6 +249,7 @@ async function tick() {
     // endpoint de-dupes by messageId so this is safe.
     if (lines.length < from) from = 0;
 
+    let wiped = false;
     for (let i = from; i < lines.length; i++) {
       let evt;
       try {
@@ -226,6 +261,14 @@ async function tick() {
       const role = evt.message.role === 'user' ? 'patient' : 'oia';
       const content = extractText(evt.message.content);
       if (!content) continue; // pure thinking / tool / media with no text
+      // TESTMODE from the patient wipes the number (db + memory) — do it and stop
+      // processing this session (its file is now gone).
+      if (role === 'patient' && /\btestmode\b/i.test(content)) {
+        await testModeReset(api, secret, phone, file);
+        changed = true;
+        wiped = true;
+        break;
+      }
       await postMessage(api, secret, {
         phone,
         role,
@@ -234,6 +277,7 @@ async function tick() {
         ts: evt.timestamp,
       });
     }
+    if (wiped) continue; // session file deleted — skip the offset update
 
     if (lines.length !== (offsets[file] || 0)) {
       offsets[file] = lines.length;
