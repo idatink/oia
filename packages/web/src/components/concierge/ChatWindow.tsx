@@ -6,6 +6,7 @@ import ChatMessage, { type Message } from './ChatMessage';
 import QuickReplies from './QuickReplies';
 import ChatInput from './ChatInput';
 import TriageWidget, { type TriageAnswers } from './TriageWidget';
+import PhotoGuideWidget, { type CapturedPhoto } from './PhotoGuideWidget';
 import type { ClinicCardData } from './ClinicCard';
 import { WAITLIST_MODE, WAITLIST_GREETING, WAITLIST_WHATSAPP_URL } from '@/lib/waitlist';
 
@@ -38,6 +39,7 @@ interface PhotoItem {
   base64: string;
   mediaType: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
   previewUrl: string;
+  angle?: string;
 }
 
 async function fileToPhotoItem(file: File): Promise<PhotoItem> {
@@ -82,6 +84,8 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
   const [loading, setLoading] = useState(false);
   const [intakeComplete, setIntakeComplete] = useState(false);
   const [showTriage, setShowTriage] = useState(false);
+  // Photo Guide: which procedure's angle set to show (null = not showing).
+  const [photosProcedure, setPhotosProcedure] = useState<string | null>(null);
   // Anonymous-first (A3): intake data is held until the patient shares a number.
   const [intakeData, setIntakeData] = useState<IntakeData | null>(null);
   const [phone, setPhone] = useState('');
@@ -161,17 +165,20 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
     })();
   }, [patientName, sessionId, inviteToken]);
 
-  const sendMessage = useCallback(async (text: string, files?: File[]) => {
+  const sendMessage = useCallback(async (text: string, files?: File[], angles?: string[]) => {
     if (loading) return;
 
-    // Convert files to base64 photo items
+    // Convert files to base64 photo items. `angles` (optional, parallel to files)
+    // carries the Photo Guide's angle label per file so photos land labelled.
     const photos: PhotoItem[] = [];
     if (files?.length) {
-      for (const file of files) {
+      for (let i = 0; i < files.length; i++) {
         try {
-          photos.push(await fileToPhotoItem(file));
+          const item = await fileToPhotoItem(files[i]);
+          if (angles?.[i]) item.angle = angles[i];
+          photos.push(item);
         } catch {
-          console.error('Failed to read file', file.name);
+          console.error('Failed to read file', files[i].name);
         }
       }
     }
@@ -211,7 +218,7 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
           patientName,
           sessionId,
           invite: inviteToken,
-          photos: photos.map(({ base64, mediaType }) => ({ base64, mediaType })),
+          photos: photos.map(({ base64, mediaType, angle }) => ({ base64, mediaType, ...(angle ? { angle } : {}) })),
         }),
       });
 
@@ -273,6 +280,9 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
               } else if (event.showTriage) {
                 setShowTriage(true);
                 setSuggestions([]);
+              } else if (event.photosProcedure) {
+                setPhotosProcedure(event.photosProcedure as string);
+                setSuggestions([]);
               }
 
               // Attach real clinic cards matched to the patient's procedure
@@ -315,6 +325,20 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
       ? `Medical screening answers: No to all conditions (${noItems.join(', ')}).`
       : `Medical screening answers — Yes: ${yesItems.join(', ')}. No: ${noItems.join(', ')}.`;
     sendMessage(text);
+  }, [sendMessage]);
+
+  // Photo Guide submit: send the captured (angle-labelled) photos to Oia along with
+  // a structured summary line so she knows exactly which angles arrived (or that
+  // the patient skipped) and can acknowledge and continue.
+  const submitPhotos = useCallback((captured: CapturedPhoto[]) => {
+    setPhotosProcedure(null);
+    if (captured.length === 0) {
+      sendMessage('Photos: the patient chose to skip sharing photos for now.');
+      return;
+    }
+    const labels = captured.map(c => c.label).join(', ');
+    const text = `Photos shared — the patient uploaded these angles: ${labels}.`;
+    sendMessage(text, captured.map(c => c.file), captured.map(c => c.key));
   }, [sendMessage]);
 
   // Shared registration: link the number to this session's patient and submit the
@@ -433,6 +457,10 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
 
         {showTriage && !intakeComplete && (
           <TriageWidget onSubmit={submitTriage} />
+        )}
+
+        {photosProcedure && !intakeComplete && (
+          <PhotoGuideWidget procedure={photosProcedure} onComplete={submitPhotos} />
         )}
 
         {/* Invited patients came from WhatsApp — we already hold their number in

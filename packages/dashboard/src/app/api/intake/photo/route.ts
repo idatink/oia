@@ -22,6 +22,9 @@ export async function POST(req: Request) {
   const { searchParams } = new URL(req.url);
   const sessionId = (searchParams.get('sessionId') || 'anon').replace(/[^a-zA-Z0-9_-]/g, '') || 'anon';
   const ext = (searchParams.get('ext') || 'jpg').replace(/[^a-zA-Z0-9]/g, '').slice(0, 5) || 'jpg';
+  // Optional angle label from the Photo Guide (e.g. left_profile) — prefixed onto
+  // the filename so the clinical team receives angle-tagged photos.
+  const angle = (searchParams.get('angle') || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40);
   const contentType = req.headers.get('content-type') || 'image/jpeg';
 
   const bytes = await req.arrayBuffer();
@@ -30,7 +33,8 @@ export async function POST(req: Request) {
   }
 
   try {
-    const blob = await put(`patient-photos/${sessionId}/${Date.now()}.${ext}`, bytes, {
+    const prefix = angle ? `${angle}-` : '';
+    const blob = await put(`patient-photos/${sessionId}/${prefix}${Date.now()}.${ext}`, bytes, {
       access: 'private',
       contentType,
       ...(token ? { token } : {}),

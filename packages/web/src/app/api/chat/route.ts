@@ -53,15 +53,15 @@ Once you have all patient information above, output exactly: <TRIAGE/>
 The patient will be shown an interactive form for all 11 conditions. When they submit it, you will receive their answers as a structured message. Read those answers, acknowledge any flags naturally in one sentence, then proceed to photos.
 
 ### Treatment area photos (required)
-- Ask once: "Could you share a quick photo of the area you'd like to address? It helps our surgeons give you a much more accurate first impression."
-- If they decline: note that photos are only seen by the clinical team and ask one more time.
-- After two refusals, accept and proceed.
+Do NOT ask for photos in free text and do NOT try to describe or count angles yourself — an interactive Photo Guide handles that. When you reach the photo step, say one warm sentence, then output exactly: <PHOTOS procedure="SLUG"/> (SLUG = the procedure slug, e.g. rhinoplasty, abdominoplasty, breast-augmentation, facelift, blepharoplasty, liposuction, brazilian-butt-lift).
+- Example: "Last step — a few photos so your surgeon can assess you accurately. I've laid out exactly which angles to take:" then <PHOTOS procedure="rhinoplasty"/>
+- The patient will be shown labelled slots for each required angle and will upload them there. When they submit, you receive a structured message listing which angles they shared (or that they skipped) — acknowledge it warmly in one sentence and proceed. Never re-ask for angles the guide already handled.
 
 ## When you may output <INTAKE>
 Only when ALL of the following are true:
 1. All patient information fields confirmed
 2. You have received the triage form submission (all 11 conditions answered)
-3. At least one photo received OR patient declined twice
+3. The Photo Guide has been submitted (they shared photos or chose to skip)
 
 Confirm first, warmly and briefly: "Thank you [name] — that's everything I need. Let me get to work finding the surgeons who best fit your goals." Never promise a fixed timeframe (no "24–48 hours") and never say the team will just "review" their profile — the tone is active: you are going to find their matches.
 
@@ -115,7 +115,7 @@ Then follow with one sentence: "These are a few of our top-rated partner clinics
 You can show a gallery or clinics at any point during the conversation — before or after intake. These do NOT block intake.
 
 ## Control tags — output them EXACTLY, literally (CRITICAL)
-- <TRIAGE/>, <CLINICS/>, <GALLERY procedure="..."/> and the <INTAKE>…</INTAKE> block are literal control tokens the app parses.
+- <TRIAGE/>, <PHOTOS procedure="..."/>, <CLINICS/>, <GALLERY procedure="..."/> and the <INTAKE>…</INTAKE> block are literal control tokens the app parses.
 - Write them verbatim, on their own, with NO markdown, NO code fences, NO backticks, and NO explanation around the tag itself.
 - The <INTAKE> block must contain raw JSON between the tags — never wrapped in \`\`\` fences.
 
@@ -210,6 +210,12 @@ function extractGallery(text: string): { clean: string; gallery: string | null }
   return { clean, gallery: match?.[1] ?? null };
 }
 
+function extractPhotos(text: string): { clean: string; photosProcedure: string | null } {
+  const match = text.match(/<PHOTOS\s+procedure="([^"]+)"\s*\/>/);
+  const clean = text.replace(/<PHOTOS\s+procedure="[^"]+"\s*\/>/, '').trim();
+  return { clean, photosProcedure: match?.[1] ?? null };
+}
+
 function extractClinics(text: string): { clean: string; showClinics: boolean } {
   const show = /<CLINICS\s*\/>/.test(text);
   const clean = text.replace(/<CLINICS\s*\/>/, '').trim();
@@ -217,7 +223,7 @@ function extractClinics(text: string): { clean: string; showClinics: boolean } {
 }
 
 type HistoryItem = { role: 'user' | 'assistant'; content: string };
-type PhotoItem = { base64: string; mediaType: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp' };
+type PhotoItem = { base64: string; mediaType: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp'; angle?: string };
 
 // ── LLM providers ────────────────────────────────────────────────────────────
 // Both yield plain text deltas so the streaming + tag-parsing loop below is
@@ -355,7 +361,9 @@ export async function POST(req: Request) {
     try {
       const bytes = Buffer.from(photo.base64, 'base64');
       const ext = (photo.mediaType.split('/')[1] ?? 'jpg').replace(/[^a-z0-9]/gi, '').slice(0, 5) || 'jpg';
-      const res = await fetch(`${dashboardUrl}/api/intake/photo?sessionId=${encodeURIComponent(sessionId ?? 'anon')}&ext=${ext}`, {
+      // angle label (e.g. left_profile) so the surgeon gets angle-tagged photos.
+      const angleParam = photo.angle ? `&angle=${encodeURIComponent(photo.angle)}` : '';
+      const res = await fetch(`${dashboardUrl}/api/intake/photo?sessionId=${encodeURIComponent(sessionId ?? 'anon')}&ext=${ext}${angleParam}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${intakeSecret}`, 'Content-Type': photo.mediaType },
         body: bytes,
@@ -427,6 +435,7 @@ export async function POST(req: Request) {
             .replace(/<INTAKE>[\s\S]*$/, '')
             .replace(/<WAITLIST>[\s\S]*$/, '')
             .replace(/<TRIAGE\s*\/>/, '')
+            .replace(/<PHOTOS\s+procedure="[^"]+"\s*\/>/, '')
             .replace(/<GALLERY\s+procedure="[^"]+"\s*\/>/, '')
             .replace(/<CLINICS\s*\/>/, '');
           controller.enqueue(encoder.encode(
@@ -436,12 +445,13 @@ export async function POST(req: Request) {
 
         const { clean: cleanIntake, json } = extractIntake(fullText);
         const { clean: cleanTriage, showTriage } = extractTriage(cleanIntake);
-        const { clean: cleanGallery, gallery } = extractGallery(cleanTriage);
+        const { clean: cleanPhotos, photosProcedure } = extractPhotos(cleanTriage);
+        const { clean: cleanGallery, gallery } = extractGallery(cleanPhotos);
         const { clean: cleanClinics, showClinics } = extractClinics(cleanGallery);
         const { clean, json: waitlist } = extractWaitlist(cleanClinics);
 
         controller.enqueue(encoder.encode(
-          `data: ${JSON.stringify({ type: 'done', intakeComplete: !!json, showTriage, gallery, showClinics, waitlistComplete: !!waitlist, fullText: clean, intake: json })}\n\n`
+          `data: ${JSON.stringify({ type: 'done', intakeComplete: !!json, showTriage, photosProcedure, gallery, showClinics, waitlistComplete: !!waitlist, fullText: clean, intake: json })}\n\n`
         ));
 
         // Persist the turn BEFORE closing the stream. On serverless (Vercel) the
