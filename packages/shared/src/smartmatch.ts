@@ -57,6 +57,34 @@ const CLUSTER_KEYWORDS: Record<string, string[]> = {
   BBL: ['bbl', 'butt', 'buttock', 'brazilian'],
 };
 
+// Colloquial procedure phrase → cluster. Patients rarely say "abdominoplasty";
+// they say "tummy tuck", "nose job", "eye lift", "boob job". interpret() falls back
+// to this when a term doesn't substring-match any treatment NAME. ORDER MATTERS:
+// specific clusters are tested before Face (whose bare "lift" would otherwise grab
+// "butt lift" / "breast lift"), so the Face pattern uses explicit compounds only.
+const CLUSTER_PATTERNS: [string, RegExp][] = [
+  ['BBL',    /\b(bbl|brazilian|butt|buttock|booty|glute)\b/],
+  ['Nose',   /\b(nose|nose ?job|rhino|nostril|septum|deviated|bridge|hump)\b/],
+  ['Breast', /\b(breast|boob|boob ?job|mammo|areola|nipple|cleavage|uplift)\b/],
+  ['Face',   /\b(face|face ?lift|facelift|eye|eyes|eye ?lift|eyelid|eye ?bag|under ?eye|bleph|brow|forehead|neck ?lift|jaw|jowl|chin|cheek|wrinkle|nasolabial|ptosis|droopy|saggy eye|hooded)\b/],
+  ['Body',   /\b(tummy|tummy ?tuck|abdomin|lipo|liposuction|contour|arm ?lift|thigh|mommy|love ?handle|gyneco|bariatric|body|fat ?removal|love ?handles)\b/],
+];
+
+// Representative matchable treatment per cluster, used when the term maps to a
+// cluster but no specific technique name matches.
+const CLUSTER_HERO: Record<string, string> = {
+  Nose: 'rhinoplasty',
+  Breast: 'breast-augmentation',
+  Face: 'facelift',
+  Body: 'tummy-tuck',
+  BBL: 'brazilian-butt-lift',
+};
+
+function clusterFromTerm(term: string): string | null {
+  for (const [cluster, re] of CLUSTER_PATTERNS) if (re.test(term)) return cluster;
+  return null;
+}
+
 // Does the provider's free-text specialisms mention this cluster's work?
 function specialismScore(specialisms: string | null, cluster: string | null): number {
   if (!specialisms || !cluster) return 0.5;
@@ -84,18 +112,23 @@ async function interpret(profile: PatientProfile) {
   }
 
   const term = (profile.procedure || '').trim();
+  const termLc = term.toLowerCase();
   const concernTags = profile.concernTags || [];
+  const STOP = new Set(['the', 'and', 'for', 'surgery', 'procedure', 'job', 'lift', 'reduction', 'my', 'area']);
+  const termTokens = termLc.split(/[^a-z]+/).filter(w => w.length >= 3 && !STOP.has(w));
 
-  // Candidates: name contains the term, OR concern-tag overlap.
   const matchable = await db.treatment.findMany({
     where: { matchable: true },
     include: { category: true },
   });
 
+  // Precise pass: full-phrase or per-token name/alias substring, plus concern tags.
   const scored = matchable
     .map(t => {
+      const nameLc = t.name.toLowerCase();
       let s = 0;
-      if (term && t.name.toLowerCase().includes(term.toLowerCase())) s += 2;
+      if (termLc && nameLc.includes(termLc)) s += 3; // whole phrase in the name
+      for (const tok of termTokens) if (nameLc.includes(tok)) s += 1; // significant token
       const overlap = t.concernTags.filter(c => concernTags.includes(c)).length;
       s += overlap;
       return { t, s };
@@ -103,8 +136,29 @@ async function interpret(profile: PatientProfile) {
     .filter(x => x.s > 0)
     .sort((a, b) => b.s - a.s);
 
-  if (scored.length === 0) return { chosen: null, candidates: [] };
-  return { chosen: scored[0].t, candidates: scored.slice(0, 5).map(x => x.t.name) };
+  if (scored.length > 0) return { chosen: scored[0].t, candidates: scored.slice(0, 5).map(x => x.t.name) };
+
+  // Fallback: no treatment name matched (colloquial term like "eye lift"). Detect
+  // the cluster from the patient's words and match within it — providers are matched
+  // by cluster anyway, so the right SURGEONS surface even when the exact technique
+  // label is loose. This is what stops colloquial terms from silently returning zero.
+  const cluster = clusterFromTerm(termLc);
+  if (cluster) {
+    const inCluster = matchable.filter(t => t.category?.cluster === cluster);
+    if (inCluster.length > 0) {
+      // Prefer a technique whose name shares the earliest significant token; else the
+      // cluster's hero treatment; else any matchable treatment in the cluster.
+      let chosen = null as (typeof inCluster)[number] | null;
+      for (const tok of termTokens) {
+        const hit = inCluster.find(t => t.name.toLowerCase().includes(tok));
+        if (hit) { chosen = hit; break; }
+      }
+      chosen = chosen ?? inCluster.find(t => t.slug === CLUSTER_HERO[cluster]) ?? inCluster[0];
+      return { chosen, candidates: [chosen.name] };
+    }
+  }
+
+  return { chosen: null, candidates: [] };
 }
 
 export async function smartMatch(profile: PatientProfile, limit = 3): Promise<MatchResult> {
