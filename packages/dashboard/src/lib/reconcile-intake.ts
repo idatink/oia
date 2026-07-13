@@ -105,14 +105,21 @@ async function extractFromTranscript(transcript: string): Promise<Extracted | nu
 }
 
 export type ReconcileResult =
-  | { ok: true; action: 'created'; leadCreated: boolean; matched: boolean; procedure: string }
+  | { ok: true; action: 'created'; leadCreated: boolean; matched: boolean; procedure: string; country?: string; name?: string }
   | { ok: true; action: 'skipped'; reason: string };
 
 /**
- * Rescue one WhatsApp session into a Lead if it's a completed intake with no Lead.
+ * Rescue one session into a Lead if it's a completed intake with no Lead.
  * `origin` is this app's own base URL, used to reuse the existing intake endpoints.
+ * By default only WhatsApp sessions are eligible; pass `{ allowWeb: true }` to also
+ * rescue web sessions (used by the web finalize step, where Oia — on Qwen — often
+ * ends the intake without ever emitting the <INTAKE> control block).
  */
-export async function reconcileSession(sessionId: string, origin: string): Promise<ReconcileResult> {
+export async function reconcileSession(
+  sessionId: string,
+  origin: string,
+  opts: { allowWeb?: boolean } = {},
+): Promise<ReconcileResult> {
   const session = await db.nIASession.findUnique({
     where: { id: sessionId },
     select: {
@@ -123,8 +130,11 @@ export async function reconcileSession(sessionId: string, origin: string): Promi
       messages: { orderBy: { createdAt: 'asc' }, select: { role: true, content: true, metadata: true } },
     },
   });
-  if (!session || session.surface !== 'whatsapp') return { ok: true, action: 'skipped', reason: 'not a whatsapp session' };
+  if (!session || (session.surface !== 'whatsapp' && !(opts.allowWeb && session.surface === 'web')))
+    return { ok: true, action: 'skipped', reason: 'session not eligible' };
 
+  // Phone: WhatsApp sessions are keyed by phone; web sessions are keyed by phone
+  // only AFTER /api/link-session migrated the identifier from the browser id.
   const phone = session.identifier;
   if (!phone || !phone.startsWith('+')) return { ok: true, action: 'skipped', reason: 'no phone' };
 
@@ -167,7 +177,7 @@ export async function reconcileSession(sessionId: string, origin: string): Promi
     method: 'POST',
     headers: auth,
     body: JSON.stringify({
-      surface: 'whatsapp',
+      surface: session.surface === 'web' ? 'web' : 'whatsapp',
       phone,
       name: data.name ?? phone,
       procedure: data.procedure,
@@ -197,7 +207,15 @@ export async function reconcileSession(sessionId: string, origin: string): Promi
     /* non-fatal */
   }
 
-  return { ok: true, action: 'created', leadCreated, matched, procedure: data.procedure };
+  return {
+    ok: true,
+    action: 'created',
+    leadCreated,
+    matched,
+    procedure: data.procedure,
+    country: data.countryOfResidence ?? undefined,
+    name: data.name ?? undefined,
+  };
 }
 
 // ── Waitlist safety net ──────────────────────────────────────────────────────

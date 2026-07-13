@@ -20,9 +20,10 @@ const INITIAL_QUICK_REPLIES = [
 
 const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '';
 
-async function fetchMatchedClinics(procedure: string): Promise<ClinicCardData[]> {
+async function fetchMatchedClinics(procedure: string, country?: string | null): Promise<ClinicCardData[]> {
   try {
-    const res = await fetch(`/api/clinics?procedure=${encodeURIComponent(procedure)}`);
+    const q = `procedure=${encodeURIComponent(procedure)}${country ? `&country=${encodeURIComponent(country)}` : ''}`;
+    const res = await fetch(`/api/clinics?${q}`);
     if (!res.ok) return [];
     return await res.json();
   } catch {
@@ -92,9 +93,14 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
   const [phoneError, setPhoneError] = useState('');
   const [linking, setLinking] = useState(false);
   const [linked, setLinked] = useState(false);
-  // Invited-back patients arrive with their WhatsApp number already in the invite
-  // token — captured here so we can auto-register them without re-asking for it.
+  // Invited-back patients arrive with their WhatsApp number + name + intention
+  // already in the invite token — captured here so we can auto-register them and
+  // finalize (match) without re-asking for anything.
   const [invitedPhone, setInvitedPhone] = useState<string | null>(null);
+  const [invitedProcedure, setInvitedProcedure] = useState<string | null>(null);
+  // Match finalization: finding + delivering the SmartMatch shortlist.
+  const [finalizing, setFinalizing] = useState(false);
+  const [finalized, setFinalized] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const greeted = useRef(false);
 
@@ -145,6 +151,7 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
           const v = await vr.json() as { valid: boolean; name?: string | null; procedure?: string | null; phone?: string | null };
           if (v.valid) {
             if (v.phone) setInvitedPhone(v.phone);
+            if (v.procedure) setInvitedProcedure(v.procedure);
             const nm = v.name ? ` ${v.name}` : '';
             const proc = v.procedure ? ` for your ${v.procedure}` : '';
             const g = `Welcome back${nm} 🤍 A space has just opened${proc} — I'm so glad it's your turn. Let's plan everything together now. To start, tell me a little about what you're hoping to achieve?`;
@@ -327,23 +334,72 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
     sendMessage(text);
   }, [sendMessage]);
 
-  // Photo Guide submit: send the captured (angle-labelled) photos to Oia along with
-  // a structured summary line so she knows exactly which angles arrived (or that
-  // the patient skipped) and can acknowledge and continue.
-  const submitPhotos = useCallback((captured: CapturedPhoto[]) => {
+  // Find + deliver the SmartMatch shortlist once intake is content-complete. Runs
+  // deterministically off the Photo Guide submit (and as a fallback if Oia does emit
+  // <INTAKE>), so completion no longer depends on Qwen emitting the control block —
+  // which is exactly what silently dropped finished intakes before. Links the session
+  // to the phone, calls /api/finalize-intake (reconcile → SmartMatch → queue the match
+  // link to WhatsApp), then renders the matched surgeons inline in the chat.
+  const finalizeStarted = useRef(false);
+  const finalize = useCallback(async (rawPhone: string, opts?: { procedureHint?: string; alreadyLinked?: boolean }) => {
+    const phoneE164 = (rawPhone || '').replace(/\s+/g, '');
+    if (!phoneE164 || finalizeStarted.current) return;
+    finalizeStarted.current = true;
+    setFinalizing(true);
+    const name = (intakeData?.name as string) || (patientName !== 'there' ? patientName : undefined);
+    const procedure = (intakeData?.procedure as string) || opts?.procedureHint || invitedProcedure || undefined;
+    const country = (intakeData?.countryOfResidence as string) || undefined;
+    try {
+      if (!opts?.alreadyLinked) {
+        await fetch('/api/link-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId, phone: phoneE164, name }),
+        });
+      }
+      const res = await fetch('/api/finalize-intake', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phoneE164, name, procedure, country }),
+      });
+      const data = await res.json() as { procedure?: string; country?: string | null; providerCount?: number };
+      const proc = data.procedure || procedure || '';
+      const clinics = proc ? await fetchMatchedClinics(proc, data.country ?? country) : [];
+      const line = clinics.length > 0
+        ? "Here are the surgeons I've matched you with 🤍 I've also saved these to your WhatsApp so you can revisit them anytime."
+        : "Thank you — I'm lining up the surgeons who best fit your goals and I'll send them straight to your WhatsApp very shortly.";
+      setMessages(m => [...m, { id: `matches-${m.length}`, role: 'nia', content: line, clinics, timestamp: new Date() }]);
+      setLinked(true);
+      setFinalized(true);
+    } catch (err) {
+      console.error('[finalize]', err);
+      setMessages(m => [...m, { id: `matches-${m.length}`, role: 'nia', content: "Thank you — I'll send your surgeon matches to your WhatsApp very shortly.", timestamp: new Date() }]);
+      setLinked(true);
+      setFinalized(true);
+    } finally {
+      setFinalizing(false);
+    }
+  }, [intakeData, patientName, sessionId, invitedProcedure]);
+
+  // Photo Guide submit: send the captured (angle-labelled) photos to Oia with a
+  // structured summary so she acknowledges and continues. For invited patients this
+  // doubles as the deterministic "intake complete" signal → finalize + deliver matches.
+  const submitPhotos = useCallback(async (captured: CapturedPhoto[]) => {
+    const proc = photosProcedure;
     setPhotosProcedure(null);
     if (captured.length === 0) {
-      sendMessage('Photos: the patient chose to skip sharing photos for now.');
-      return;
+      await sendMessage('Photos: the patient chose to skip sharing photos for now.');
+    } else {
+      const labels = captured.map(c => c.label).join(', ');
+      await sendMessage(`Photos shared — the patient uploaded these angles: ${labels}.`, captured.map(c => c.file), captured.map(c => c.key));
     }
-    const labels = captured.map(c => c.label).join(', ');
-    const text = `Photos shared — the patient uploaded these angles: ${labels}.`;
-    sendMessage(text, captured.map(c => c.file), captured.map(c => c.key));
-  }, [sendMessage]);
+    if (inviteToken && invitedPhone) {
+      await finalize(invitedPhone, { procedureHint: proc ?? invitedProcedure ?? undefined });
+    }
+  }, [sendMessage, photosProcedure, inviteToken, invitedPhone, invitedProcedure, finalize]);
 
   // Shared registration: link the number to this session's patient and submit the
-  // intake. Used by both the manual phone box (anonymous patients) and the
-  // auto-register effect (invited patients, whose number arrived in their token).
+  // intake. Used by the manual phone box (anonymous patients).
   const doSubmit = useCallback(async (normalized: string) => {
     if (linking || linked || !intakeData) return;
     setLinking(true);
@@ -392,15 +448,18 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
     }
     setPhoneError('');
     await doSubmit(normalized);
-  }, [linking, linked, intakeData, phone, doSubmit]);
+    // Deliver the SmartMatch shortlist (inline + WhatsApp) now that we have a number.
+    await finalize(normalized, { alreadyLinked: true });
+  }, [linking, linked, intakeData, phone, doSubmit, finalize]);
 
-  // Invited patients: the moment intake completes, auto-register using the number
-  // already carried in their invite token — no phone box, no re-asking.
+  // Invited patients: finalize the moment intake is complete. Two triggers, whichever
+  // fires first (hard-guarded to run once): the Photo Guide submit (deterministic) or
+  // a clean <INTAKE> block on the rare occasion Qwen does emit one.
   useEffect(() => {
-    if (intakeComplete && inviteToken && invitedPhone && intakeData && !linked && !linking) {
-      doSubmit(invitedPhone);
+    if (intakeComplete && inviteToken && invitedPhone && !finalized && !finalizing) {
+      finalize(invitedPhone, { procedureHint: (intakeData?.procedure as string) || invitedProcedure || undefined });
     }
-  }, [intakeComplete, inviteToken, invitedPhone, intakeData, linked, linking, doSubmit]);
+  }, [intakeComplete, inviteToken, invitedPhone, finalized, finalizing, intakeData, invitedProcedure, finalize]);
 
   return (
     <div className="flex flex-col h-full">
@@ -463,19 +522,19 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
           <PhotoGuideWidget procedure={photosProcedure} onComplete={submitPhotos} />
         )}
 
-        {/* Invited patients came from WhatsApp — we already hold their number in
-            the token and auto-register on completion, so no phone box. */}
-        {intakeComplete && !linked && inviteToken && (
+        {/* Finding + delivering the SmartMatch shortlist (invited patients skip the
+            phone box entirely — we already hold their number in the token). */}
+        {finalizing && (
           <div className="bg-surface-container-low border border-outline-variant/30 rounded-2xl px-5 py-4 text-center">
             <svg className="w-5 h-5 animate-spin text-primary mx-auto mb-2" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
             </svg>
-            <p className="font-body text-on-surface-variant text-xs">Putting your personalised surgeon matches together…</p>
+            <p className="font-body text-on-surface-variant text-xs">Finding the surgeons who best fit your goals…</p>
           </div>
         )}
 
-        {intakeComplete && !linked && !inviteToken && (
+        {intakeComplete && !linked && !finalizing && !finalized && !inviteToken && (
           <div className="bg-surface-container-low border border-outline-variant/30 rounded-2xl px-5 py-5">
             <div className="flex items-center gap-2 mb-1.5">
               <svg className="w-5 h-5 text-[#25D366] fill-current shrink-0" viewBox="0 0 24 24">
@@ -517,7 +576,10 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
           </div>
         )}
 
-        {linked && (
+        {/* Once finalized, the matched surgeons are rendered inline as a chat message,
+            so this "registered but no matches yet" card only shows if delivery hasn't
+            completed (e.g. finalize errored). */}
+        {linked && !finalized && (
           <div className="bg-green-500/10 border border-green-500/20 rounded-2xl px-5 py-4 text-center">
             <svg className="w-8 h-8 text-green-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
