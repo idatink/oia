@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  let body: { phone?: string; name?: string; procedure?: string; country?: string; deliverWhatsApp?: boolean };
+  let body: { phone?: string; name?: string; procedure?: string; country?: string; locationPreference?: 'local' | 'travel' | 'both'; deliverWhatsApp?: boolean };
   try {
     body = await req.json();
   } catch {
@@ -46,6 +46,7 @@ export async function POST(req: Request) {
   let procedure = body.procedure ?? '';
   let country = body.country;
   let name = body.name;
+  let locationPreference = body.locationPreference;
   if (session) {
     try {
       const r = await reconcileSession(session.id, origin, { allowWeb: true });
@@ -53,6 +54,7 @@ export async function POST(req: Request) {
         procedure = procedure || r.procedure;
         country = country ?? r.country;
         name = name ?? r.name;
+        locationPreference = locationPreference ?? r.locationPreference;
       }
     } catch (err) {
       console.error('[finalize-web] reconcile failed', err);
@@ -67,8 +69,10 @@ export async function POST(req: Request) {
   // web chat renders exactly these (same shape as /api/clinics) — no second, possibly
   // divergent match call client-side. Mirrors the /api/clinics mapping.
   let providers: Array<Record<string, unknown>> = [];
+  let note: string | undefined;
   try {
-    const result = await smartMatch({ procedure, country }, 5);
+    const result = await smartMatch({ procedure, country, locationPreference }, 5);
+    note = result.note;
     providers = result.providers.map(p => ({
       id: p.id,
       name: p.surgeonName,
@@ -116,5 +120,5 @@ export async function POST(req: Request) {
     }
   }
 
-  return NextResponse.json({ ok: true, matchToken: token, link, procedure, country: country ?? null, providerCount, providers });
+  return NextResponse.json({ ok: true, matchToken: token, link, procedure, country: country ?? null, locationPreference: locationPreference ?? null, providerCount, providers, note: note ?? null });
 }

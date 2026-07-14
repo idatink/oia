@@ -61,6 +61,7 @@ const EXTRACT_SCHEMA_HINT = `Return ONLY a JSON object (no prose, no code fence)
   "procedure": string|null,          // treatment they want, plain words e.g. "tummy tuck"
   "dateOfBirth": string|null,        // ISO "YYYY-MM-DD" if derivable, else null
   "countryOfResidence": string|null,
+  "locationPreference": "local"|"travel"|"both"|null, // did they want it done at home, abroad, or to compare both?
   "intent": string|null,             // one sentence: their goal
   "medicalScreening": object,        // {"diabetes":false,...} for conditions mentioned; {} if none discussed
   "photosDeclined": boolean,         // true if they declined a photo
@@ -75,6 +76,7 @@ type Extracted = {
   procedure: string | null;
   dateOfBirth: string | null;
   countryOfResidence: string | null;
+  locationPreference: 'local' | 'travel' | 'both' | null;
   intent: string | null;
   medicalScreening: Record<string, boolean>;
   photosDeclined: boolean;
@@ -105,7 +107,7 @@ async function extractFromTranscript(transcript: string): Promise<Extracted | nu
 }
 
 export type ReconcileResult =
-  | { ok: true; action: 'created'; leadCreated: boolean; matched: boolean; procedure: string; country?: string; name?: string }
+  | { ok: true; action: 'created'; leadCreated: boolean; matched: boolean; procedure: string; country?: string; name?: string; locationPreference?: 'local' | 'travel' | 'both' }
   | { ok: true; action: 'skipped'; reason: string };
 
 /**
@@ -200,7 +202,12 @@ export async function reconcileSession(
     const matchRes = await fetch(`${origin}/api/smartmatch`, {
       method: 'POST',
       headers: auth,
-      body: JSON.stringify({ phone, procedure: data.procedure, country: data.countryOfResidence ? undefined : undefined }),
+      body: JSON.stringify({
+        phone,
+        procedure: data.procedure,
+        country: data.countryOfResidence ?? undefined,
+        locationPreference: data.locationPreference ?? undefined,
+      }),
     });
     matched = matchRes.ok;
   } catch {
@@ -214,6 +221,7 @@ export async function reconcileSession(
     matched,
     procedure: data.procedure,
     country: data.countryOfResidence ?? undefined,
+    locationPreference: data.locationPreference ?? undefined,
     name: data.name ?? undefined,
   };
 }

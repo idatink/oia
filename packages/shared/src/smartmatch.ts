@@ -11,6 +11,7 @@ export type PatientProfile = {
   treatmentSlug?: string; // pre-resolved technique, if known
   concernTags?: string[]; // Oia-derived concern tags
   country?: string; // ISO alpha-2 of the patient, e.g. "GB"
+  locationPreference?: 'local' | 'travel' | 'both'; // patient's choice: home only, abroad, or compare both
   ageBand?: string; // "45-54"
   budget?: number; // GBP
   goalTags?: string[];
@@ -178,11 +179,17 @@ export async function smartMatch(profile: PatientProfile, limit = 3): Promise<Ma
     };
   }
 
-  // Filter: active providers in a pilot country that cover this cluster.
+  // Filter: active providers that cover this cluster, in the countries the patient's
+  // locationPreference allows.
+  //  - local        → their own country only (0 results → honest "no local yet", handled by caller)
+  //  - travel / both → the full accredited network (their country ranked first if it's in scope)
+  //  - unset         → network (backwards-compatible default)
   const patientCountry = (profile.country || '').toUpperCase();
-  const countries = PILOT_COUNTRIES.includes(patientCountry)
-    ? [patientCountry, ...PILOT_COUNTRIES.filter(c => c !== patientCountry)]
-    : PILOT_COUNTRIES;
+  const countries = profile.locationPreference === 'local'
+    ? (patientCountry ? [patientCountry] : [])
+    : PILOT_COUNTRIES.includes(patientCountry)
+      ? [patientCountry, ...PILOT_COUNTRIES.filter(c => c !== patientCountry)]
+      : PILOT_COUNTRIES;
 
   const eligible = await db.provider.findMany({
     where: { isActive: true, country: { in: countries }, clusters: { has: cluster } },
@@ -214,9 +221,17 @@ export async function smartMatch(profile: PatientProfile, limit = 3): Promise<Ma
     .sort((a, b) => b.score - a.score)
     .slice(0, limit);
 
+  // Distinguish "no surgeons in your own country yet" (local preference, empty) from a
+  // general empty result — so the caller can be honest about local supply.
+  const note = ranked.length > 0
+    ? undefined
+    : profile.locationPreference === 'local'
+      ? 'no_local_providers'
+      : 'no_providers_in_scope';
+
   return {
     treatment: { name: chosen.name, slug: chosen.slug, cluster },
     cluster, candidates, providers: ranked,
-    note: ranked.length === 0 ? 'no_providers_in_scope' : undefined,
+    note,
   };
 }

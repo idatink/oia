@@ -16,11 +16,13 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const procedure = searchParams.get('procedure') ?? '';
   const country = searchParams.get('country') ?? undefined;
+  const lp = searchParams.get('locationPreference');
+  const locationPreference = (lp === 'local' || lp === 'travel' || lp === 'both') ? lp : undefined;
   // Chat shows a shortlist (default 5); the full "match room" page passes a
   // higher limit to show the patient every surgeon who fits her goals.
   const limit = Math.min(Number(searchParams.get('limit')) || 5, 200);
 
-  const result = await smartMatch({ procedure, country }, limit);
+  const result = await smartMatch({ procedure, country, locationPreference }, limit);
 
   return NextResponse.json(
     result.providers.map(p => ({

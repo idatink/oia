@@ -20,9 +20,9 @@ const INITIAL_QUICK_REPLIES = [
 
 const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '';
 
-async function fetchMatchedClinics(procedure: string, country?: string | null): Promise<ClinicCardData[]> {
+async function fetchMatchedClinics(procedure: string, country?: string | null, locationPreference?: string | null): Promise<ClinicCardData[]> {
   try {
-    const q = `procedure=${encodeURIComponent(procedure)}${country ? `&country=${encodeURIComponent(country)}` : ''}`;
+    const q = `procedure=${encodeURIComponent(procedure)}${country ? `&country=${encodeURIComponent(country)}` : ''}${locationPreference ? `&locationPreference=${encodeURIComponent(locationPreference)}` : ''}`;
     const res = await fetch(`/api/clinics?${q}`);
     if (!res.ok) return [];
     return await res.json();
@@ -101,6 +101,12 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
   // Match finalization: finding + delivering the SmartMatch shortlist.
   const [finalizing, setFinalizing] = useState(false);
   const [finalized, setFinalized] = useState(false);
+  // Intake is content-complete when BOTH the Photo Guide and the triage form are done.
+  // Order-independent (photos now come before medical), so we track each and finalize
+  // once both have happened — not off whichever widget submits last.
+  const [photosDone, setPhotosDone] = useState(false);
+  const [triageDone, setTriageDone] = useState(false);
+  const [photosProc, setPhotosProc] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const greeted = useRef(false);
 
@@ -332,6 +338,7 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
       ? `Medical screening answers: No to all conditions (${noItems.join(', ')}).`
       : `Medical screening answers — Yes: ${yesItems.join(', ')}. No: ${noItems.join(', ')}.`;
     sendMessage(text);
+    setTriageDone(true);
   }, [sendMessage]);
 
   // Find + deliver the SmartMatch shortlist once intake is content-complete. Runs
@@ -349,6 +356,7 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
     const name = (intakeData?.name as string) || (patientName !== 'there' ? patientName : undefined);
     const procedure = (intakeData?.procedure as string) || opts?.procedureHint || invitedProcedure || undefined;
     const country = (intakeData?.countryOfResidence as string) || undefined;
+    const locationPreference = (intakeData?.locationPreference as 'local' | 'travel' | 'both') || undefined;
     try {
       if (!opts?.alreadyLinked) {
         await fetch('/api/link-session', {
@@ -360,18 +368,27 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
       const res = await fetch('/api/finalize-intake', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phoneE164, name, procedure, country }),
+        body: JSON.stringify({ phone: phoneE164, name, procedure, country, locationPreference }),
       });
-      const data = await res.json() as { procedure?: string; country?: string | null; providerCount?: number; providers?: ClinicCardData[] };
-      // Render exactly the surgeons finalize matched. Fall back to a fresh fetch only
-      // if the response somehow carried none.
+      const data = await res.json() as { procedure?: string; country?: string | null; providerCount?: number; providers?: ClinicCardData[]; note?: string | null };
       const proc = data.procedure || procedure || '';
-      const clinics = (data.providers && data.providers.length > 0)
-        ? data.providers
-        : (proc ? await fetchMatchedClinics(proc, data.country ?? country) : []);
-      const line = clinics.length > 0
-        ? "Here are the surgeons I've matched you with 🤍 Take your time looking through them — I've saved them so you can come back anytime."
-        : "Thank you — I'm putting your personalised surgeon matches together now and they'll appear here in just a moment.";
+      let clinics = (data.providers && data.providers.length > 0) ? data.providers : [];
+      let line: string;
+      if (data.note === 'no_local_providers') {
+        // Graceful degradation: no vetted surgeons in the patient's country yet. Be
+        // honest, then offer the international network instead (never abroad-as-local).
+        const intl = proc ? await fetchMatchedClinics(proc, undefined, 'travel') : [];
+        clinics = intl;
+        const where = data.country || 'your country';
+        line = intl.length > 0
+          ? `I'll be honest with you — we don't have vetted surgeons in ${where} in our network just yet. So I've focused on excellent international options, every one board-accredited. 🤍`
+          : `I'll be honest — I don't have surgeons in ${where} for you yet. I'm lining up international options and I'll bring them to you here shortly.`;
+      } else {
+        if (clinics.length === 0 && proc) clinics = await fetchMatchedClinics(proc, data.country ?? country, locationPreference);
+        line = clinics.length > 0
+          ? "Here are the surgeons I've matched you with 🤍 Take your time looking through them — I've saved them so you can come back anytime."
+          : "Thank you — I'm putting your personalised surgeon matches together now and they'll appear here in just a moment.";
+      }
       setMessages(m => [...m, { id: `matches-${m.length}`, role: 'nia', content: line, clinics, timestamp: new Date() }]);
       setLinked(true);
       setFinalized(true);
@@ -391,16 +408,17 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
   const submitPhotos = useCallback(async (captured: CapturedPhoto[]) => {
     const proc = photosProcedure;
     setPhotosProcedure(null);
+    setPhotosProc(proc);
     if (captured.length === 0) {
       await sendMessage('Photos: the patient chose to skip sharing photos for now.');
     } else {
       const labels = captured.map(c => c.label).join(', ');
       await sendMessage(`Photos shared — the patient uploaded these angles: ${labels}.`, captured.map(c => c.file), captured.map(c => c.key));
     }
-    if (inviteToken && invitedPhone) {
-      await finalize(invitedPhone, { procedureHint: proc ?? invitedProcedure ?? undefined });
-    }
-  }, [sendMessage, photosProcedure, inviteToken, invitedPhone, invitedProcedure, finalize]);
+    // Photos now come BEFORE the safety questions, so this is no longer the last step —
+    // the both-done effect below finalizes once triage is also submitted.
+    setPhotosDone(true);
+  }, [sendMessage, photosProcedure]);
 
   // Shared registration: link the number to this session's patient and submit the
   // intake. Used by the manual phone box (anonymous patients).
@@ -456,14 +474,16 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
     await finalize(normalized, { alreadyLinked: true });
   }, [linking, linked, intakeData, phone, doSubmit, finalize]);
 
-  // Invited patients: finalize the moment intake is complete. Two triggers, whichever
-  // fires first (hard-guarded to run once): the Photo Guide submit (deterministic) or
-  // a clean <INTAKE> block on the rare occasion Qwen does emit one.
+  // Invited patients: finalize once intake is content-complete. Deterministic trigger =
+  // BOTH the Photo Guide and the triage form submitted (order-independent). Fallback =
+  // a clean <INTAKE> block on the rare occasion Qwen emits one. Hard-guarded to run once.
   useEffect(() => {
-    if (intakeComplete && inviteToken && invitedPhone && !finalized && !finalizing) {
-      finalize(invitedPhone, { procedureHint: (intakeData?.procedure as string) || invitedProcedure || undefined });
+    if (!inviteToken || !invitedPhone || finalized || finalizing) return;
+    const contentComplete = (photosDone && triageDone) || intakeComplete;
+    if (contentComplete) {
+      finalize(invitedPhone, { procedureHint: (intakeData?.procedure as string) || photosProc || invitedProcedure || undefined });
     }
-  }, [intakeComplete, inviteToken, invitedPhone, finalized, finalizing, intakeData, invitedProcedure, finalize]);
+  }, [photosDone, triageDone, intakeComplete, inviteToken, invitedPhone, finalized, finalizing, intakeData, photosProc, invitedProcedure, finalize]);
 
   return (
     <div className="flex flex-col h-full">
