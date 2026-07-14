@@ -63,15 +63,28 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'no procedure to match on' }, { status: 400 });
   }
 
-  // Run SmartMatch for the shortlist we deliver (persisted separately by the
-  // reconciler's /api/smartmatch call; here we just need the count + a valid token).
-  let providerCount = 0;
+  // Run SmartMatch for the shortlist we deliver, and RETURN the mapped cards so the
+  // web chat renders exactly these (same shape as /api/clinics) — no second, possibly
+  // divergent match call client-side. Mirrors the /api/clinics mapping.
+  let providers: Array<Record<string, unknown>> = [];
   try {
     const result = await smartMatch({ procedure, country }, 5);
-    providerCount = result.providers.length;
+    providers = result.providers.map(p => ({
+      id: p.id,
+      name: p.surgeonName,
+      city: p.city ?? '',
+      country: p.country,
+      description: [p.clinicName, p.reasons.join(' · ')].filter(Boolean).join(' — '),
+      niaScore: null,
+      accreditations: p.accreditations,
+      specialties: [],
+      website: p.website,
+      photoUrl: null,
+    }));
   } catch (err) {
     console.error('[finalize-web] smartMatch failed', err);
   }
+  const providerCount = providers.length;
 
   const token = mintMatchToken({ procedure, country, name });
   const link = `${WEB_URL}/matches/${token}`;
@@ -103,5 +116,5 @@ export async function POST(req: Request) {
     }
   }
 
-  return NextResponse.json({ ok: true, matchToken: token, link, procedure, country: country ?? null, providerCount });
+  return NextResponse.json({ ok: true, matchToken: token, link, procedure, country: country ?? null, providerCount, providers });
 }

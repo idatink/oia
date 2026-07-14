@@ -362,18 +362,22 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: phoneE164, name, procedure, country }),
       });
-      const data = await res.json() as { procedure?: string; country?: string | null; providerCount?: number };
+      const data = await res.json() as { procedure?: string; country?: string | null; providerCount?: number; providers?: ClinicCardData[] };
+      // Render exactly the surgeons finalize matched. Fall back to a fresh fetch only
+      // if the response somehow carried none.
       const proc = data.procedure || procedure || '';
-      const clinics = proc ? await fetchMatchedClinics(proc, data.country ?? country) : [];
+      const clinics = (data.providers && data.providers.length > 0)
+        ? data.providers
+        : (proc ? await fetchMatchedClinics(proc, data.country ?? country) : []);
       const line = clinics.length > 0
-        ? "Here are the surgeons I've matched you with 🤍 I've also saved these to your WhatsApp so you can revisit them anytime."
-        : "Thank you — I'm lining up the surgeons who best fit your goals and I'll send them straight to your WhatsApp very shortly.";
+        ? "Here are the surgeons I've matched you with 🤍 Take your time looking through them — I've saved them so you can come back anytime."
+        : "Thank you — I'm putting your personalised surgeon matches together now and they'll appear here in just a moment.";
       setMessages(m => [...m, { id: `matches-${m.length}`, role: 'nia', content: line, clinics, timestamp: new Date() }]);
       setLinked(true);
       setFinalized(true);
     } catch (err) {
       console.error('[finalize]', err);
-      setMessages(m => [...m, { id: `matches-${m.length}`, role: 'nia', content: "Thank you — I'll send your surgeon matches to your WhatsApp very shortly.", timestamp: new Date() }]);
+      setMessages(m => [...m, { id: `matches-${m.length}`, role: 'nia', content: "Thank you — I'm putting your surgeon matches together now and they'll appear here shortly.", timestamp: new Date() }]);
       setLinked(true);
       setFinalized(true);
     } finally {

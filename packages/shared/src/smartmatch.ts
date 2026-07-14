@@ -62,12 +62,15 @@ const CLUSTER_KEYWORDS: Record<string, string[]> = {
 // to this when a term doesn't substring-match any treatment NAME. ORDER MATTERS:
 // specific clusters are tested before Face (whose bare "lift" would otherwise grab
 // "butt lift" / "breast lift"), so the Face pattern uses explicit compounds only.
+// Leading \b anchors to a word start; NO trailing \b, so medical stems match their
+// full words too — "abdomin" → "abdominoplasty", "rhino" → "rhinoplasty",
+// "bleph" → "blepharoplasty", "mammo" → "mammoplasty", "gyneco" → "gynecomastia".
 const CLUSTER_PATTERNS: [string, RegExp][] = [
-  ['BBL',    /\b(bbl|brazilian|butt|buttock|booty|glute)\b/],
-  ['Nose',   /\b(nose|nose ?job|rhino|nostril|septum|deviated|bridge|hump)\b/],
-  ['Breast', /\b(breast|boob|boob ?job|mammo|areola|nipple|cleavage|uplift)\b/],
-  ['Face',   /\b(face|face ?lift|facelift|eye|eyes|eye ?lift|eyelid|eye ?bag|under ?eye|bleph|brow|forehead|neck ?lift|jaw|jowl|chin|cheek|wrinkle|nasolabial|ptosis|droopy|saggy eye|hooded)\b/],
-  ['Body',   /\b(tummy|tummy ?tuck|abdomin|lipo|liposuction|contour|arm ?lift|thigh|mommy|love ?handle|gyneco|bariatric|body|fat ?removal|love ?handles)\b/],
+  ['BBL',    /\b(bbl|brazilian|butt|buttock|booty|glute)/],
+  ['Nose',   /\b(nose|rhino|nostril|septum|deviated|bridge|hump)/],
+  ['Breast', /\b(breast|boob|mammo|areola|nipple|cleavage|uplift)/],
+  ['Face',   /\b(face|eyelid|eye|bleph|brow|forehead|neck|jaw|jowl|chin|cheek|wrinkle|nasolabial|ptosis|droopy|hooded)/],
+  ['Body',   /\b(tummy|abdomin|lipo|contour|arm ?lift|thigh|mommy|love ?handle|gyneco|bariatric|body|fat ?removal)/],
 ];
 
 // Representative matchable treatment per cluster, used when the term maps to a
