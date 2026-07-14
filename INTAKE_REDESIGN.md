@@ -55,8 +55,14 @@ File roles:
    Local · <country> / Abroad / per-country filter chips, defaults to the patient's preference,
    honest empty-local state, browses the full network. Consistent with the inline list (same
    `/api/clinics` engine). Verified live: lp-token verifies, GB local=0 → honest, abroad=136.
-7. **[NEXT] UK provider import** (fast-follow data: Notion master DB → Postgres) — makes "local" real for UK.
-8. **WhatsApp parity** (Phase 2): `AGENTS.md` inherits shared flow.
+7. ✅ **DONE 2026-07-14.** UK provider import — 17 providers from Ida's list (script
+   `packages/shared/uk-import.mjs`), 16 active + Signature held (BBL vetting pending). "local"
+   now real for the UK: local+GB returns 14–16 per cluster; both+GB = 14 UK + 136 intl. Verified
+   live. **CAVEAT:** accreditations imported as [] (none in the source) → UK surgeons score on the
+   lowest tier, so they rank below FEBOPRAS/ISAPS in the *network* view (fine for local-only where
+   they're the sole options). Follow-up: get FRCS(Plast)/BAAPS/BAPRAS/GMC credentials + add UK
+   bodies to `accredScore` in smartmatch.ts so UK ranks fairly. BBL local still 0 (Signature held).
+8. **[NEXT] WhatsApp parity** (Phase 2): `AGENTS.md` inherits shared flow.
 9. **IDENTITY/SOUL fold into web compose** (deferred; needs conflict resolution — language, which
    SOUL capabilities are live — then verify no over-claiming).
 
