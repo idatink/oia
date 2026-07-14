@@ -50,9 +50,12 @@ File roles:
 5. ✅ **DONE (15097f1).** Graceful degradation: local + 0 → `note='no_local_providers'` → web shows
    an honest "no vetted surgeons in [country] yet" message + offers international; never
    abroad-as-local. Verified end-to-end in prod (local London → note fired; both → 5 intl).
-6. **[NEXT] Grouped/filterable match view** (group by country / local-vs-abroad toggle); reconcile
-   web-inline shortlist with the WhatsApp `/matches` room.
-7. **UK provider import** (fast-follow data: Notion master DB → Postgres) — makes "local" real for UK.
+6. ✅ **DONE 2026-07-14 (commit f755635).** Match room (`/matches/<token>`) now local-vs-abroad
+   aware: match token carries `locationPreference` (backwards-compatible); MatchRoomClient adds
+   Local · <country> / Abroad / per-country filter chips, defaults to the patient's preference,
+   honest empty-local state, browses the full network. Consistent with the inline list (same
+   `/api/clinics` engine). Verified live: lp-token verifies, GB local=0 → honest, abroad=136.
+7. **[NEXT] UK provider import** (fast-follow data: Notion master DB → Postgres) — makes "local" real for UK.
 8. **WhatsApp parity** (Phase 2): `AGENTS.md` inherits shared flow.
 9. **IDENTITY/SOUL fold into web compose** (deferred; needs conflict resolution — language, which
    SOUL capabilities are live — then verify no over-claiming).
