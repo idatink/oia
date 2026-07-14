@@ -34,17 +34,28 @@ File roles:
 [[project_nia_training_lab]] foundation (non-engineers tune Oia via .md, not code).
 
 ## Build plan (ordered)
-1. **[STEP 1 — approved] Promote `IDENTITY.md` + `SOUL.md` to shared; make the web route LOAD
-   them** — from here web can't diverge from Oia's identity again.
-2. Add web **`INTAKE.md`** (streamlined flow + graceful degradation + honesty guards); web loads it
-   in place of the hard-coded `SYSTEM_PROMPT` body.
-3. Add **`locationPreference`** field: `<INTAKE>` schema + reconciler extraction + storage.
-4. **SmartMatch country filter** branches on `locationPreference` (`PatientProfile` gains it) +
-   update callers (`/api/clinics`, finalize-web, reconciler, match room).
-5. **Graceful degradation**: 0 local → Oia says so honestly; never abroad-as-local.
-6. **Grouped/filterable match view**; reconcile web-inline shortlist with the WhatsApp room.
-7. **UK provider import** (fast-follow data: Notion master DB → Postgres).
-8. **WhatsApp parity** (Phase 2, when intake moves to WhatsApp): `AGENTS.md` inherits shared flow.
+1. ✅ **DONE 2026-07-14 (commit fcf7f34).** Web prompt is now editable Markdown
+   (`packages/shared/src/oia/web-intake.md`, loaded via webpack asset/source). `IDENTITY.md` +
+   `SOUL.md` promoted to the shared editable location (byte-identical copies). Verified: byte-exact
+   prompt, tsc, next build, live prod response.
+2. ✅ **DONE 2026-07-14 (commit 15097f1).** `web-intake.md` restructured into VOICE / FLOW /
+   OUTPUT-CONTRACTS (voice safely editable); streamlined flow applied (brief confidence + local/
+   travel/both after procedure; photos before safety; goals/timeline/language cut).
+3. ✅ **DONE (15097f1).** `locationPreference` in the `<INTAKE>` schema + reconciler extraction +
+   threaded through finalize. (Storage: currently carried through the pipeline; a dedicated
+   Consultation/Lead column is a later nicety, not required for matching.)
+4. ✅ **DONE (15097f1).** SmartMatch country filter branches on `locationPreference` (local →
+   residence only; travel/both → network; unset → network). Callers updated: `/api/clinics`,
+   finalize-web, reconciler (also fixed a latent always-undefined country bug). Verified vs prod.
+5. ✅ **DONE (15097f1).** Graceful degradation: local + 0 → `note='no_local_providers'` → web shows
+   an honest "no vetted surgeons in [country] yet" message + offers international; never
+   abroad-as-local. Verified end-to-end in prod (local London → note fired; both → 5 intl).
+6. **[NEXT] Grouped/filterable match view** (group by country / local-vs-abroad toggle); reconcile
+   web-inline shortlist with the WhatsApp `/matches` room.
+7. **UK provider import** (fast-follow data: Notion master DB → Postgres) — makes "local" real for UK.
+8. **WhatsApp parity** (Phase 2): `AGENTS.md` inherits shared flow.
+9. **IDENTITY/SOUL fold into web compose** (deferred; needs conflict resolution — language, which
+   SOUL capabilities are live — then verify no over-claiming).
 
 ---
 
