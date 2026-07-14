@@ -7,6 +7,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const config = {
   transpilePackages: ['@nia/shared-ui', '@nia/shared'],
   outputFileTracingRoot: path.join(__dirname, '../../'),
+  // Load Oia's editable .md brain (packages/shared/src/oia/*.md) as raw text so the
+  // system prompt is composed from Markdown, not hard-coded in the route.
+  webpack: (config) => {
+    config.module.rules.push({ test: /\.md$/, type: 'asset/source' });
+    return config;
+  },
   experimental: {
     outputFileTracingIncludes: {
       '/api/**': [
