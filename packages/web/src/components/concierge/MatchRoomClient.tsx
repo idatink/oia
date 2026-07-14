@@ -22,24 +22,47 @@ const COUNTRY_NAMES: Record<string, string> = {
 };
 const countryLabel = (c: string) => COUNTRY_NAMES[c] ?? c;
 
-export default function MatchRoomClient({ procedure, name }: { procedure: string; country?: string; name?: string }) {
+export default function MatchRoomClient({ procedure, country: homeRaw, name, locationPreference }:
+  { procedure: string; country?: string; name?: string; locationPreference?: 'local' | 'travel' | 'both' }) {
+  const home = (homeRaw || '').toUpperCase();
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
-  const [country, setCountry] = useState<string>('all');
+  // view: 'all' | 'local' | 'abroad' | <countryCode>
+  const [view, setView] = useState<string>('all');
 
   useEffect(() => {
     (async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/clinics?procedure=${encodeURIComponent(procedure)}&limit=200`);
+        // Full network so the patient can browse/compare everything; home country
+        // passed so it ranks first. Grouping into local vs abroad happens client-side.
+        const q = `procedure=${encodeURIComponent(procedure)}&limit=200${home ? `&country=${encodeURIComponent(home)}` : ''}`;
+        const res = await fetch(`/api/clinics?${q}`);
         setMatches(res.ok ? await res.json() : []);
       } catch { setMatches([]); }
       setLoading(false);
     })();
-  }, [procedure]);
+  }, [procedure, home]);
 
+  const localMatches = useMemo(() => home ? matches.filter(m => m.country === home) : [], [matches, home]);
+  const abroadMatches = useMemo(() => home ? matches.filter(m => m.country !== home) : matches, [matches, home]);
   const countries = useMemo(() => Array.from(new Set(matches.map(m => m.country))).sort(), [matches]);
-  const shown = country === 'all' ? matches : matches.filter(m => m.country === country);
+
+  // Default the view to the patient's stated preference, but only land on "local" if
+  // there's actually something there — otherwise "all", so they never hit a blank first.
+  useEffect(() => {
+    if (loading) return;
+    if (locationPreference === 'local' && localMatches.length > 0) setView('local');
+    else setView('all');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
+  const shown = view === 'all' ? matches
+    : view === 'local' ? localMatches
+    : view === 'abroad' ? abroadMatches
+    : matches.filter(m => m.country === view);
+
+  const showLocalAbroad = home && localMatches.length >= 0 && abroadMatches.length > 0;
 
   return (
     <div className="min-h-screen bg-surface-container-lowest">
@@ -54,13 +77,23 @@ export default function MatchRoomClient({ procedure, name }: { procedure: string
         </p>
       </header>
 
-      {countries.length > 0 && (
+      {matches.length > 0 && (
         <div className="px-6 max-w-6xl mx-auto flex flex-wrap gap-2 justify-center mb-10">
-          <FilterChip active={country === 'all'} onClick={() => setCountry('all')}>
-            All countries ({matches.length})
+          <FilterChip active={view === 'all'} onClick={() => setView('all')}>
+            All ({matches.length})
           </FilterChip>
+          {showLocalAbroad && (
+            <>
+              <FilterChip active={view === 'local'} onClick={() => setView('local')}>
+                Local · {countryLabel(home)} ({localMatches.length})
+              </FilterChip>
+              <FilterChip active={view === 'abroad'} onClick={() => setView('abroad')}>
+                Abroad ({abroadMatches.length})
+              </FilterChip>
+            </>
+          )}
           {countries.map(c => (
-            <FilterChip key={c} active={country === c} onClick={() => setCountry(c)}>
+            <FilterChip key={c} active={view === c} onClick={() => setView(c)}>
               {countryLabel(c)} ({matches.filter(m => m.country === c).length})
             </FilterChip>
           ))}
@@ -70,6 +103,16 @@ export default function MatchRoomClient({ procedure, name }: { procedure: string
       <main className="px-6 pb-20 max-w-6xl mx-auto">
         {loading ? (
           <p className="text-center font-body text-on-surface-variant py-20">Finding your matches…</p>
+        ) : view === 'local' && localMatches.length === 0 ? (
+          <div className="text-center py-20 max-w-lg mx-auto">
+            <p className="font-body text-body-md text-on-surface mb-2">
+              We don&apos;t have vetted surgeons in {home ? countryLabel(home) : 'your country'} yet.
+            </p>
+            <p className="font-body text-body-sm text-on-surface-variant">
+              Our network there is still growing. In the meantime, here are excellent international options —{' '}
+              <button className="text-primary underline" onClick={() => setView('abroad')}>see them</button>.
+            </p>
+          </div>
         ) : shown.length === 0 ? (
           <p className="text-center font-body text-on-surface-variant py-20">
             No matches in this filter yet — new destinations join as our network grows.

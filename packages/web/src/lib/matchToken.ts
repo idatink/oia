@@ -12,6 +12,7 @@ export interface MatchRoomParams {
   procedure: string;
   country?: string;
   name?: string;
+  locationPreference?: 'local' | 'travel' | 'both';
 }
 
 function b64url(buf: Buffer): string {
@@ -29,6 +30,7 @@ export function mintMatchToken(params: MatchRoomParams): string {
     p: params.procedure,
     c: params.country ?? '',
     n: params.name ?? '',
+    l: params.locationPreference ?? '',
   })));
   return `${payload}.${sign(payload)}`;
 }
@@ -39,7 +41,8 @@ export function verifyMatchToken(token: string): MatchRoomParams | null {
   try {
     const d = JSON.parse(fromB64url(payload).toString('utf8'));
     if (!d.p) return null;
-    return { procedure: d.p, country: d.c || undefined, name: d.n || undefined };
+    const lp = d.l === 'local' || d.l === 'travel' || d.l === 'both' ? d.l : undefined;
+    return { procedure: d.p, country: d.c || undefined, name: d.n || undefined, locationPreference: lp };
   } catch {
     return null;
   }

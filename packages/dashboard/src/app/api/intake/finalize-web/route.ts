@@ -90,7 +90,7 @@ export async function POST(req: Request) {
   }
   const providerCount = providers.length;
 
-  const token = mintMatchToken({ procedure, country, name });
+  const token = mintMatchToken({ procedure, country, name, locationPreference });
   const link = `${WEB_URL}/matches/${token}`;
 
   // Deliver to the patient's WhatsApp (durable saved link). Queued the same way as
