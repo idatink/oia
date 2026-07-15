@@ -22,13 +22,44 @@ const COUNTRY_NAMES: Record<string, string> = {
 };
 const countryLabel = (c: string) => COUNTRY_NAMES[c] ?? c;
 
-export default function MatchRoomClient({ procedure, country: homeRaw, name, locationPreference }:
-  { procedure: string; country?: string; name?: string; locationPreference?: 'local' | 'travel' | 'both' }) {
+const SHORTLIST_CAP = 10;
+
+export default function MatchRoomClient({ procedure, country: homeRaw, name, locationPreference, token, canShortlist }:
+  { procedure: string; country?: string; name?: string; locationPreference?: 'local' | 'travel' | 'both'; token?: string; canShortlist?: boolean }) {
   const home = (homeRaw || '').toUpperCase();
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   // view: 'all' | 'local' | 'abroad' | <countryCode>
   const [view, setView] = useState<string>('all');
+  // Stage-2 shortlist: pick up to 10, send to Oia (see INTAKE_REDESIGN.md funnel).
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const toggleSelect = (id: string) => {
+    if (sent) return;
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else if (next.size < SHORTLIST_CAP) next.add(id);
+      return next;
+    });
+  };
+
+  const sendShortlist = async () => {
+    if (!token || sending || sent || selected.size === 0) return;
+    setSending(true);
+    try {
+      const providers = matches.filter(m => selected.has(m.id)).map(m => ({ id: m.id, name: m.name, country: m.country }));
+      const res = await fetch('/api/shortlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, providers }),
+      });
+      if (res.ok) setSent(true);
+    } catch { /* leave the bar so they can retry */ }
+    setSending(false);
+  };
 
   useEffect(() => {
     (async () => {
@@ -72,8 +103,9 @@ export default function MatchRoomClient({ procedure, country: homeRaw, name, loc
           {name ? `${name}, here` : 'Here'} are your surgeons for <span className="italic text-primary">{procedure}</span>.
         </h1>
         <p className="font-body text-body-md text-on-surface-variant max-w-xl mx-auto mt-5 leading-relaxed">
-          Every surgeon here fits your goals — vetted for accreditation, specialism and real patient reviews.
-          Take your time exploring, then tell Oia which two or three draw you and she&apos;ll secure your rates.
+          {canShortlist
+            ? <>Every surgeon here is vetted for accreditation and specialism. Take your time — tap the ♡ on the ones that draw you (up to {SHORTLIST_CAP}), send them to Oia, and she&apos;ll go deeper on each: real before-and-afters, availability and full packages.</>
+            : <>Every surgeon here fits your goals — vetted for accreditation and specialism. Take your time exploring, then tell Oia which ones draw you and she&apos;ll go deeper on each.</>}
         </p>
       </header>
 
@@ -119,15 +151,53 @@ export default function MatchRoomClient({ procedure, country: homeRaw, name, loc
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {shown.map(m => <MatchCard key={m.id} m={m} />)}
+            {shown.map(m => (
+              <MatchCard
+                key={m.id}
+                m={m}
+                selectable={!!canShortlist && !sent}
+                selected={selected.has(m.id)}
+                onToggle={() => toggleSelect(m.id)}
+              />
+            ))}
           </div>
         )}
       </main>
 
-      <footer className="bg-surface border-t border-outline-variant/30 px-6 py-10 text-center">
+      {/* Sticky shortlist bar */}
+      {canShortlist && (selected.size > 0 || sent) && (
+        <div className="fixed bottom-0 inset-x-0 z-40 bg-surface-container-lowest/95 backdrop-blur border-t border-outline-variant/30 px-6 py-4">
+          <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
+            {sent ? (
+              <p className="font-body text-body-sm text-on-surface flex-1 text-center">
+                <span className="font-semibold text-green-500">Sent to Oia ✓</span>
+                {' '}— she&apos;s going deeper on your {selected.size} pick{selected.size > 1 ? 's' : ''} and will come back with before/afters, availability and packages.
+              </p>
+            ) : (
+              <>
+                <p className="font-body text-body-sm text-on-surface">
+                  <span className="font-semibold">{selected.size} of {SHORTLIST_CAP}</span> selected
+                  {selected.size >= SHORTLIST_CAP && <span className="text-on-surface-variant"> — that&apos;s the limit, choose your favourites</span>}
+                </p>
+                <button
+                  onClick={sendShortlist}
+                  disabled={sending}
+                  className="bg-primary text-on-primary font-body text-sm font-semibold px-6 py-3 rounded-xl hover:opacity-90 disabled:opacity-50 transition-all"
+                >
+                  {sending ? 'Sending…' : 'Send my shortlist to Oia'}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      <footer className="bg-surface border-t border-outline-variant/30 px-6 py-10 pb-28 text-center">
         <p className="font-display italic text-xl text-on-surface mb-1">Found the ones that feel right?</p>
         <p className="font-body text-body-sm text-on-surface-variant">
-          Message Oia with their names — she&apos;ll get you the partner rate and handle the rest.
+          {canShortlist
+            ? <>Tap the ♡ on your favourites and send them to Oia — she&apos;ll go deeper on each and get you the full picture.</>
+            : <>Message Oia with their names — she&apos;ll get you the partner rate and handle the rest.</>}
         </p>
       </footer>
     </div>
@@ -149,16 +219,31 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
   );
 }
 
-function MatchCard({ m }: { m: Match }) {
+function MatchCard({ m, selectable, selected, onToggle }: { m: Match; selectable?: boolean; selected?: boolean; onToggle?: () => void }) {
   const hasClinic = m.description.includes(' — ');
   const clinic = hasClinic ? m.description.split(' — ')[0] : '';
   const reasons = hasClinic ? m.description.split(' — ').slice(1).join(' — ') : m.description;
   return (
-    <div className="bg-surface-container-lowest rounded-card2 overflow-hidden border border-outline-variant/20 shadow-card hover:shadow-concierge hover:border-primary/30 transition-all flex flex-col">
+    <div className={`bg-surface-container-lowest rounded-card2 overflow-hidden border shadow-card hover:shadow-concierge transition-all flex flex-col ${
+      selected ? 'border-primary ring-1 ring-primary/40' : 'border-outline-variant/20 hover:border-primary/30'
+    }`}>
       <div className="h-28 bg-gradient-to-br from-secondary-container to-tertiary-fixed relative">
         <span className="absolute bottom-3 left-3 bg-on-surface/70 text-inverse-on-surface px-2.5 py-1 rounded-full font-body text-[10px] uppercase tracking-widest font-semibold">
           {m.city ? `${m.city}, ` : ''}{countryLabel(m.country)}
         </span>
+        {selectable && (
+          <button
+            onClick={onToggle}
+            aria-label={selected ? 'Remove from shortlist' : 'Add to shortlist'}
+            className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center transition-all ${
+              selected ? 'bg-primary text-on-primary' : 'bg-white/85 text-on-surface hover:bg-white'
+            }`}
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill={selected ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={1.8}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
+            </svg>
+          </button>
+        )}
       </div>
       <div className="p-5 flex flex-col flex-1">
         <h3 className="font-display text-xl text-on-surface mb-2 leading-snug">{m.name}</h3>

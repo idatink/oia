@@ -161,6 +161,22 @@ abroad-as-local; if 0 local, she says so honestly), **then (2) UK provider impor
 (1) needs the `locationPreference` field from this redesign to exist, so it ships inside the same
 batch as the intake changes; (2) is the fast-follow data import right after.
 
+## Match → clinic-selection flow (designed with Ida 2026-07-15)
+Funnel: **139 matches → patient shortlists ≤10 → Oia deep-dives → top 3–5 outreach → 2–3 quotes → 1 clinic.**
+1. **Delivery** (live + 2 fixes): top-5 inline; closing copy must SAY the list went to WhatsApp
+   (only when actually queued — honesty) + render a match-room link card in chat.
+2. **Guided shortlist** (build now): match room gets ♡ select (cap 10) + "Send my shortlist to
+   Oia" → lands on the patient's session (metadata.shortlist) for the team + WhatsApp confirmation.
+   **[DECIDED] No ordering claim** — Oia says "take your time, pick the ones that draw you";
+   NEVER "ordered by availability" (no availability data exists — false claim).
+3. **Deep-dive** (Phase 1 = TEAM-ASSISTED via existing Clinic-mode playbook + submit_clinic_quote):
+   per shortlisted surgeon → consent-signed before/afters requested from the clinic, availability
+   window, indicative all-in package. Oia narrows ≤10 → top 3–5.
+   **[DECIDED] Results delivered as web compare view + WhatsApp ping** (compare view = next build).
+4. **Negotiate** (playbook exists, trigger manual): patient narrows to 2–3 → Oia haggles all-in;
+   never reveals patient identity; quotes → dashboard.
+5. **Choose + handoff**: side-by-side quotes → patient picks → team locks date + price.
+
 ## Open questions / forks
 - If `local`: we need the patient's country to filter on (already collected as country of
   residence — confirm timing).

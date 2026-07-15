@@ -370,8 +370,10 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: phoneE164, name, procedure, country, locationPreference }),
       });
-      const data = await res.json() as { procedure?: string; country?: string | null; providerCount?: number; providers?: ClinicCardData[]; note?: string | null };
+      const data = await res.json() as { procedure?: string; country?: string | null; providerCount?: number; providers?: ClinicCardData[]; note?: string | null; link?: string; whatsappQueued?: boolean };
       const proc = data.procedure || procedure || '';
+      // Only claim the WhatsApp delivery when it actually queued (honesty).
+      const waLine = data.whatsappQueued ? " I've also sent this to your WhatsApp, so it's always easy to find." : '';
       let clinics = (data.providers && data.providers.length > 0) ? data.providers : [];
       let line: string;
       if (data.note === 'no_local_providers') {
@@ -381,15 +383,15 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
         clinics = intl;
         const where = data.country || 'your country';
         line = intl.length > 0
-          ? `I'll be honest with you — we don't have vetted surgeons in ${where} in our network just yet. So I've focused on excellent international options, every one board-accredited. 🤍`
+          ? `I'll be honest with you — we don't have vetted surgeons in ${where} in our network just yet. So I've focused on excellent international options, every one board-accredited. 🤍${waLine}`
           : `I'll be honest — I don't have surgeons in ${where} for you yet. I'm lining up international options and I'll bring them to you here shortly.`;
       } else {
         if (clinics.length === 0 && proc) clinics = await fetchMatchedClinics(proc, data.country ?? country, locationPreference);
         line = clinics.length > 0
-          ? "Here are the surgeons I've matched you with 🤍 Take your time looking through them — I've saved them so you can come back anytime."
+          ? `Here are your top matches 🤍 Take your time — no rush at all. Your full match room below has every surgeon who fits you: pick the ones that draw you (up to 10) and I'll go deeper on each.${waLine}`
           : "Thank you — I'm putting your personalised surgeon matches together now and they'll appear here in just a moment.";
       }
-      setMessages(m => [...m, { id: `matches-${m.length}`, role: 'nia', content: line, clinics, timestamp: new Date() }]);
+      setMessages(m => [...m, { id: `matches-${m.length}`, role: 'nia', content: line, clinics, matchLink: clinics.length > 0 ? data.link : undefined, timestamp: new Date() }]);
       setLinked(true);
       setFinalized(true);
     } catch (err) {

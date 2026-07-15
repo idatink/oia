@@ -10,5 +10,14 @@ export const dynamic = 'force-dynamic';
 export default function MatchTokenPage({ params }: { params: { token: string } }) {
   const room = verifyMatchToken(params.token);
   if (!room) notFound();
-  return <MatchRoomClient procedure={room.procedure} country={room.country} name={room.name} locationPreference={room.locationPreference} />;
+  return (
+    <MatchRoomClient
+      procedure={room.procedure}
+      country={room.country}
+      name={room.name}
+      locationPreference={room.locationPreference}
+      token={params.token}
+      canShortlist={!!room.phone}
+    />
+  );
 }

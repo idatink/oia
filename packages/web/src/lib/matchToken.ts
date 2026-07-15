@@ -13,6 +13,7 @@ export interface MatchRoomParams {
   country?: string;
   name?: string;
   locationPreference?: 'local' | 'travel' | 'both';
+  phone?: string; // E.164 — lets the match room attach the patient's shortlist
 }
 
 function b64url(buf: Buffer): string {
@@ -31,6 +32,7 @@ export function mintMatchToken(params: MatchRoomParams): string {
     c: params.country ?? '',
     n: params.name ?? '',
     l: params.locationPreference ?? '',
+    ph: params.phone ?? '',
   })));
   return `${payload}.${sign(payload)}`;
 }
@@ -42,7 +44,7 @@ export function verifyMatchToken(token: string): MatchRoomParams | null {
     const d = JSON.parse(fromB64url(payload).toString('utf8'));
     if (!d.p) return null;
     const lp = d.l === 'local' || d.l === 'travel' || d.l === 'both' ? d.l : undefined;
-    return { procedure: d.p, country: d.c || undefined, name: d.n || undefined, locationPreference: lp };
+    return { procedure: d.p, country: d.c || undefined, name: d.n || undefined, locationPreference: lp, phone: d.ph || undefined };
   } catch {
     return null;
   }

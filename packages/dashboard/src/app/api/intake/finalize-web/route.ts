@@ -90,11 +90,12 @@ export async function POST(req: Request) {
   }
   const providerCount = providers.length;
 
-  const token = mintMatchToken({ procedure, country, name, locationPreference });
+  const token = mintMatchToken({ procedure, country, name, locationPreference, phone });
   const link = `${WEB_URL}/matches/${token}`;
 
   // Deliver to the patient's WhatsApp (durable saved link). Queued the same way as
   // the "invite back" message; the Fly sidecar polls /api/outbound/pending.
+  let whatsappQueued = false;
   if (body.deliverWhatsApp !== false && session && providerCount > 0) {
     const firstName = (name || '').split(/\s+/)[0] || 'there';
     const message =
@@ -115,10 +116,11 @@ export async function POST(req: Request) {
           },
         },
       });
+      whatsappQueued = true;
     } catch (err) {
       console.error('[finalize-web] queue whatsapp failed', err);
     }
   }
 
-  return NextResponse.json({ ok: true, matchToken: token, link, procedure, country: country ?? null, locationPreference: locationPreference ?? null, providerCount, providers, note: note ?? null });
+  return NextResponse.json({ ok: true, matchToken: token, link, procedure, country: country ?? null, locationPreference: locationPreference ?? null, providerCount, providers, note: note ?? null, whatsappQueued });
 }
