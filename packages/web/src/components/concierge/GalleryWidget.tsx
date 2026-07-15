@@ -1,38 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-
-// Placeholder gallery data — replace with real clinic photos
-const GALLERIES: Record<string, { src: string; caption: string }[]> = {
-  rhinoplasty: [
-    { src: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=500&fit=crop', caption: 'Tip refinement & bridge reduction' },
-    { src: 'https://images.unsplash.com/photo-1595167151695-a9a2e05f33e1?w=400&h=500&fit=crop', caption: 'Natural profile result' },
-    { src: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=500&fit=crop', caption: 'Subtle bridge correction' },
-  ],
-  liposuction: [
-    { src: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=500&fit=crop', caption: 'Abdominal contouring' },
-    { src: 'https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=500&fit=crop', caption: 'Flank & waist definition' },
-  ],
-  abdominoplasty: [
-    { src: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=500&fit=crop', caption: 'Tummy tuck result' },
-    { src: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=500&fit=crop', caption: 'Post-bariatric contouring' },
-  ],
-  blepharoplasty: [
-    { src: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&h=500&fit=crop', caption: 'Upper eyelid lift' },
-    { src: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=500&fit=crop', caption: 'Lower eyelid rejuvenation' },
-  ],
-  facelift: [
-    { src: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=500&fit=crop', caption: 'Full facelift result' },
-  ],
-  'breast-augmentation': [
-    { src: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=500&fit=crop', caption: 'Natural augmentation' },
-  ],
-};
-
-const FALLBACK = [
-  { src: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=500&fit=crop', caption: 'Partner clinic result' },
-  { src: 'https://images.unsplash.com/photo-1595167151695-a9a2e05f33e1?w=400&h=500&fit=crop', caption: 'Partner clinic result' },
-];
+import { GALLERIES } from './galleryData';
 
 interface GalleryWidgetProps {
   procedure: string;
@@ -42,39 +11,55 @@ export default function GalleryWidget({ procedure }: GalleryWidgetProps) {
   const [consented, setConsented] = useState(false);
   const [index, setIndex] = useState(0);
 
-  const photos = GALLERIES[procedure] ?? FALLBACK;
-  const current = photos[index];
+  const photos = GALLERIES[procedure] ?? [];
+  const label = procedure.replace(/-/g, ' ');
 
-  return (
-    <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl overflow-hidden">
-      {/* Header */}
-      <div className="px-4 py-3 border-b border-outline-variant/10 flex items-center justify-between">
-        <div>
-          <p className="font-body text-xs font-semibold text-on-surface capitalize">
-            Before / After Results
+  // Honest empty state — until real, consent-signed examples are added, we never show
+  // stand-in images. Oia offers to fetch real before/afters from the matched clinics.
+  if (photos.length === 0) {
+    return (
+      <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl overflow-hidden">
+        <div className="px-4 py-3 border-b border-outline-variant/10">
+          <p className="font-body text-xs font-semibold text-on-surface">Before / after examples</p>
+          <p className="font-body text-[10px] text-on-surface-variant mt-0.5 capitalize">{label}</p>
+        </div>
+        <div className="px-5 py-6 text-center">
+          <p className="font-body text-body-sm text-on-surface leading-relaxed mb-2">
+            I&apos;m still curating consent-signed before-and-after examples for {label} — I won&apos;t show
+            stand-in images and pretend they&apos;re results.
           </p>
-          <p className="font-body text-[10px] text-on-surface-variant mt-0.5 capitalize">
-            {procedure.replace(/-/g, ' ')}
+          <p className="font-body text-xs text-on-surface-variant leading-relaxed">
+            Once we&apos;ve completed your intake, I can request real before/after photos directly from your
+            matched clinics — anonymised, and shown only to help you picture realistic outcomes.
           </p>
         </div>
-        <span className="font-body text-[10px] text-on-surface-variant">
-          {index + 1} / {photos.length}
-        </span>
+      </div>
+    );
+  }
+
+  const current = photos[index];
+  return (
+    <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl overflow-hidden">
+      <div className="px-4 py-3 border-b border-outline-variant/10 flex items-center justify-between">
+        <div>
+          <p className="font-body text-xs font-semibold text-on-surface">Before / after examples</p>
+          <p className="font-body text-[10px] text-on-surface-variant mt-0.5 capitalize">{label}</p>
+        </div>
+        <span className="font-body text-[10px] text-on-surface-variant">{index + 1} / {photos.length}</span>
       </div>
 
-      {/* Image */}
       <div className="relative w-full" style={{ aspectRatio: '4/5', maxHeight: 320 }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={current.src}
           alt={current.caption}
           className="w-full h-full object-cover"
           style={{ filter: consented ? 'none' : 'blur(18px)', transition: 'filter 0.3s' }}
         />
-
         {!consented && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center bg-black/20">
             <p className="font-body text-xs text-white/90 leading-relaxed">
-              These photos contain medical imagery. Please confirm to view.
+              These are medical images. Please confirm to view.
             </p>
             <button
               onClick={() => setConsented(true)}
@@ -90,7 +75,6 @@ export default function GalleryWidget({ procedure }: GalleryWidgetProps) {
         )}
       </div>
 
-      {/* Caption + nav */}
       <div className="px-4 py-3 flex items-center justify-between gap-3">
         <button
           onClick={() => setIndex(i => Math.max(0, i - 1))}
@@ -114,7 +98,7 @@ export default function GalleryWidget({ procedure }: GalleryWidgetProps) {
       </div>
 
       <p className="px-4 pb-3 font-body text-[9px] text-on-surface-variant/50 text-center">
-        Individual results may vary. Photos shown with patient consent.
+        Examples only, shown to set expectations — not tied to any clinic. Individual results vary. Shown with patient consent.
       </p>
     </div>
   );
