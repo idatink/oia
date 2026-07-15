@@ -341,8 +341,25 @@ export async function POST(req: Request) {
         const { clean: cleanClinics, showClinics } = extractClinics(cleanGallery);
         const { clean, json: waitlist } = extractWaitlist(cleanClinics);
 
+        // Deterministic TRIAGE net: Qwen often ANNOUNCES the medical form without
+        // emitting <TRIAGE/> (it narrates instead of executing — the same failure
+        // mode as the skipped <INTAKE>). If this turn reads like the medical-screening
+        // step, photos are already behind us, and the form hasn't been shown/answered,
+        // force the form open — the widget must never depend on the model's token.
+        const inFullIntake = !!invited || !WAITLIST_MODE;
+        const triageAnswered =
+          /medical screening answers/i.test(message ?? '') ||
+          history.some(h => h.role === 'user' && /medical screening answers/i.test(h.content));
+        const photosBehindUs =
+          /photos shared|chose to skip sharing photos/i.test(message ?? '') ||
+          history.some(h => /photos shared — the patient uploaded|chose to skip sharing photos/i.test(h.content));
+        const announcesTriage =
+          /(safety|medical|health)[^.!?\n]{0,60}(form|questions|screening|check)|form to complete|screening form|11 (health )?(questions|conditions)/i.test(clean);
+        const showTriageFinal = showTriage ||
+          (inFullIntake && !photosProcedure && !json && !triageAnswered && photosBehindUs && announcesTriage);
+
         controller.enqueue(encoder.encode(
-          `data: ${JSON.stringify({ type: 'done', intakeComplete: !!json, showTriage, photosProcedure, gallery, showClinics, waitlistComplete: !!waitlist, fullText: clean, intake: json })}\n\n`
+          `data: ${JSON.stringify({ type: 'done', intakeComplete: !!json, showTriage: showTriageFinal, photosProcedure, gallery, showClinics, waitlistComplete: !!waitlist, fullText: clean, intake: json })}\n\n`
         ));
 
         // Persist the turn BEFORE closing the stream. On serverless (Vercel) the

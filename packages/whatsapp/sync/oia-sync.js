@@ -249,18 +249,26 @@ async function tick() {
     // endpoint de-dupes by messageId so this is safe.
     if (lines.length < from) from = 0;
 
+    // DELIVERY GUARANTEE: the offset cursor only advances past a turn once its POST
+    // succeeded. On a failed POST we stop and retry the same line next tick —
+    // previously the offset jumped to EOF regardless, so any turn that failed to
+    // deliver (e.g. mid dashboard redeploy) was silently lost forever, which also
+    // starved the reconciler safety nets (root of the Paloma waitlist drop, 2026-07-15).
+    let cursor = from;
     let wiped = false;
+    let posted = 0;
     for (let i = from; i < lines.length; i++) {
       let evt;
       try {
         evt = JSON.parse(lines[i]);
       } catch {
+        cursor = i + 1;
         continue;
       }
-      if (!evt || evt.type !== 'message' || !evt.message) continue;
+      if (!evt || evt.type !== 'message' || !evt.message) { cursor = i + 1; continue; }
       const role = evt.message.role === 'user' ? 'patient' : 'oia';
       const content = extractText(evt.message.content);
-      if (!content) continue; // pure thinking / tool / media with no text
+      if (!content) { cursor = i + 1; continue; } // pure thinking / tool / media with no text
       // TESTMODE from the patient wipes the number (db + memory) — do it and stop
       // processing this session (its file is now gone).
       if (role === 'patient' && /\btestmode\b/i.test(content)) {
@@ -269,18 +277,22 @@ async function tick() {
         wiped = true;
         break;
       }
-      await postMessage(api, secret, {
+      const ok = await postMessage(api, secret, {
         phone,
         role,
         content,
         messageId: evt.id,
         ts: evt.timestamp,
       });
+      if (!ok) break; // do NOT advance — retry this turn next tick
+      posted++;
+      cursor = i + 1;
     }
     if (wiped) continue; // session file deleted — skip the offset update
 
-    if (lines.length !== (offsets[file] || 0)) {
-      offsets[file] = lines.length;
+    if (posted > 0) console.log(`[oia-sync] delivered ${posted} turn(s) for ${phone}`);
+    if (cursor !== (offsets[file] || 0)) {
+      offsets[file] = cursor;
       changed = true;
     }
   }
@@ -288,6 +300,7 @@ async function tick() {
 }
 
 async function loop() {
+  let ticks = 0;
   // eslint-disable-next-line no-constant-condition
   while (true) {
     try {
@@ -299,6 +312,12 @@ async function loop() {
       await outboundTick();
     } catch (e) {
       console.error('[oia-outbound] tick error:', e.message);
+    }
+    // Heartbeat every ~5 min so a dead/silent syncer is visible in `fly logs`
+    // (its total silence is what made the 2026-07-15 delivery gap hard to spot).
+    ticks++;
+    if (ticks % 100 === 0) {
+      console.log(`[oia-sync] heartbeat — alive, tracking ${currentSessions().length} session(s)`);
     }
     await new Promise(r => setTimeout(r, POLL_MS));
   }
