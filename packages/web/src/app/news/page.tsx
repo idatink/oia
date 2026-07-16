@@ -32,7 +32,7 @@ const POSTS = [
 export default function NewsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   return (
-    <div className="bg-surface-container-lowest min-h-screen">
+    <div className="bg-surface-container-lowest min-h-screen aurora overflow-hidden">
       <Nav onCTAClick={() => setModalOpen(true)} />
 
       <main className="pt-16">
@@ -47,7 +47,7 @@ export default function NewsPage() {
           <div className="max-w-3xl mx-auto space-y-6">
             {POSTS.map(p => (
               <article key={p.title}
-                className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-8 hover:border-primary/30 transition-colors">
+                className="glass-soft lift-card rounded-2xl p-8">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="font-body text-[10px] font-semibold uppercase tracking-widest text-primary bg-primary/8 rounded-full px-3 py-1">{p.tag}</span>
                   <span className="font-body text-[11px] uppercase tracking-widest text-on-surface-variant">{p.date}</span>
@@ -63,7 +63,7 @@ export default function NewsPage() {
         <section className="py-20 bg-surface-container-low px-6 text-center">
           <h2 className="font-display text-3xl md:text-4xl text-on-surface mb-6">Rather just talk it through?</h2>
           <button onClick={() => setModalOpen(true)}
-            className="bg-primary text-on-primary px-8 py-4 rounded-lg font-body font-semibold text-label-caps uppercase tracking-widest hover:opacity-90 active:opacity-80 transition-all">
+            className="bg-primary text-on-primary px-8 py-4 rounded-xl font-body font-semibold text-label-caps uppercase tracking-widest hover:opacity-90 active:opacity-80 transition-all lift-cta">
             Talk to Oia
           </button>
         </section>

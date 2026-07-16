@@ -12,11 +12,11 @@ export default function ConciergeShell() {
   const [detectedProcedures, setDetectedProcedures] = useState<string[]>([]);
 
   return (
-    <div className="flex flex-col h-screen bg-surface overflow-hidden">
+    <div className="aurora flex flex-col h-screen bg-surface overflow-hidden">
       {/* Desktop nav */}
-      <header className="hidden md:flex items-center justify-between px-[64px] h-16 border-b border-outline-variant/10 bg-surface/80 nav-blur shrink-0 fixed top-0 left-0 right-0 z-40">
+      <header className="hidden md:flex items-center justify-between px-[64px] h-16 glass-nav shrink-0 fixed top-0 left-0 right-0 z-40">
         <Link href="/" className="font-display text-display-sm text-primary tracking-tight">
-          Oia — Your Bespoke Treatment Planner
+          OIA — Your Bespoke Treatment Planner
         </Link>
         <nav className="flex items-center gap-10">
           {[{ label: 'Treatments', href: '/treatments' }, { label: 'The Oia Way', href: '/about' }, { label: 'Clinics', href: '/clinics' }].map(item => (
@@ -35,7 +35,7 @@ export default function ConciergeShell() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
           </svg>
         </Link>
-        <span className="font-display text-display-sm text-primary">Oia AI</span>
+        <span className="font-display text-display-sm text-primary">OIA AI</span>
         <div className="w-10" />
       </div>
 

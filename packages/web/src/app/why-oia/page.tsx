@@ -52,7 +52,7 @@ const FEATURES = [
 export default function FeaturesPage() {
   const [modalOpen, setModalOpen] = useState(false);
   return (
-    <div className="bg-surface-container-lowest min-h-screen">
+    <div className="bg-surface-container-lowest min-h-screen aurora overflow-hidden">
       <Nav onCTAClick={() => setModalOpen(true)} />
 
       <main className="pt-16">
@@ -104,7 +104,7 @@ export default function FeaturesPage() {
           </div>
           <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
             {SCOPE.map(s => (
-              <div key={s.category} className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-7">
+              <div key={s.category} className="glass-soft rounded-2xl p-7">
                 <h3 className="font-display text-xl text-primary mb-4">{s.category}</h3>
                 <ul className="space-y-2.5">
                   {s.items.map(i => (
@@ -121,7 +121,7 @@ export default function FeaturesPage() {
           <h2 className="font-display text-3xl md:text-5xl text-on-surface mb-6 max-w-xl mx-auto">Ask her anything first.</h2>
           <p className="font-body text-body-md text-on-surface-variant max-w-md mx-auto mb-8">Private. No forms. No pressure.</p>
           <button onClick={() => setModalOpen(true)}
-            className="bg-primary text-on-primary px-8 py-4 rounded-lg font-body font-semibold text-label-caps uppercase tracking-widest hover:opacity-90 active:opacity-80 transition-all">
+            className="bg-primary text-on-primary px-8 py-4 rounded-xl lift-cta font-body font-semibold text-label-caps uppercase tracking-widest hover:opacity-90 active:opacity-80 transition-all">
             Talk to Oia
           </button>
         </section>

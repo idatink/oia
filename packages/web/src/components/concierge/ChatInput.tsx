@@ -34,8 +34,8 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
   }
 
   return (
-    <div className="border-t border-outline-variant/20 bg-surface-container-lowest px-4 py-3">
-      <div className="flex items-center gap-3 bg-surface-container-low rounded-2xl px-4 py-3 border border-outline-variant/30 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+    <div className="border-t border-white/40 bg-surface-container-lowest/60 backdrop-blur-md px-4 py-3">
+      <div className="flex items-center gap-3 glass-soft rounded-2xl px-4 py-3 focus-within:border-primary/60 focus-within:ring-1 focus-within:ring-primary/40 transition-all">
         {/* Attachment */}
         <button
           type="button"

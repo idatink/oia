@@ -96,7 +96,7 @@ export default function MatchRoomClient({ procedure, country: homeRaw, name, loc
   const showLocalAbroad = home && localMatches.length >= 0 && abroadMatches.length > 0;
 
   return (
-    <div className="min-h-screen bg-surface-container-lowest">
+    <div className="min-h-screen bg-surface-container-lowest aurora overflow-hidden">
       <header className="px-6 pt-14 pb-8 max-w-6xl mx-auto text-center">
         <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-3">Your matches</span>
         <h1 className="font-display text-3xl md:text-5xl text-on-surface leading-tight">
@@ -182,7 +182,7 @@ export default function MatchRoomClient({ procedure, country: homeRaw, name, loc
                 <button
                   onClick={sendShortlist}
                   disabled={sending}
-                  className="bg-primary text-on-primary font-body text-sm font-semibold px-6 py-3 rounded-xl hover:opacity-90 disabled:opacity-50 transition-all"
+                  className="bg-primary text-on-primary font-body text-sm font-semibold px-6 py-3 rounded-xl lift-cta hover:opacity-90 disabled:opacity-50 transition-all"
                 >
                   {sending ? 'Sending…' : 'Send my shortlist to Oia'}
                 </button>
@@ -224,7 +224,7 @@ function MatchCard({ m, selectable, selected, onToggle }: { m: Match; selectable
   const clinic = hasClinic ? m.description.split(' — ')[0] : '';
   const reasons = hasClinic ? m.description.split(' — ').slice(1).join(' — ') : m.description;
   return (
-    <div className={`bg-surface-container-lowest rounded-card2 overflow-hidden border shadow-card hover:shadow-concierge transition-all flex flex-col ${
+    <div className={`glass-soft lift-card rounded-card2 overflow-hidden transition-all flex flex-col ${
       selected ? 'border-primary ring-1 ring-primary/40' : 'border-outline-variant/20 hover:border-primary/30'
     }`}>
       <div className="h-28 bg-gradient-to-br from-secondary-container to-tertiary-fixed relative">

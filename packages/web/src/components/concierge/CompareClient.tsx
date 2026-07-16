@@ -24,7 +24,7 @@ const countryLabel = (c?: string) => (c ? COUNTRY_NAMES[c] ?? c : '');
 export default function CompareClient({ name, procedure, entries }:
   { name?: string | null; procedure: string; entries: CompareEntry[] }) {
   return (
-    <div className="min-h-screen bg-surface-container-lowest">
+    <div className="min-h-screen bg-surface-container-lowest aurora overflow-hidden">
       <header className="px-6 pt-14 pb-8 max-w-6xl mx-auto text-center">
         <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-3">Your comparison</span>
         <h1 className="font-display text-3xl md:text-5xl text-on-surface leading-tight">
@@ -39,7 +39,7 @@ export default function CompareClient({ name, procedure, entries }:
       <main className="px-6 pb-16 max-w-6xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {entries.map((e, i) => (
-            <div key={i} className="bg-surface-container-lowest rounded-card2 overflow-hidden border border-outline-variant/20 shadow-card flex flex-col">
+            <div key={i} className="glass-soft rounded-card2 overflow-hidden flex flex-col">
               <div className="px-5 pt-5 pb-4 border-b border-outline-variant/10">
                 <p className="font-body text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
                   {[e.city, countryLabel(e.country)].filter(Boolean).join(', ')}
@@ -84,7 +84,7 @@ export default function CompareClient({ name, procedure, entries }:
           href="https://wa.me/447752991023"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 bg-primary text-on-primary font-body text-sm font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition-all"
+          className="inline-flex items-center gap-2 bg-primary text-on-primary font-body text-sm font-semibold px-6 py-3 rounded-xl lift-cta hover:opacity-90 transition-all"
         >
           Message Oia on WhatsApp
         </a>

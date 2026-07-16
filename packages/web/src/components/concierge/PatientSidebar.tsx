@@ -7,12 +7,12 @@ interface PatientSidebarProps {
 
 export default function PatientSidebar({ name, patientId, intents, conciergeStatus }: PatientSidebarProps) {
   return (
-    <aside className="w-[320px] shrink-0 border-r border-outline-variant/30 bg-surface-container-low flex flex-col h-full overflow-y-auto">
+    <aside className="w-[320px] shrink-0 border-r border-white/40 bg-surface-container-low/50 backdrop-blur-md flex flex-col h-full overflow-y-auto">
       <div className="p-6 space-y-6">
         {/* Profile */}
         <div>
           <h2 className="font-body text-label-caps text-primary uppercase tracking-[0.15em] font-semibold mb-4">Patient Profile</h2>
-          <div className="flex items-center gap-3 bg-surface-container-lowest rounded-card p-4 border border-outline-variant/20">
+          <div className="flex items-center gap-3 glass-soft rounded-card p-4">
             <div className="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
               <span className="font-display text-display-sm text-on-secondary-container">
                 {name.charAt(0)}
@@ -48,7 +48,7 @@ export default function PatientSidebar({ name, patientId, intents, conciergeStat
               { name: 'Medical_History.pdf', type: 'pdf' },
               { name: 'Front_Profile_Views.zip', type: 'zip' },
             ].map(file => (
-              <div key={file.name} className="flex items-center justify-between bg-surface-container-lowest rounded-lg px-4 py-3 border border-outline-variant/20">
+              <div key={file.name} className="flex items-center justify-between glass-soft rounded-lg px-4 py-3">
                 <div className="flex items-center gap-3 min-w-0">
                   <svg className="w-4 h-4 text-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>

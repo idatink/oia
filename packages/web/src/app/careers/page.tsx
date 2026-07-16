@@ -22,7 +22,7 @@ const VALUES = [
 export default function CareersPage() {
   const [modalOpen, setModalOpen] = useState(false);
   return (
-    <div className="bg-surface-container-lowest min-h-screen">
+    <div className="bg-surface-container-lowest min-h-screen aurora overflow-hidden">
       <Nav onCTAClick={() => setModalOpen(true)} />
 
       <main className="pt-16">
@@ -39,7 +39,7 @@ export default function CareersPage() {
         <section className="pb-20 md:pb-28 px-6">
           <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
             {VALUES.map(v => (
-              <div key={v.title} className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-7">
+              <div key={v.title} className="glass-soft rounded-2xl p-7">
                 <h3 className="font-display text-xl text-primary mb-3">{v.title}</h3>
                 <p className="font-body text-body-sm text-on-surface-variant leading-relaxed">{v.body}</p>
               </div>
@@ -56,7 +56,7 @@ export default function CareersPage() {
             But exceptional people make their own openings. If you care about patients, craft and honesty, tell us who you are.
           </p>
           <a href="mailto:hello@heyoia.com?subject=Joining%20Oia"
-            className="inline-block bg-primary text-on-primary px-8 py-4 rounded-lg font-body font-semibold text-label-caps uppercase tracking-widest hover:opacity-90 active:opacity-80 transition-all">
+            className="inline-block bg-primary text-on-primary px-8 py-4 rounded-xl font-body font-semibold text-label-caps uppercase tracking-widest hover:opacity-90 active:opacity-80 transition-all lift-cta">
             Write to us
           </a>
         </section>

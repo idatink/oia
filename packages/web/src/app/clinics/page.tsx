@@ -176,7 +176,7 @@ export default function ClinicsPage() {
       <main className="pt-16 flex-grow">
 
         {/* ── Hero ─────────────────────────────────────────────────────── */}
-        <section className="bg-surface py-24">
+        <section className="aurora overflow-hidden bg-surface py-24">
           <div className="max-w-container mx-auto px-[64px]">
             <div className="max-w-2xl">
               <span className="font-body text-label-caps text-primary uppercase tracking-[0.2em] block mb-5">Our Partner Network</span>
@@ -227,7 +227,7 @@ export default function ClinicsPage() {
                 <article
                   key={clinic.id}
                   onClick={() => setSelected(clinic)}
-                  className="group bg-surface-container-lowest rounded-card2 overflow-hidden border border-outline-variant/20 cursor-pointer hover:shadow-concierge hover:-translate-y-1 transition-all duration-300"
+                  className="group glass lift-card rounded-card2 overflow-hidden cursor-pointer transition-all duration-300"
                 >
                   <div className="h-48 relative overflow-hidden">
                     <img src={clinic.img} alt={clinic.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -299,7 +299,7 @@ export default function ClinicsPage() {
                 <article
                   key={clinic.id}
                   onClick={() => setSelected(clinic)}
-                  className="group bg-surface-container-lowest rounded-card2 border border-outline-variant/20 overflow-hidden cursor-pointer hover:shadow-concierge hover:-translate-y-1 transition-all duration-300"
+                  className="group glass-soft lift-card rounded-card2 overflow-hidden cursor-pointer transition-all duration-300"
                 >
                   <div className="h-36 relative overflow-hidden">
                     <img src={clinic.img} alt={clinic.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -354,7 +354,7 @@ export default function ClinicsPage() {
               { step: '03', label: 'Outcome Data Analysis', body: 'We review complication rates, revision rates and patient feedback for a minimum 2-year period before approval.' },
               { step: '04', label: 'Annual Re-Certification', body: 'Approval is never permanent. Clinics are re-audited annually and removed immediately if standards fall below our threshold.' },
             ].map(v => (
-              <div key={v.step} className="bg-surface-container-lowest rounded-card2 p-6 border border-outline-variant/20">
+              <div key={v.step} className="glass-soft rounded-card2 p-6">
                 <span className="font-display text-display-xl text-outline-variant/30 leading-none block mb-4">{v.step}</span>
                 <h4 className="font-display text-display-sm text-on-surface mb-2">{v.label}</h4>
                 <p className="font-body text-body-sm text-on-surface-variant leading-relaxed">{v.body}</p>
@@ -376,7 +376,7 @@ export default function ClinicsPage() {
             </p>
             <button
               onClick={() => setModalOpen(true)}
-              className="bg-surface-container-lowest text-primary px-10 py-5 rounded-xl font-body font-bold text-label-caps uppercase tracking-[0.2em] hover:shadow-float transition-all"
+              className="bg-surface-container-lowest text-primary px-10 py-5 rounded-xl font-body font-bold text-label-caps uppercase tracking-[0.2em] lift-cta hover:shadow-float transition-all"
             >
               Start AI Assessment →
             </button>
@@ -430,7 +430,7 @@ export default function ClinicsPage() {
                 <p className="font-body text-[9px] text-on-surface-variant uppercase tracking-widest font-semibold mb-3">Accreditations & Certifications</p>
                 <div className="space-y-2">
                   {selected.accreditations.map(a => (
-                    <div key={a} className="flex items-center gap-3 bg-surface-container-low rounded-xl px-4 py-2.5">
+                    <div key={a} className="flex items-center gap-3 glass-soft rounded-xl px-4 py-2.5">
                       <svg className="w-4 h-4 text-primary shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
                         <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
@@ -443,11 +443,11 @@ export default function ClinicsPage() {
 
               {/* Quick facts */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-surface-container-low rounded-xl p-4 text-center border border-outline-variant/10">
+                <div className="glass-soft rounded-xl p-4 text-center">
                   <p className="font-body text-[9px] text-on-surface-variant uppercase tracking-wider mb-1.5">Region</p>
                   <p className="font-display text-display-sm text-on-surface">{selected.region}</p>
                 </div>
-                <div className="bg-surface-container-low rounded-xl p-4 text-center border border-outline-variant/10">
+                <div className="glass-soft rounded-xl p-4 text-center">
                   <p className="font-body text-[9px] text-on-surface-variant uppercase tracking-wider mb-1.5">Established</p>
                   <p className="font-display text-display-sm text-on-surface">{selected.since}</p>
                 </div>
@@ -468,7 +468,7 @@ export default function ClinicsPage() {
               </button>
               <button
                 onClick={() => { setSelected(null); setModalOpen(true); }}
-                className="flex-1 bg-primary text-on-primary py-3.5 rounded-xl font-body text-[10px] font-semibold uppercase tracking-wider hover:opacity-90 transition-all"
+                className="flex-1 bg-primary text-on-primary py-3.5 rounded-xl font-body text-[10px] font-semibold uppercase tracking-wider lift-cta hover:opacity-90 transition-all"
               >
                 Check My Match →
               </button>

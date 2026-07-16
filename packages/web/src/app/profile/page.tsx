@@ -12,7 +12,7 @@ export default function ProfilePage() {
     <>
       <Nav onCTAClick={() => setModalOpen(true)} />
 
-      <main className="flex-grow pt-16 min-h-screen bg-surface-container-low">
+      <main className="flex-grow pt-16 min-h-screen bg-surface-container-low aurora overflow-hidden">
         <div className="max-w-lg mx-auto px-6 py-16 text-center">
 
           {/* Avatar placeholder */}
@@ -31,7 +31,7 @@ export default function ProfilePage() {
           <div className="space-y-3 mb-10">
             <button
               onClick={() => setModalOpen(true)}
-              className="w-full flex items-center gap-4 bg-surface-container-lowest rounded-xl border border-outline-variant/20 px-5 py-4 text-left hover:border-primary/40 hover:bg-primary-fixed/20 transition-all group"
+              className="w-full flex items-center gap-4 glass-soft lift-card rounded-xl px-5 py-4 text-left hover:border-primary/40 hover:bg-primary-fixed/20 transition-all group"
             >
               <div className="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
                 <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
@@ -49,7 +49,7 @@ export default function ProfilePage() {
 
             <Link
               href="/concierge"
-              className="w-full flex items-center gap-4 bg-surface-container-lowest rounded-xl border border-outline-variant/20 px-5 py-4 text-left hover:border-primary/40 hover:bg-primary-fixed/20 transition-all group"
+              className="w-full flex items-center gap-4 glass-soft lift-card rounded-xl px-5 py-4 text-left hover:border-primary/40 hover:bg-primary-fixed/20 transition-all group"
             >
               <div className="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
                 <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -67,7 +67,7 @@ export default function ProfilePage() {
 
             <Link
               href="/why-oia"
-              className="w-full flex items-center gap-4 bg-surface-container-lowest rounded-xl border border-outline-variant/20 px-5 py-4 text-left hover:border-primary/40 hover:bg-primary-fixed/20 transition-all group"
+              className="w-full flex items-center gap-4 glass-soft lift-card rounded-xl px-5 py-4 text-left hover:border-primary/40 hover:bg-primary-fixed/20 transition-all group"
             >
               <div className="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
                 <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>

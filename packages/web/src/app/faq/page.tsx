@@ -98,7 +98,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 export default function FaqPage() {
   const [modalOpen, setModalOpen] = useState(false);
   return (
-    <div className="bg-surface-container-lowest min-h-screen">
+    <div className="bg-surface-container-lowest min-h-screen aurora overflow-hidden">
       <Nav onCTAClick={() => setModalOpen(true)} />
 
       <main className="pt-16">
@@ -126,7 +126,7 @@ export default function FaqPage() {
         <section className="py-20 bg-surface-container-low px-6 text-center">
           <h2 className="font-display text-3xl md:text-4xl text-on-surface mb-6">Still wondering about something?</h2>
           <button onClick={() => setModalOpen(true)}
-            className="bg-primary text-on-primary px-8 py-4 rounded-lg font-body font-semibold text-label-caps uppercase tracking-widest hover:opacity-90 active:opacity-80 transition-all">
+            className="bg-primary text-on-primary px-8 py-4 rounded-xl lift-cta font-body font-semibold text-label-caps uppercase tracking-widest hover:opacity-90 active:opacity-80 transition-all">
             Ask Oia
           </button>
         </section>

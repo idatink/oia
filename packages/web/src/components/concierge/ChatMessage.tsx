@@ -57,7 +57,7 @@ export default function ChatMessage({ message, patientInitial = 'E', onClinicSel
         {message.content && (
           <div className={`px-4 py-3 rounded-2xl font-body text-body-md leading-relaxed ${
             isOia
-              ? 'bg-surface-container-lowest border border-outline-variant/20 text-on-surface rounded-tl-sm'
+              ? 'glass-soft text-on-surface rounded-tl-sm'
               : 'bg-primary text-on-primary rounded-tr-sm'
           }`}>
             {message.content}
