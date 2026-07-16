@@ -160,7 +160,9 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
             if (v.procedure) setInvitedProcedure(v.procedure);
             const nm = v.name ? ` ${v.name}` : '';
             const proc = v.procedure ? ` for your ${v.procedure}` : '';
-            const g = `Welcome back${nm} 🤍 A space has just opened${proc} — I'm so glad it's your turn. Let's plan everything together now. To start, tell me a little about what you're hoping to achieve?`;
+            // Opens directly on the local/travel question — the first step of the
+            // streamlined flow (goals-probing was cut; photos carry the goals).
+            const g = `Welcome back${nm} 🤍 A space has just opened${proc} — I'm so glad it's your turn. Let's plan everything together now. First things first: would you prefer to have it done close to home, or are you happy to travel for the right surgeon? Plenty of people like to see both, to compare.`;
             setMessages([{ id: 'greeting', role: 'nia', content: g, timestamp: new Date() }]);
             setHistory([{ role: 'assistant', content: g }]);
             return;
