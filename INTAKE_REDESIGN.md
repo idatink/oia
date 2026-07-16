@@ -172,7 +172,13 @@ Funnel: **139 matches → patient shortlists ≤10 → Oia deep-dives → top 3�
 3. **Deep-dive** (Phase 1 = TEAM-ASSISTED via existing Clinic-mode playbook + submit_clinic_quote):
    per shortlisted surgeon → consent-signed before/afters requested from the clinic, availability
    window, indicative all-in package. Oia narrows ≤10 → top 3–5.
-   **[DECIDED] Results delivered as web compare view + WhatsApp ping** (compare view = next build).
+   **[DECIDED] Results delivered as web compare view + WhatsApp ping.**
+   ✅ **Compare view BUILT 2026-07-16 (commit 91ba0fc), verified live:** team tool at dashboard
+   `/admin/compare` (work queue = patient shortlists → per-surgeon form: price/inclusions/
+   availability/notes, human-entered real quotes only) → signed `/compare/<token>` page (side-by-
+   side cards, "confirmed at booking" honesty label, WhatsApp CTA) + WhatsApp ping via the
+   outbound rail. Tamper-rejected tokens verified. The CLINIC CONVERSATIONS themselves remain
+   manual (team, Clinic-mode playbook) — that's the Phase-1 deal.
 4. **Negotiate** (playbook exists, trigger manual): patient narrows to 2–3 → Oia haggles all-in;
    never reveals patient identity; quotes → dashboard.
 5. **Choose + handoff**: side-by-side quotes → patient picks → team locks date + price.
