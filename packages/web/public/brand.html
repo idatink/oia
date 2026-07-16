@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oia Brand Resources — Technical Luxury v1.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --terracotta:#BD5B44; --cream:#FCF9F7;
+    --primary:#99402b; --on-primary:#fff; --primary-container:#b95841; --primary-fixed:#ffdad2;
+    --secondary:#5f5e5d; --secondary-container:#e2dfdd;
+    --slate:#4d5e6f; --slate-container:#657688; --tertiary-fixed:#d2e4f9;
+    --error:#ba1a1a;
+    --surface:#f9f9ff; --on-surface:#151c27; --on-surface-variant:#56423e;
+    --inverse-surface:#2a313d; --inverse-on-surface:#ebf1ff;
+    --outline:#89726d; --outline-variant:#dcc0ba;
+    --serif:'EB Garamond',Georgia,'Times New Roman',serif;
+    --sans:'Hanken Grotesk',-apple-system,'Helvetica Neue',Arial,sans-serif;
+    --glass-bg:rgba(252,249,247,.65);
+    --rim:rgba(255,255,255,.75); --rim-dim:rgba(255,255,255,.35);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--cream);color:var(--on-surface);font-family:var(--sans);font-size:16px;line-height:1.5;overflow-x:hidden}
+
+  /* ── Elevation L1: the Aura ── */
+  .aura{position:fixed;inset:0;z-index:-1;background:var(--cream);overflow:hidden}
+  .aura div{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55}
+  .a1{width:60vw;height:60vw;background:radial-gradient(circle,#BD5B44 0%,transparent 70%);top:-18vw;left:-12vw;animation:drift1 26s ease-in-out infinite alternate}
+  .a2{width:55vw;height:55vw;background:radial-gradient(circle,#657688 0%,transparent 70%);bottom:-20vw;right:-10vw;animation:drift2 32s ease-in-out infinite alternate}
+  .a3{width:45vw;height:45vw;background:radial-gradient(circle,#ffdad2 0%,transparent 70%);top:35%;left:45%;animation:drift3 24s ease-in-out infinite alternate}
+  @keyframes drift1{from{transform:translate(0,0) scale(1)}to{transform:translate(9vw,7vh) scale(1.15)}}
+  @keyframes drift2{from{transform:translate(0,0) scale(1.1)}to{transform:translate(-8vw,-6vh) scale(.95)}}
+  @keyframes drift3{from{transform:translate(0,0) scale(1)}to{transform:translate(-6vw,8vh) scale(1.2)}}
+  @media (prefers-reduced-motion: reduce){.aura div{animation:none}}
+
+  .wrap{max-width:1120px;margin:0 auto;padding:0 32px}
+  @media(max-width:640px){.wrap{padding:0 16px}}
+  section{padding:80px 0}
+  .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--primary);font-weight:600;margin-bottom:16px}
+  h1{font-family:var(--serif);font-size:clamp(40px,6vw,64px);font-weight:500;line-height:1.1;letter-spacing:.02em;margin-bottom:24px}
+  h2{font-family:var(--serif);font-size:32px;font-weight:500;line-height:1.2;letter-spacing:.01em;margin-bottom:16px}
+  h3{font-family:var(--serif);font-size:24px;font-weight:500;line-height:1.3;margin-bottom:8px}
+  .label{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+  p.lede{font-size:18px;line-height:1.6;color:var(--on-surface);max-width:680px}
+  p{max-width:680px}
+  .muted{color:var(--outline)}
+
+  /* ── Elevation L2: glass panels ── */
+  .glass{background:var(--glass-bg);-webkit-backdrop-filter:blur(32px);backdrop-filter:blur(32px);border-radius:1rem;
+    border-top:1px solid var(--rim);border-left:1px solid var(--rim);border-right:1px solid var(--rim-dim);border-bottom:1px solid var(--rim-dim);
+    box-shadow:0 8px 40px rgba(189,91,68,.10)}
+  .glass.active{box-shadow:inset 0 0 20px rgba(255,255,255,.3),0 8px 40px rgba(189,91,68,.14)}
+  .pad{padding:24px}
+  .grid{display:grid;gap:24px;margin-top:48px}
+  .g3{grid-template-columns:repeat(3,1fr)} .g2{grid-template-columns:repeat(2,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:860px){.g3,.g2,.g4{grid-template-columns:1fr}}
+  .figure{display:flex;align-items:center;justify-content:center;min-height:190px;padding:24px}
+  .badge{display:inline-block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;background:rgba(189,91,68,.10);border:1px solid var(--terracotta);color:var(--primary);border-radius:9999px;padding:4px 12px;margin-bottom:12px}
+  .badge.hard{background:var(--inverse-surface);border-color:var(--inverse-surface);color:var(--inverse-on-surface)}
+  .badge.slate{background:rgba(77,94,111,.10);border-color:var(--slate);color:var(--slate)}
+
+  .swatch{border-radius:1rem;padding:24px;min-height:210px;display:flex;flex-direction:column;justify-content:flex-end}
+  .swatch h3{margin-bottom:6px}
+  .swatch .vals{font-size:12.5px;line-height:1.7}
+  .swatch .role{font-size:13.5px;margin-bottom:12px;line-height:1.5}
+
+  ul.rules{list-style:none;max-width:720px}
+  ul.rules li{padding:14px 0 14px 28px;border-bottom:1px solid var(--outline-variant);position:relative;font-size:15px;color:var(--on-surface)}
+  ul.rules li::before{content:"";position:absolute;left:0;top:22px;width:10px;height:10px;border-radius:50%;background:var(--terracotta)}
+  ul.rules.dont li::before{background:var(--outline)}
+  .do-dont{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:40px}
+  @media(max-width:860px){.do-dont{grid-template-columns:1fr}}
+
+  .voice-pair{margin-top:16px;max-width:760px}
+  .voice-pair .no{color:var(--outline);text-decoration:line-through;font-size:14.5px;display:block;margin-bottom:8px}
+  .voice-pair .yes{font-family:var(--serif);font-size:20px;color:var(--on-surface);display:block}
+
+  /* Components — live specimens */
+  .btn{display:inline-block;font-family:var(--sans);font-weight:600;font-size:14px;letter-spacing:.02em;padding:12px 28px;border-radius:1rem;cursor:pointer;border:none}
+  .btn-primary{background:var(--terracotta);color:#fff;position:relative}
+  .btn-primary:hover{box-shadow:inset 0 8px 20px rgba(255,255,255,.25)}
+  .btn-glass{background:rgba(252,249,247,.25);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid #fff;color:var(--terracotta)}
+  .chip{display:inline-block;background:rgba(189,91,68,.10);border:1px solid var(--terracotta);color:var(--primary);border-radius:9999px;padding:8px 18px;font-size:13.5px;font-weight:600;margin:4px 8px 4px 0}
+  .input-sunken{background:rgba(252,249,247,.4);border:1px solid var(--rim-dim);box-shadow:inset 0 2px 6px rgba(21,28,39,.08);border-radius:.75rem;padding:14px 18px;font-family:var(--sans);font-size:15px;color:var(--on-surface);width:100%}
+  .input-sunken::placeholder{color:var(--outline)}
+  .tooltip{background:rgba(252,249,247,.9);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--rim);border-radius:.75rem;padding:10px 16px;font-size:13px;display:inline-block;box-shadow:0 4px 24px rgba(21,28,39,.12)}
+
+  .bubble{background:var(--glass-bg);-webkit-backdrop-filter:blur(32px);backdrop-filter:blur(32px);border:1px solid var(--rim);border-radius:1rem;border-bottom-left-radius:.25rem;padding:14px 18px;font-size:14.5px;margin-bottom:12px}
+  .note{background:rgba(189,91,68,.08);border:1px solid var(--outline-variant);border-radius:.75rem;padding:16px 20px;font-size:13.5px;max-width:720px;margin-top:24px}
+  .hero{padding:110px 0 90px}
+  footer{background:var(--inverse-surface);color:var(--inverse-on-surface);padding:56px 0;font-size:13.5px}
+  a{color:var(--primary)}
+  code{font-size:.9em;background:rgba(220,192,186,.35);border-radius:4px;padding:1px 6px}
+  .type-row{display:flex;align-items:baseline;gap:24px;padding:20px 0;border-bottom:1px solid var(--outline-variant);flex-wrap:wrap}
+  .type-row .spec{font-size:12px;color:var(--outline);min-width:220px}
+  .elev{display:flex;flex-direction:column;gap:16px;margin-top:40px}
+</style>
+</head>
+<body>
+<div class="aura"><div class="a1"></div><div class="a2"></div><div class="a3"></div></div>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">Guidelines and best practices · v1.2</div>
+  <h1>Oia brand resources</h1>
+  <p class="lede">This design system evolves the medical concierge experience into <strong>Technical Luxury</strong> — a living interface of luminous glass over organic, pulsating gradients. Authoritative yet empathetic: high-science intelligence with high-touch human care. The page you're reading is built in the system itself.</p>
+  <div class="glass active" style="margin-top:56px;padding:56px;display:flex;gap:48px;align-items:center;flex-wrap:wrap;justify-content:center">
+    <svg viewBox="0 0 440 160" width="330" xmlns="http://www.w3.org/2000/svg" aria-label="OIA animated logo">
+      <defs>
+        <mask id="heroCutL"><rect width="440" height="160" fill="#fff"/><circle cy="78" r="46" fill="#000"><animate attributeName="cx" values="96;101;96;92;96" dur="3.2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/></circle></mask>
+        <mask id="heroCutR"><rect width="440" height="160" fill="#fff"/><circle cy="80" r="45" fill="#000"><animate attributeName="cx" values="90;86;90;93;90" dur="3.2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/></circle></mask>
+      </defs>
+      <g transform="translate(8,0) scale(0.82) translate(0,17)">
+        <circle cx="72" cy="80" r="52" fill="#BD5B44" mask="url(#heroCutL)"/>
+        <circle cx="103" cy="80" r="40" fill="#99402b" mask="url(#heroCutR)"/>
+      </g>
+      <text x="150" y="103" font-family="EB Garamond,Georgia,serif" font-size="72" font-weight="500" letter-spacing="10" fill="#BD5B44">OIA</text>
+    </svg>
+    <div style="max-width:380px">
+      <div class="bubble">Hi, I'm Oia — your personal concierge for planning treatment. There's no rush. When you're ready, I'll set everything up.</div>
+      <span class="chip">Yes, let's go</span><span class="chip">I have a question first</span>
+    </div>
+  </div>
+  <div class="note"><strong>Status.</strong> Palette, type, glass system, and components are the <em>ratified</em> v1.0 system; the logo is v1.2 — the all-terracotta eclipse speech mark with six avatar behavior states and the expanded icon library. Compliance rules are hard and final.</div>
+</div></section>
+
+<!-- ═══════════ LOGOS ═══════════ -->
+<section><div class="wrap">
+  <div class="eyebrow">Types of logos</div>
+  <h2>All the variations of our logo</h2>
+  <p class="lede">The OIA logo is a conversation made visible: two facing arcs — an eclipse — one voice meeting another. The larger arc in Signature Terracotta is Oia; the deeper sliver is the patient. Never black: the mark lives entirely in terracotta. The wordmark is OIA in uppercase EB Garamond with generous tracking.</p>
+  <div class="grid g3">
+    <div class="glass">
+      <div class="figure"><svg viewBox="0 0 440 160" width="260"><defs><mask id="lk1"><rect width="440" height="160" fill="#fff"/><circle cx="96" cy="78" r="46" fill="#000"/></mask><mask id="lk2"><rect width="440" height="160" fill="#fff"/><circle cx="90" cy="80" r="45" fill="#000"/></mask></defs><g transform="translate(8,0) scale(0.82) translate(0,17)"><circle cx="72" cy="80" r="52" fill="#BD5B44" mask="url(#lk1)"/><circle cx="103" cy="80" r="40" fill="#99402b" mask="url(#lk2)"/></g><text x="150" y="103" font-family="EB Garamond,Georgia,serif" font-size="72" font-weight="500" letter-spacing="10" fill="#BD5B44">OIA</text></svg></div>
+      <div class="pad"><span class="badge">v1.1</span><h3>Primary lockup</h3><p style="font-size:14.5px">Eclipse mark plus wordmark — the default everywhere the brand appears for the first time. Minimum width 96px; clear space equals the width of the "I".</p></div>
+    </div>
+    <div class="glass">
+      <div class="figure"><svg viewBox="0 0 320 160" width="190"><text x="160" y="103" text-anchor="middle" font-family="EB Garamond,Georgia,serif" font-size="72" font-weight="500" letter-spacing="10" fill="#BD5B44">OIA</text></svg></div>
+      <div class="pad"><span class="badge">v1.1</span><h3>Wordmark</h3><p style="font-size:14.5px">Stands alone on surfaces already carrying the brand — chat header, legal pages, email footers. Minimum width 64px.</p></div>
+    </div>
+    <div class="glass">
+      <div class="figure"><svg viewBox="0 0 160 160" width="120"><defs><mask id="mg1"><rect width="160" height="160" fill="#fff"/><circle cx="96" cy="78" r="46" fill="#000"/></mask><mask id="mg2"><rect width="160" height="160" fill="#fff"/><circle cx="90" cy="80" r="45" fill="#000"/></mask></defs><circle cx="72" cy="80" r="52" fill="#BD5B44" mask="url(#mg1)"/><circle cx="103" cy="80" r="40" fill="#99402b" mask="url(#mg2)"/></svg></div>
+      <div class="pad"><span class="badge">v1.1</span><h3>Eclipse mark</h3><p style="font-size:14.5px">Avatar and app-icon use — WhatsApp profile, chat avatar, favicon. The animated states below are its native behavior in product. Minimum width 24px.</p></div>
+    </div>
+  </div>
+
+  <div style="margin-top:64px">
+    <div class="eyebrow">Logo motion</div>
+    <h2>A mark that speaks</h2>
+    <p class="lede">OIA is direct conversation, so the mark behaves like a participant, not a decoration. In the speech bubble the avatar carries six behavioral states, each mapped to a moment in the patient journey. Motion is always slow, small, and calm — never louder than the conversation itself. Each state ships as its own file in <code>logos/states/</code>.</p>
+    <div class="grid g3">
+      <div class="glass">
+        <div class="figure" style="min-height:170px"><svg viewBox="0 0 160 160" width="110"><defs><mask id="sti1"><rect width="160" height="160" fill="#fff"/><circle cx="96" cy="78" r="46" fill="#000"/></mask><mask id="sti2"><rect width="160" height="160" fill="#fff"/><circle cx="90" cy="80" r="45" fill="#000"/></mask></defs><g><animateTransform attributeName="transform" type="scale" values="1;1.02;1" dur="6.4s" repeatCount="indefinite" additive="sum" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/><animateTransform attributeName="transform" type="translate" values="0 0;-1.6 -1.6;0 0" dur="6.4s" repeatCount="indefinite" additive="sum" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/><circle cx="72" cy="80" r="52" fill="#BD5B44" mask="url(#sti1)"/><circle cx="103" cy="80" r="40" fill="#99402b" mask="url(#sti2)"/></g></svg></div>
+        <div class="pad"><h3 style="font-size:20px">Idle</h3><p style="font-size:14px">A 2% breath over 6.4s. Present, alive, unobtrusive — the default in the chat header and thread avatar.</p></div>
+      </div>
+      <div class="glass">
+        <div class="figure" style="min-height:170px"><svg viewBox="0 0 160 160" width="110"><defs><mask id="stl1"><rect width="160" height="160" fill="#fff"/><circle cx="96" cy="78" r="46" fill="#000"/></mask><mask id="stl2"><rect width="160" height="160" fill="#fff"/><circle cx="90" cy="80" fill="#000"><animate attributeName="r" values="45;43;45" dur="2.4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></circle></mask></defs><circle cx="72" cy="80" r="52" fill="#BD5B44" mask="url(#stl1)"/><circle cx="103" cy="80" fill="#99402b" mask="url(#stl2)"><animate attributeName="r" values="40;42;40" dur="2.4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></circle></svg></div>
+        <div class="pad"><h3 style="font-size:20px">Listening</h3><p style="font-size:14px">The patient's sliver gently swells while they type or record — their voice literally grows in the mark.</p></div>
+      </div>
+      <div class="glass active">
+        <div class="figure" style="min-height:170px"><svg viewBox="0 0 160 160" width="110"><defs><mask id="sts1"><rect width="160" height="160" fill="#fff"/><circle cy="78" r="46" fill="#000"><animate attributeName="cx" values="96;101;96;92;96" dur="3.2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/></circle></mask><mask id="sts2"><rect width="160" height="160" fill="#fff"/><circle cy="80" r="45" fill="#000"><animate attributeName="cx" values="90;86;90;93;90" dur="3.2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/></circle></mask></defs><circle cx="72" cy="80" r="52" fill="#BD5B44" mask="url(#sts1)"/><circle cx="103" cy="80" r="40" fill="#99402b" mask="url(#sts2)"/></svg></div>
+        <div class="pad"><h3 style="font-size:20px">Speaking</h3><p style="font-size:14px">The arcs open and close toward each other — Oia is composing or delivering a message.</p></div>
+      </div>
+      <div class="glass">
+        <div class="figure" style="min-height:170px"><svg viewBox="0 0 160 160" width="110"><defs><mask id="stt1"><rect width="160" height="160" fill="#fff"/><circle cx="96" cy="78" r="46" fill="#000"/></mask><mask id="stt2"><rect width="160" height="160" fill="#fff"/><circle cx="90" cy="80" r="45" fill="#000"/></mask></defs><circle cx="72" cy="80" r="52" fill="#BD5B44" mask="url(#stt1)"/><circle cx="103" cy="80" r="40" fill="#99402b" mask="url(#stt2)"/><g fill="#BD5B44"><circle cx="66" cy="80" r="4"><animate attributeName="opacity" values="0.25;1;0.25" dur="1.8s" begin="0s" repeatCount="indefinite"/></circle><circle cx="80" cy="80" r="4"><animate attributeName="opacity" values="0.25;1;0.25" dur="1.8s" begin="0.3s" repeatCount="indefinite"/></circle><circle cx="94" cy="80" r="4"><animate attributeName="opacity" values="0.25;1;0.25" dur="1.8s" begin="0.6s" repeatCount="indefinite"/></circle></g></svg></div>
+        <div class="pad"><h3 style="font-size:20px">Thinking</h3><p style="font-size:14px">Three dots pulse between the arcs — SmartMatch is matching, curation is underway, or negotiation is in progress.</p></div>
+      </div>
+      <div class="glass">
+        <div class="figure" style="min-height:170px"><svg viewBox="0 0 160 160" width="110"><defs><mask id="stc1"><rect width="160" height="160" fill="#fff"/><circle cx="96" cy="78" fill="#000"><animate attributeName="r" values="46;46;0;0;46" keyTimes="0;0.1;0.35;0.8;1" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1"/></circle></mask><mask id="stc2"><rect width="160" height="160" fill="#fff"/><circle cx="90" cy="80" r="45" fill="#000"/></mask></defs><circle cx="72" cy="80" r="52" fill="#BD5B44" mask="url(#stc1)"/><circle cy="80" r="40" fill="#99402b" mask="url(#stc2)"><animate attributeName="cx" values="103;103;86;86;103" keyTimes="0;0.1;0.35;0.8;1" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1"/><animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.1;0.35;0.8;1" dur="5s" repeatCount="indefinite"/></circle></svg></div>
+        <div class="pad"><h3 style="font-size:20px">Confirming</h3><p style="font-size:14px">The eclipse completes: the arcs close into a full circle as an offer is accepted or a booking confirmed. Plays once in product, then holds. (Looped here for preview.)</p></div>
+      </div>
+      <div class="glass">
+        <div class="figure" style="min-height:170px"><svg viewBox="0 0 160 160" width="110"><defs><mask id="stx1"><rect width="160" height="160" fill="#fff"/><circle cx="96" cy="78" r="46" fill="#000"/></mask><mask id="stx2"><rect width="160" height="160" fill="#fff"/><circle cx="90" cy="80" r="45" fill="#000"/></mask></defs><circle cx="72" cy="80" r="52" fill="#BD5B44" mask="url(#stx1)"/><circle cx="103" cy="80" r="40" fill="#99402b" mask="url(#stx2)"/></svg></div>
+        <div class="pad"><h3 style="font-size:20px">Still</h3><p style="font-size:14px">Deliberately motionless — during consent prompts, the sensitive-imagery gate, and medical escalations. Stillness signals seriousness.</p></div>
+      </div>
+    </div>
+    <ul class="rules" style="margin-top:40px">
+      <li><strong>Small and slow.</strong> Scale never exceeds 2%; positional shifts never exceed 5% of the mark's width; cycles run 3s or slower.</li>
+      <li><strong>Motion respects the moment.</strong> During the sensitive-imagery gate, consent prompts, and medical escalations, the mark holds still — animation never plays over serious moments.</li>
+      <li><strong>One state at a time, driven by the conversation.</strong> The orchestrator sets the avatar state (idle → listening → thinking → speaking → confirming); states never blend or flicker between turns.</li>
+      <li><strong>Honors <code>prefers-reduced-motion</code>.</strong> Product surfaces substitute <code>oia-state-still.svg</code> automatically.</li>
+      <li><strong>Print and small sizes are static.</strong> Below 32px, and in any print or document context, use <code>oia-monogram.svg</code>.</li>
+    </ul>
+  </div>
+</div></section>
+
+<!-- ═══════════ DO'S AND DON'TS ═══════════ -->
+<section><div class="wrap">
+  <div class="eyebrow">Do's and don'ts</div>
+  <h2>How to apply our brand</h2>
+  <div class="do-dont">
+    <div class="glass pad">
+      <span class="label" style="color:var(--primary)">Do</span>
+      <ul class="rules">
+        <li><strong>Keep clear space</strong> equal to the width of the "I" on all sides. Let the aura breathe around it.</li>
+        <li><strong>Approved colorways only:</strong> Signature Terracotta arc + deep Primary sliver on Cream/glass, or Cream arc + Terracotta sliver on inverse surface. The logo is never black or ink.</li>
+        <li><strong>Respect minimums:</strong> lockup 96px, wordmark 64px, monogram 24px.</li>
+        <li><strong>Co-brand with care:</strong> partner-clinic logos at equal visual weight, separated by clear space — never merged, never inside the monogram.</li>
+      </ul>
+    </div>
+    <div class="glass pad">
+      <span class="label" style="color:var(--outline)">Don't</span>
+      <ul class="rules dont">
+        <li>Don't stretch, rotate, outline, add shadows, or recolor the logo — never render it in black or ink; don't alter animation timings or invent new motion states.</li>
+        <li>Don't set the wordmark in another typeface or in lowercase — OIA is uppercase by design.</li>
+        <li>Don't place the logo over photography or directly on the aura without a glass panel behind it.</li>
+        <li>Don't let third parties use the marks without written permission — clinic partners receive assets through their agreement.</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- ═══════════ PRIMARY COLORS ═══════════ -->
+<section><div class="wrap">
+  <div class="eyebrow">Creative guidelines</div>
+  <h2>Primary colors</h2>
+  <p class="lede">The palette centers on <strong>Signature Terracotta</strong> — the warmth of human blood and earth — against <strong>Nia Cream</strong>. In interfaces, the deeper accessible Primary carries interactive elements; Slate serves data density.</p>
+  <div class="grid g2">
+    <div class="swatch" style="background:#BD5B44;color:#FCF9F7">
+      <div><span class="badge" style="background:rgba(252,249,247,.15);border-color:#FCF9F7;color:#FCF9F7">Brand</span><h3>Signature Terracotta</h3>
+      <p class="role">Hero moments, aura gradients, brand marks, primary buttons. Warmth with authority.</p>
+      <div class="vals" style="color:#ffdad2">#BD5B44 · RGB 189, 91, 68</div></div>
+    </div>
+    <div class="swatch" style="background:#FCF9F7;border:1px solid var(--outline-variant)">
+      <div><span class="badge">Brand</span><h3>Nia Cream</h3>
+      <p class="role">The canvas beneath the glass. Everything luminous starts here.</p>
+      <div class="vals muted">#FCF9F7 · RGB 252, 249, 247</div></div>
+    </div>
+  </div>
+  <div class="grid g4">
+    <div class="swatch" style="background:#99402b;color:#fff;min-height:170px">
+      <div><h3 style="font-size:20px">Primary</h3><p class="role" style="color:#ffdad2">Interactive elements, text accents — the accessible terracotta.</p><div class="vals" style="color:#ffdad2">#99402b</div></div>
+    </div>
+    <div class="swatch" style="background:#b95841;color:#fffbff;min-height:170px">
+      <div><h3 style="font-size:20px">Primary container</h3><p class="role" style="color:#ffdad2">Filled emphasis surfaces.</p><div class="vals" style="color:#ffdad2">#b95841</div></div>
+    </div>
+    <div class="swatch" style="background:#5f5e5d;color:#fff;min-height:170px">
+      <div><h3 style="font-size:20px">Secondary</h3><p class="role" style="color:#e2dfdd">Quiet support — neutral controls, muted text.</p><div class="vals" style="color:#e2dfdd">#5f5e5d</div></div>
+    </div>
+    <div class="swatch" style="background:#4d5e6f;color:#fff;min-height:170px">
+      <div><h3 style="font-size:20px">Tertiary · Slate</h3><p class="role" style="color:#d2e4f9">High-density data viz and cockpit dashboards, where contrast is required.</p><div class="vals" style="color:#d2e4f9">#4d5e6f</div></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ═══════════ SURFACES & SYSTEM COLORS ═══════════ -->
+<section><div class="wrap">
+  <h2>Surfaces &amp; system colors</h2>
+  <p class="lede">A cool, luminous surface ramp carries the interface; warm outlines echo the terracotta. Error roles are reserved strictly for genuine failure states — never for medical urgency copy, which follows the escalation script.</p>
+  <div class="grid g4">
+    <div class="swatch" style="background:#f9f9ff;border:1px solid var(--outline-variant);min-height:150px"><div><h3 style="font-size:19px">Surface</h3><div class="vals muted">#f9f9ff · on-surface #151c27</div></div></div>
+    <div class="swatch" style="background:#e7eefe;min-height:150px"><div><h3 style="font-size:19px">Surface container</h3><div class="vals" style="color:#56423e">#e7eefe · ramp #ffffff→#dce2f3</div></div></div>
+    <div class="swatch" style="background:#2a313d;color:#ebf1ff;min-height:150px"><div><h3 style="font-size:19px">Inverse surface</h3><div class="vals" style="color:#b6c8dc">#2a313d · on #ebf1ff</div></div></div>
+    <div class="swatch" style="background:#ffdad6;min-height:150px"><div><h3 style="font-size:19px;color:#93000a">Error</h3><div class="vals" style="color:#93000a">#ba1a1a · container #ffdad6</div></div></div>
+  </div>
+  <div class="note">Outline <code>#89726d</code> / outline-variant <code>#dcc0ba</code> carry hairline borders and dividers. Fixed roles (<code>primary-fixed #ffdad2</code>, <code>tertiary-fixed #d2e4f9</code>, etc.) are in <code>tokens.css</code> for components that keep their color across light/dark contexts.</div>
+</div></section>
+
+<!-- ═══════════ GRADIENTS & GLASS ═══════════ -->
+<section><div class="wrap">
+  <div class="eyebrow">Luminous depth</div>
+  <h2>The Aura and the glass</h2>
+  <p class="lede">The interface lives atop an <strong>Aura</strong> — three to four large radial gradients (Terracotta, Cream, muted Slate) that slowly pulsate and drift, mirroring biological rhythms. Glass panels float above it, suggesting clarity and transparency in medical data. You're watching it behind this page.</p>
+  <div class="grid g3">
+    <div class="glass pad"><span class="badge slate">Glass surface</span><h3 style="font-size:20px">Panels</h3><p style="font-size:14px">Semi-transparent Cream <code>rgba(252,249,247,.65)</code> with minimum 24px blur (32px standard). Sidebars blur 40px+ so clinical data never bleeds through.</p></div>
+    <div class="glass pad"><span class="badge slate">Rim light</span><h3 style="font-size:20px">Precision edges</h3><p style="font-size:14px">1px hairline borders in brightened surface color; top and left brighter than bottom and right, simulating light from the top-left.</p></div>
+    <div class="glass pad"><span class="badge slate">Respect motion</span><h3 style="font-size:20px">Restraint</h3><p style="font-size:14px">The aura drifts slowly — never flashes or pulses aggressively. Honors <code>prefers-reduced-motion</code>. Calm is the luxury; motion never competes with the conversation.</p></div>
+  </div>
+</div></section>
+
+<!-- ═══════════ TYPOGRAPHY ═══════════ -->
+<section><div class="wrap">
+  <div class="eyebrow">Typography</div>
+  <h2>Prestige meets efficiency</h2>
+  <p class="lede"><strong>EB Garamond</strong> carries editorial and headline moments with generous tracking (+2–5%). <strong>Hanken Grotesk</strong> is the functional workhorse — clean, geometric, a high-tech counterpoint. Use 500/600 weights for interactive labels so they hold against blurred glass.</p>
+  <div class="glass" style="padding:40px;margin-top:48px">
+    <div class="type-row"><span style="font-family:var(--serif);font-size:48px;font-weight:500;line-height:1.1;letter-spacing:.02em">Display large</span><span class="spec">EB Garamond 500 · 48/1.1 · +2%</span></div>
+    <div class="type-row"><span style="font-family:var(--serif);font-size:32px;font-weight:500;line-height:1.2;letter-spacing:.01em">Headline large</span><span class="spec">EB Garamond 500 · 32/1.2 · +1%</span></div>
+    <div class="type-row"><span style="font-family:var(--serif);font-size:24px;font-weight:500;line-height:1.3">Headline medium</span><span class="spec">EB Garamond 500 · 24/1.3</span></div>
+    <div class="type-row"><span style="font-size:18px;line-height:1.6">Body large — the conversation itself reads at this size.</span><span class="spec">Hanken Grotesk 400 · 18/1.6</span></div>
+    <div class="type-row"><span style="font-size:16px">Body medium — supporting copy and card text.</span><span class="spec">Hanken Grotesk 400 · 16/1.5</span></div>
+    <div class="type-row" style="border-bottom:none"><span class="label">Label small — buttons &amp; chips</span><span class="spec">Hanken Grotesk 600 · 12/1 · +8%</span></div>
+  </div>
+</div></section>
+
+<!-- ═══════════ ELEVATION ═══════════ -->
+<section><div class="wrap">
+  <div class="eyebrow">Elevation &amp; depth</div>
+  <h2>Refractive layering</h2>
+  <p class="lede">Hierarchy comes from light and refraction, never black drop-shadows. Ambient shadows are color-tinted — Terracotta in warm contexts, Slate in clinical ones.</p>
+  <div class="elev">
+    <div class="glass pad" style="background:rgba(252,249,247,.3)"><strong>L1 — Base.</strong> <span style="font-size:14.5px">The pulsating Aura gradient background.</span></div>
+    <div class="glass pad"><strong>L2 — Panels.</strong> <span style="font-size:14.5px">Glass at 65% opacity, 32px blur, rim light, soft tinted ambient shadow.</span></div>
+    <div class="glass active pad"><strong>L3 — Interactions.</strong> <span style="font-size:14.5px">Active cards and modals gain a white 10% inner glow and a secondary 1px border — closer to the light.</span></div>
+    <div class="tooltip"><strong>L4 — Floating.</strong> Tooltips and critical alerts: 90% opacity, sharper 8px blur, popping against the softer layers.</div>
+  </div>
+</div></section>
+
+<!-- ═══════════ SHAPES & COMPONENTS ═══════════ -->
+<section><div class="wrap">
+  <div class="eyebrow">Shapes &amp; components</div>
+  <h2>Softly architectural</h2>
+  <p class="lede">Curves are generous but controlled: 1rem corners on containers balance approachability with professional structure. Pill shapes are reserved for chips and tags — primary containers are never pills, so the UI stays precise, not bubbly.</p>
+  <div class="grid g2">
+    <div class="glass pad">
+      <h3 style="font-size:20px">Buttons</h3>
+      <p style="font-size:14px;margin-bottom:20px">Primary: solid Terracotta, white text, subtle top-edge glow on hover. Secondary: transparent glass, 1px white border, 12px blur, Terracotta text.</p>
+      <button class="btn btn-primary">Begin your consultation</button>&nbsp;
+      <button class="btn btn-glass">Tell me more</button>
+    </div>
+    <div class="glass pad">
+      <h3 style="font-size:20px">Chips &amp; tags</h3>
+      <p style="font-size:14px;margin-bottom:20px">Highly rounded, Terracotta at 10% opacity with a solid 1px border — the "stained glass" effect. These carry the conversation's quick replies.</p>
+      <span class="chip">Rhinoplasty</span><span class="chip">Facelift &amp; eyelids</span><span class="chip">I have a question</span>
+    </div>
+    <div class="glass pad">
+      <h3 style="font-size:20px">Input fields</h3>
+      <p style="font-size:14px;margin-bottom:20px">Sunken glass: 40% opacity background with a slight inner shadow — a physical indentation in the surface.</p>
+      <input class="input-sunken" type="text" placeholder="Tell Oia what you're hoping for…">
+    </div>
+    <div class="glass pad">
+      <h3 style="font-size:20px">Glass cards</h3>
+      <p style="font-size:14px;margin-bottom:20px">Every card: <code>backdrop-filter: blur(32px)</code>, background <code>rgba(252,249,247,.65)</code>, top/left borders brighter than bottom/right.</p>
+      <div class="bubble" style="margin-bottom:0">Your matches are ready. I hand-picked these because their real results closely resemble the look you shared.</div>
+    </div>
+  </div>
+  <div class="note"><strong>Layout.</strong> Fluid Glass Grid: floating containers keep a 32px minimum viewport margin (16px mobile). Desktop is a 12-column grid with 32px gutters so the aura peeks through. Spacing on a 4px base; larger components favor 16/24/32px increments for the airy, premium feel.</div>
+</div></section>
+
+<!-- ═══════════ PHOTOGRAPHY ═══════════ -->
+<section><div class="wrap">
+  <div class="eyebrow">Photography</div>
+  <h2>Sun-warmed, real, consensual</h2>
+  <p class="lede">Our photography lives in the same light as the palette: golden hour, terracotta warmth, honest skin with real texture. Calm, editorial, unhurried — people at ease in their own skin, photographed with respect. It sits <em>behind</em> glass panels, never fighting the aura. No clinical settings, no operating theatres, no plastic retouching.</p>
+  <div class="grid g3">
+    <div class="glass" style="overflow:hidden">
+      <img src="brand-assets/photography/oia-photo-01-profile.jpg" alt="Profile portrait in golden-hour light against a warm plaster wall" style="width:100%;height:340px;object-fit:cover;display:block" onerror="this.parentElement.firstElementChild.outerHTML='&lt;div class=&quot;figure&quot; style=&quot;min-height:340px;background:linear-gradient(160deg,#E3D3C8,#BD5B44 140%)&quot;&gt;&lt;span class=&quot;label&quot; style=&quot;color:#fff&quot;&gt;Drop oia-photo-01-profile.jpg here&lt;/span&gt;&lt;/div&gt;'">
+      <div class="pad"><span class="label" style="color:var(--primary)">The profile</span><p style="font-size:13.5px;margin-top:6px">Quiet confidence in natural light. Warm plaster backdrops echo Nia Cream; skin keeps its texture and glow.</p></div>
+    </div>
+    <div class="glass" style="overflow:hidden">
+      <img src="brand-assets/photography/oia-photo-02-skin.jpg" alt="Close-up of natural skin with visible texture in warm light" style="width:100%;height:340px;object-fit:cover;display:block" onerror="this.parentElement.firstElementChild.outerHTML='&lt;div class=&quot;figure&quot; style=&quot;min-height:340px;background:linear-gradient(160deg,#E3D3C8,#99402b 160%)&quot;&gt;&lt;span class=&quot;label&quot; style=&quot;color:#fff&quot;&gt;Drop oia-photo-02-skin.jpg here&lt;/span&gt;&lt;/div&gt;'">
+      <div class="pad"><span class="label" style="color:var(--primary)">The detail</span><p style="font-size:13.5px;margin-top:6px">Honest close-ups: pores, fine hairs, luminosity. Realness is the luxury — never airbrushed to plastic.</p></div>
+    </div>
+    <div class="glass" style="overflow:hidden">
+      <img src="brand-assets/photography/oia-photo-03-sun.jpg" alt="Figure at ease in warm sunlight by the sea" style="width:100%;height:340px;object-fit:cover;display:block" onerror="this.parentElement.firstElementChild.outerHTML='&lt;div class=&quot;figure&quot; style=&quot;min-height:340px;background:linear-gradient(160deg,#FCF9F7,#BD5B44 180%)&quot;&gt;&lt;span class=&quot;label&quot; style=&quot;color:#99402b&quot;&gt;Drop oia-photo-03-sun.jpg here&lt;/span&gt;&lt;/div&gt;'">
+      <div class="pad"><span class="label" style="color:var(--primary)">The ease</span><p style="font-size:13.5px;margin-top:6px">Bodies at ease in sun and air — recovery, travel, life resumed. Aspiration framed as wellbeing, never as a promised outcome.</p></div>
+    </div>
+  </div>
+  <ul class="rules" style="margin-top:40px">
+    <li><strong>Before/after imagery is never decorative.</strong> <span class="badge hard">Hard rule</span> Clinical results appear only inside the conversation, behind the sensitive-imagery gate, with verified patient consent on record. Never in marketing, headers, or social.</li>
+    <li><strong>Consent is a prerequisite, not a caption.</strong> No consent record, no usage — anywhere, ever.</li>
+    <li><strong>Show care, not procedures.</strong> Recovery suites, morning light, the concierge experience — not the surgery.</li>
+    <li><strong>Warmth over gloss.</strong> Golden-hour light, terracotta tones, real skin texture. If it looks like a filter or a clinic ad, it's wrong.</li>
+    <li><strong>Aspiration ≠ promise.</strong> <span class="badge hard">Hard rule</span> Editorial imagery must never be paired with procedure claims, outcomes copy, or pricing in a way that implies a guaranteed result or trivialises surgery (UK CAP/ASA).</li>
+  </ul>
+</div></section>
+
+<!-- ═══════════ ICONOGRAPHY ═══════════ -->
+<section><div class="wrap">
+  <div class="eyebrow">Iconography</div>
+  <h2>Precision detailing</h2>
+  <p class="lede">Icons are hairline-fine — 1.5px strokes, rounded terminals, built on the mark's circular geometry. On glass they render in on-surface ink; Terracotta marks curated or brand moments only. Each maps to a journey moment from <code>design.md</code>. Full sheet: <code>brand-assets/icons/oia-icons.svg</code>.</p>
+  <div class="grid g4">
+    <div class="glass"><div class="figure" style="min-height:110px"><svg width="44" height="44" viewBox="0 0 48 48" fill="none" stroke="#151c27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="16"/><path d="M17 24l5 5 9-10"/></svg></div><div class="pad" style="padding-top:0"><p class="muted" style="font-size:13px">Confirmed / approved</p></div></div>
+    <div class="glass"><div class="figure" style="min-height:110px"><svg width="44" height="44" viewBox="0 0 48 48" fill="none" stroke="#151c27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20a8 8 0 018-8h12a8 8 0 018 8v6a8 8 0 01-8 8H20l-8 6v-6a8 8 0 01-2-14z"/></svg></div><div class="pad" style="padding-top:0"><p class="muted" style="font-size:13px">Conversation</p></div></div>
+    <div class="glass"><div class="figure" style="min-height:110px"><svg width="44" height="44" viewBox="0 0 48 48" fill="none" stroke="#151c27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="16"/><path d="M24 14v10l7 5"/></svg></div><div class="pad" style="padding-top:0"><p class="muted" style="font-size:13px">Check-in / schedule</p></div></div>
+    <div class="glass"><div class="figure" style="min-height:110px"><svg width="44" height="44" viewBox="0 0 48 48" fill="none" stroke="#BD5B44" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 10l3.8 8.4 9.2 1-6.8 6.2 1.9 9L24 30l-8.1 4.6 1.9-9-6.8-6.2 9.2-1z"/></svg></div><div class="pad" style="padding-top:0"><p class="muted" style="font-size:13px">Curated (Terracotta — sparing)</p></div></div>
+    <div class="glass"><div class="figure" style="min-height:110px"><svg width="44" height="44" viewBox="0 0 48 48" fill="none" stroke="#151c27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="15" width="32" height="23" rx="4"/><path d="M18 15l3-5h6l3 5"/><circle cx="24" cy="26" r="7"/></svg></div><div class="pad" style="padding-top:0"><p class="muted" style="font-size:13px">Photo prompt</p></div></div>
+    <div class="glass"><div class="figure" style="min-height:110px"><svg width="44" height="44" viewBox="0 0 48 48" fill="none" stroke="#151c27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 8l14 5v10c0 9-6 15-14 17-8-2-14-8-14-17V13z"/><path d="M18 24l4 4 8-8"/></svg></div><div class="pad" style="padding-top:0"><p class="muted" style="font-size:13px">Consent / privacy</p></div></div>
+    <div class="glass"><div class="figure" style="min-height:110px"><svg width="44" height="44" viewBox="0 0 48 48" fill="none" stroke="#151c27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M40 12L10 24l8 4-1 10 6-6 9 6z"/><path d="M18 28l22-16"/></svg></div><div class="pad" style="padding-top:0"><p class="muted" style="font-size:13px">Travel</p></div></div>
+    <div class="glass"><div class="figure" style="min-height:110px"><svg width="44" height="44" viewBox="0 0 48 48" fill="none" stroke="#151c27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="12" width="30" height="26" rx="4"/><path d="M9 20h30M17 8v8M31 8v8"/></svg></div><div class="pad" style="padding-top:0"><p class="muted" style="font-size:13px">Itinerary</p></div></div>
+    <div class="glass"><div class="figure" style="min-height:110px"><svg width="44" height="44" viewBox="0 0 48 48" fill="none" stroke="#151c27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 8c-7 0-12 5-12 12 0 9 12 20 12 20s12-11 12-20c0-7-5-12-12-12z"/><circle cx="24" cy="20" r="4.5"/></svg></div><div class="pad" style="padding-top:0"><p class="muted" style="font-size:13px">Clinic / location</p></div></div>
+    <div class="glass"><div class="figure" style="min-height:110px"><svg width="44" height="44" viewBox="0 0 48 48" fill="none" stroke="#151c27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10h14l16 16-14 14-16-16z"/><circle cx="17" cy="17" r="2.5"/></svg></div><div class="pad" style="padding-top:0"><p class="muted" style="font-size:13px">Quote / offer</p></div></div>
+    <div class="glass"><div class="figure" style="min-height:110px"><svg width="44" height="44" viewBox="0 0 48 48" fill="none" stroke="#151c27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 8h14l8 8v24H14z"/><path d="M28 8v8h8M20 26h12M20 32h8"/></svg></div><div class="pad" style="padding-top:0"><p class="muted" style="font-size:13px">Care summary</p></div></div>
+    <div class="glass"><div class="figure" style="min-height:110px"><svg width="44" height="44" viewBox="0 0 48 48" fill="none" stroke="#151c27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 38s-13-8-13-17a7.5 7.5 0 0113-5 7.5 7.5 0 0113 5c0 9-13 17-13 17z"/></svg></div><div class="pad" style="padding-top:0"><p class="muted" style="font-size:13px">Recovery / post-op</p></div></div>
+  </div>
+</div></section>
+
+<!-- ═══════════ PRODUCT IMAGERY ═══════════ -->
+<section><div class="wrap">
+  <div class="eyebrow">Product imagery</div>
+  <h2>The conversation is the brand</h2>
+  <p class="lede">There are no pages to screenshot — the patient-facing product <em>is</em> the thread with Oia, rendered in glass. Product imagery always shows the conversation: a bubble, a card, a considered choice floating over the aura.</p>
+  <div class="grid g2">
+    <div class="glass active pad">
+      <div class="bubble">Here's what I secured with your chosen clinic: the full package, including aftercare and transfers. Nothing is committed until you say yes.</div>
+      <span class="chip">Accept</span><span class="chip">Ask a question</span><span class="chip">See other offer</span>
+    </div>
+    <div>
+      <ul class="rules">
+        <li>Show real component types from <code>design.md</code> — shortlist cards, quote cards, itineraries — never invented UI.</li>
+        <li>Any price visible in imagery is framed as indicative. <span class="badge hard">Hard rule</span></li>
+        <li>No patient photos or before/afters in product imagery — neutral placeholders only.</li>
+        <li>Slate-accented dashboard visuals are cockpit/clinic-side only; patient-side imagery is always conversational.</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- ═══════════ VOICE & TONE ═══════════ -->
+<section><div class="wrap">
+  <div class="eyebrow">Voice and tone</div>
+  <h2>Considered. Reassuring. Honest.</h2>
+  <p class="lede">The visual system may be technical, but Oia's voice never is. She is the friend with impeccable judgement who happens to know everyone — never a salesperson, never clinical, never gushing. Warm, plain, elegant sentences; the patient always in control.</p>
+  <div class="glass pad voice-pair"><span class="no">"Amazing choice!! 😍 You'll look INCREDIBLE"</span><span class="yes">"That's a beautiful, natural result to aim for. Let me find surgeons who achieve exactly this."</span></div>
+  <div class="glass pad voice-pair"><span class="no">"Book now — offer ends soon!"</span><span class="yes">"There's no rush. When you're ready, I'll set it up."</span></div>
+  <div class="glass pad voice-pair"><span class="no">"That swelling is totally normal, don't worry."</span><span class="yes">"I'm not able to advise on anything medical, but I've alerted your clinic and I'll chase them until they reply."</span></div>
+  <h3 style="margin-top:48px;font-size:20px">Hard compliance rules — every word, everywhere <span class="badge hard">UK CAP/ASA</span></h3>
+  <ul class="rules dont">
+    <li>No guaranteed results — before/afters illustrate <em>that patient's</em> outcome, never a promise.</li>
+    <li>No trivialising surgery — it is significant and carries risk; copy never makes it sound casual.</li>
+    <li>No pressure, urgency, scarcity, or time-limited framing. Ever.</li>
+    <li>No medical advice — suitability and clinical judgement belong to surgeons; Oia relays, never advises.</li>
+    <li>All prices indicative until a founder-approved offer; all clinical imagery behind the consent gate.</li>
+  </ul>
+</div></section>
+
+<!-- ═══════════ RESOURCES ═══════════ -->
+<section><div class="wrap">
+  <div class="eyebrow">Additional resources</div>
+  <h2>The full library</h2>
+  <div class="grid g3">
+    <div class="glass pad"><span class="label">Assets</span><p style="font-size:14.5px;margin-top:8px"><code>brand-assets/</code> — logo SVGs (placeholder), palette sheet, <code>tokens.css</code> + <code>tokens.json</code> v1.0. The tokens are the single styling source for chat, cockpit, and marketing.</p></div>
+    <div class="glass pad"><span class="label">Voice &amp; compliance</span><p style="font-size:14.5px;margin-top:8px"><code>mvp-spec/brand.md</code> — positioning, personality, voice rules, and the compliance checklist every patient-facing string must pass.</p></div>
+    <div class="glass pad"><span class="label">Conversation design</span><p style="font-size:14.5px;margin-top:8px"><code>mvp-spec/design.md</code> — the rich-message component library and every patient journey, message by message.</p></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <svg viewBox="0 0 440 160" width="130" style="display:block;margin-bottom:20px"><defs><mask id="ft1"><rect width="440" height="160" fill="#fff"/><circle cx="96" cy="78" r="46" fill="#000"/></mask><mask id="ft2"><rect width="440" height="160" fill="#fff"/><circle cx="90" cy="80" r="45" fill="#000"/></mask></defs><g transform="translate(8,0) scale(0.82) translate(0,17)"><circle cx="72" cy="80" r="52" fill="#ebf1ff" mask="url(#ft1)"/><circle cx="103" cy="80" r="40" fill="#BD5B44" mask="url(#ft2)"/></g><text x="150" y="103" font-family="EB Garamond,Georgia,serif" font-size="72" font-weight="500" letter-spacing="10" fill="#ebf1ff">OIA</text></svg>
+  <p style="max-width:none">OIA brand guidelines · Technical Luxury v1.2 · ratified 16 July 2026 · heyoia.com<br>
+  Compliance rules are final.<br>
+  Third-party use of Oia marks requires written permission.</p>
+</div></footer>
+
+</body>
+</html>
