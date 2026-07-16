@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oia — Seed Round 2026 · Investor Deck</title>
+<meta name="description" content="Oia matches cosmetic treatment patients to accredited surgeons on verified clinical outcomes, negotiates all-inclusive packages, and manages recovery — in one conversational interface.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --terracotta:#99402b; --terra-soft:#b95841; --cream:#fcf9f7; --peach:#ffdad2;
+    --slate:#4d5e6f; --slate-soft:#657688; --ink:#1b1c1b; --muted:#56423e;
+    --line:rgba(153,64,43,.14);
+    --glass:rgba(252,249,247,.55); --rim:rgba(255,255,255,.7);
+    --serif:'EB Garamond',Georgia,serif; --sans:'Work Sans',-apple-system,sans-serif;
+    --ease:cubic-bezier(.22,1,.36,1);
+    --elev:0 2px 8px rgba(60,26,18,.05),0 18px 40px -14px rgba(153,64,43,.18);
+    --elev-hi:0 4px 12px rgba(60,26,18,.07),0 30px 60px -18px rgba(153,64,43,.26);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-snap-type:y proximity;scroll-behavior:smooth}
+  body{font-family:var(--sans);color:var(--ink);background:var(--cream);-webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.55}
+
+  /* ── Aura background ── */
+  .aura{position:fixed;inset:0;z-index:-1;overflow:hidden;background:var(--cream)}
+  .aura b{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;display:block}
+  .b1{width:62vw;height:62vw;background:radial-gradient(circle,#99402b 0%,transparent 70%);top:-20vw;left:-14vw;animation:d1 28s var(--ease) infinite alternate}
+  .b2{width:56vw;height:56vw;background:radial-gradient(circle,#657688 0%,transparent 70%);bottom:-22vw;right:-12vw;animation:d2 34s var(--ease) infinite alternate}
+  .b3{width:46vw;height:46vw;background:radial-gradient(circle,#ffdad2 0%,transparent 70%);top:34%;left:46%;animation:d3 24s var(--ease) infinite alternate}
+  @keyframes d1{to{transform:translate(9vw,7vh) scale(1.15)}}
+  @keyframes d2{to{transform:translate(-8vw,-6vh) scale(.92)}}
+  @keyframes d3{to{transform:translate(-6vw,8vh) scale(1.2)}}
+
+  /* ── Slides ── */
+  .slide{min-height:100vh;scroll-snap-align:start;scroll-snap-stop:always;display:flex;align-items:center;padding:96px 40px;position:relative}
+  .wrap{width:100%;max-width:1060px;margin:0 auto}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--terracotta);display:flex;align-items:center;gap:10px;margin-bottom:20px}
+  .eyebrow .mk{width:13px;height:13px}
+  h1{font-family:var(--serif);font-weight:500;letter-spacing:-.01em;line-height:1.04}
+  h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.6vw,52px);line-height:1.06;letter-spacing:-.01em;color:var(--ink)}
+  h2 i{font-style:italic;color:var(--terracotta)}
+  .lead{font-size:clamp(15px,1.5vw,18px);color:var(--muted);max-width:640px;margin-top:18px;line-height:1.6}
+  .grid{display:grid;gap:20px;margin-top:44px}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .card{background:var(--glass);backdrop-filter:blur(16px) saturate(1.1);-webkit-backdrop-filter:blur(16px) saturate(1.1);border:1px solid var(--rim);border-radius:20px;padding:26px 24px;box-shadow:var(--elev);transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+  .card:hover{transform:translateY(-5px);box-shadow:var(--elev-hi)}
+  .card h3{font-family:var(--sans);font-size:16px;font-weight:600;color:var(--ink);margin-bottom:9px;letter-spacing:.01em}
+  .card p{font-size:14.5px;color:var(--muted);line-height:1.6}
+  .kicker{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--terracotta);margin-bottom:12px}
+  .idx{font-family:var(--serif);font-size:15px;color:var(--terra-soft);border:1px solid var(--line);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+  .num{font-family:var(--serif);font-weight:500;color:var(--terracotta);line-height:1;letter-spacing:-.01em}
+  .stat .num{font-size:clamp(40px,6vw,68px)}
+  .stat .cap{font-size:13.5px;color:var(--muted);margin-top:12px;line-height:1.5;letter-spacing:.01em}
+  .chip{display:inline-block;background:rgba(153,64,43,.08);color:var(--terracotta);border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:13px;font-weight:500;margin:5px 6px 0 0}
+  .bar{height:9px;border-radius:999px;background:rgba(153,64,43,.1);overflow:hidden;margin-top:10px}
+  .bar>span{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--terracotta),var(--terra-soft));transition:width 1.1s var(--ease) .1s}
+  .slide.in .bar>span{width:var(--w)}
+  .cmp{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+  .cmp .old{color:var(--slate);font-size:14.5px;text-align:right;opacity:.75}
+  .cmp .vs{font-family:var(--serif);font-style:italic;color:var(--terra-soft);font-size:14px}
+  .cmp .new{color:var(--ink);font-size:14.5px;font-weight:500}
+
+  /* Cover */
+  .cover{flex-direction:column;justify-content:center;text-align:center}
+  .cover .mark{width:96px;height:96px;margin:0 auto 30px}
+  .cover .mark svg{width:100%;height:100%;transform-box:fill-box;transform-origin:center;animation:turn 16s linear infinite}
+  @keyframes turn{to{transform:rotate(360deg)}}
+  .word{font-family:var(--serif);font-size:clamp(56px,11vw,120px);font-weight:500;letter-spacing:.14em;color:var(--terracotta);line-height:1}
+  .cover .tag{font-family:var(--serif);font-size:clamp(20px,2.7vw,30px);color:var(--ink);max-width:760px;margin:26px auto 0;line-height:1.3}
+  .cover .sub{font-size:clamp(14px,1.5vw,16.5px);color:var(--muted);max-width:640px;margin:20px auto 0;line-height:1.65}
+  .cover .foot{margin-top:40px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--slate)}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+  .slide.in .reveal{opacity:1;transform:none}
+  .d1{transition-delay:.06s}.d2{transition-delay:.14s}.d3{transition-delay:.22s}
+  .d4{transition-delay:.30s}.d5{transition-delay:.38s}.d6{transition-delay:.46s}
+
+  /* progress dots */
+  .dots{position:fixed;right:26px;top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:12px}
+  .dots a{width:9px;height:9px;border-radius:50%;background:rgba(153,64,43,.22);transition:all .3s var(--ease);display:block}
+  .dots a.on{background:var(--terracotta);transform:scale(1.35)}
+  .pageno{position:fixed;left:30px;bottom:26px;z-index:20;font-size:12px;letter-spacing:.1em;color:var(--muted);font-variant-numeric:tabular-nums}
+  .pageno b{color:var(--terracotta);font-weight:600}
+  .brandmini{position:fixed;left:30px;top:26px;z-index:20;font-family:var(--serif);font-weight:600;letter-spacing:.24em;color:var(--terracotta);font-size:15px}
+
+  @media(max-width:760px){
+    .slide{padding:88px 22px}
+    .g3,.g2{grid-template-columns:1fr}
+    .dots{display:none}
+    .cmp{grid-template-columns:1fr;text-align:left;gap:4px}
+    .cmp .old{text-align:left}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .aura b,.cover .mark svg{animation:none}
+    .reveal{opacity:1;transform:none;transition:none}
+    .bar>span{transition:none}
+  }
+</style>
+<noscript><style>.reveal{opacity:1 !important;transform:none !important}.bar>span{width:var(--w) !important}</style></noscript>
+</head>
+<body>
+<div class="aura"><b class="b1"></b><b class="b2"></b><b class="b3"></b></div>
+<div class="brandmini">OIA</div>
+<nav class="dots" aria-hidden="true"></nav>
+<div class="pageno"><b id="pn">01</b> / 10</div>
+
+<!-- 1 · Cover -->
+<section class="slide cover in" id="s1">
+  <div class="wrap">
+    <div class="mark reveal"><svg viewBox="0 0 100 100"><path fill-rule="evenodd" fill="#99402b" d="M4,50 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0 Z M24,50 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0 Z"/></svg></div>
+    <div class="word reveal d1">OIA</div>
+    <p class="tag reveal d2">Bespoke treatments matching patient goals to vetted, <i style="font-style:italic;color:var(--terracotta)">high-integrity clinical outcomes.</i></p>
+    <p class="sub reveal d3">Oia matches cosmetic treatment patients to accredited surgeons based on verified clinical results, negotiates all-inclusive packages, and manages the end-to-end recovery journey — all in one conversational interface.</p>
+    <div class="foot reveal d4">Seed Round · 2026</div>
+  </div>
+</section>
+
+<!-- 2 · Problem -->
+<section class="slide" id="s2">
+  <div class="wrap">
+    <div class="eyebrow reveal"><svg class="mk" viewBox="0 0 100 100"><path fill-rule="evenodd" fill="#99402b" d="M4,50 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0 Z M24,50 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0 Z"/></svg>Problem</div>
+    <h2 class="reveal d1">A high-stakes decision, made in <i>the dark.</i></h2>
+    <div class="grid g3">
+      <div class="card reveal d2"><div class="kicker">Trust deficit</div><h3>Unverified by design</h3><p>Patients navigate a fragmented landscape of unregulated forums, hidden sponsorships, and highly edited, unverified reviews.</p></div>
+      <div class="card reveal d3"><div class="kicker">Information asymmetry</div><h3>Marketing, not outcomes</h3><p>Clinic selection is driven by marketing budgets and influencer ads — not objective clinical success rates or verified patient outcomes.</p></div>
+      <div class="card reveal d4"><div class="kicker">Safety &amp; isolation</div><h3>No one on the other side</h3><p>Cross-border travel is opaque and high-risk; the lack of coordinated, domestic post-operative care leads to severe, preventable complications.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · Solution -->
+<section class="slide" id="s3">
+  <div class="wrap">
+    <div class="eyebrow reveal"><svg class="mk" viewBox="0 0 100 100"><path fill-rule="evenodd" fill="#99402b" d="M4,50 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0 Z M24,50 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0 Z"/></svg>Solution</div>
+    <h2 class="reveal d1">A patient-aligned concierge for <i>transparency, safety &amp; care.</i></h2>
+    <div class="grid g3">
+      <div class="card reveal d2"><div class="idx">01</div><h3>Proprietary matching</h3><p>Matches made via objective clinical histories, patient-specific anatomical goals, and verified 3D clinical portfolios.</p></div>
+      <div class="card reveal d3"><div class="idx">02</div><h3>Pre-negotiated rates</h3><p>Curated, all-inclusive packages — surgical, hospitality, transfer — secured with zero hidden clinic fees.</p></div>
+      <div class="card reveal d4"><div class="idx">03</div><h3>Continuous care</h3><p>Coordinated post-operative monitoring and a direct digital bridge to the surgical team through the critical 6-week window.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · Market Validation -->
+<section class="slide" id="s4">
+  <div class="wrap">
+    <div class="eyebrow reveal"><svg class="mk" viewBox="0 0 100 100"><path fill-rule="evenodd" fill="#99402b" d="M4,50 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0 Z M24,50 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0 Z"/></svg>Market validation</div>
+    <h2 class="reveal d1">Cross-border demand is <i>accelerating organically.</i></h2>
+    <div class="grid g3">
+      <div class="card stat reveal d2"><div class="num" data-to="8.5" data-dec="1" data-pre="$" data-suf="B+">$8.5B+</div><div class="cap">Spent annually by 1.4M+ cross-border elective &amp; cosmetic surgery patients.</div></div>
+      <div class="card stat reveal d3"><div class="num" data-to="24" data-dec="0" data-pre="+" data-suf="% YoY">+24% YoY</div><div class="cap">Compound growth of the cross-border cosmetic category — outpacing all other travel segments.</div></div>
+      <div class="card stat reveal d4"><div class="num" style="font-size:clamp(28px,3.4vw,40px);line-height:1.1">The Safety Premium</div><div class="cap">Patients actively pay more for verified safety, structured coordination, and guaranteed aftercare.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · Market Size & Beachhead -->
+<section class="slide" id="s5">
+  <div class="wrap">
+    <div class="eyebrow reveal"><svg class="mk" viewBox="0 0 100 100"><path fill-rule="evenodd" fill="#99402b" d="M4,50 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0 Z M24,50 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0 Z"/></svg>Market size &amp; beachhead</div>
+    <h2 class="reveal d1">A large, growing market — entered with <i>discipline.</i></h2>
+    <div class="grid g2">
+      <div class="card stat reveal d2"><div class="kicker">TAM · Global cosmetic surgery</div><div class="num" data-to="72" data-dec="0" data-pre="$" data-suf="B">$72B</div><div class="cap">Growing 8–10% annually.</div></div>
+      <div class="card stat reveal d3"><div class="kicker">SAM · Accessible cross-border</div><div class="num" data-to="6.9" data-dec="1" data-pre="$" data-suf="B">$6.9B</div><div class="cap">Cross-border cosmetic treatment market.</div></div>
+    </div>
+    <div class="grid g2" style="margin-top:20px">
+      <div class="card reveal d4"><h3>UK-to-Europe beachhead</h3><p style="margin-bottom:12px">Launching with 5 core high-demand procedures.</p>
+        <span class="chip">Rhinoplasty</span><span class="chip">Breast Augmentation</span><span class="chip">Facelift</span><span class="chip">Blepharoplasty</span><span class="chip">Liposuction</span></div>
+      <div class="card reveal d5"><h3>Dual-option routing</h3><p>Local UK private options offered alongside vetted European / Turkish pathways — a seamless budget fallback that keeps every patient inside the funnel.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · Product -->
+<section class="slide" id="s6">
+  <div class="wrap">
+    <div class="eyebrow reveal"><svg class="mk" viewBox="0 0 100 100"><path fill-rule="evenodd" fill="#99402b" d="M4,50 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0 Z M24,50 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0 Z"/></svg>Product</div>
+    <h2 class="reveal d1">A clinical journey, simplified into <i>one conversation.</i></h2>
+    <div class="grid g3">
+      <div class="card reveal d2"><div class="kicker">1 · Consult</div><h3>Talk</h3><p>Conversational AI intake on WhatsApp or web. No cold forms — patients share goals, medical history, and reference images.</p></div>
+      <div class="card reveal d3"><div class="kicker">2 · Decide</div><h3>Plan</h3><p>Customised surgeon matches backed by raw, verified metadata portfolios, alongside complete travel and recovery itineraries.</p></div>
+      <div class="card reveal d4"><div class="kicker">3 · Restore</div><h3>Recover</h3><p>Integrated daily recovery tracking. Oia's portal coordinates with local UK nursing partners for physical aftercare, minimising complication risk.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · Business Model -->
+<section class="slide" id="s7">
+  <div class="wrap">
+    <div class="eyebrow reveal"><svg class="mk" viewBox="0 0 100 100"><path fill-rule="evenodd" fill="#99402b" d="M4,50 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0 Z M24,50 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0 Z"/></svg>Business model &amp; unit economics</div>
+    <h2 class="reveal d1">High-margin B2B commission, <i>aligned by design.</i></h2>
+    <div class="grid g3">
+      <div class="card stat reveal d2"><div class="kicker">Core revenue</div><div class="num" data-to="900" data-dec="0" data-pre="£" data-suf="">£900</div><div class="cap">Avg unit revenue — a 15% booking commission (paid by clinics) on a £6,000 average package.</div></div>
+      <div class="card stat reveal d3"><div class="kicker">Ancillary revenue</div><div class="num" data-to="35" data-dec="0" data-pre="" data-suf="%">35%</div><div class="cap">Gross-margin upsell on premium Oia Recovery Packages — private nurse, hotel partners, medical transport.</div></div>
+      <div class="card reveal d4"><div class="kicker">Zero-conflict pricing</div><h3>Incentives perfectly aligned</h3><p>Commissions are fixed and contractually agreed with clinics. We never take a percentage of the patient's negotiated savings.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · Moat -->
+<section class="slide" id="s8">
+  <div class="wrap">
+    <div class="eyebrow reveal"><svg class="mk" viewBox="0 0 100 100"><path fill-rule="evenodd" fill="#99402b" d="M4,50 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0 Z M24,50 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0 Z"/></svg>Competitive moat</div>
+    <h2 class="reveal d1">A verification pipeline others <i>can't buy.</i></h2>
+    <div class="grid g2">
+      <div class="card reveal d2">
+        <div class="kicker">The old way vs. Oia</div>
+        <div class="cmp"><span class="old">Marketing clout &amp; ads</span><span class="vs">vs</span><span class="new">Verified clinical portfolios</span></div>
+        <div class="cmp" style="border-bottom:0"><span class="old">DIY directories</span><span class="vs">vs</span><span class="new">Patient-aligned concierge</span></div>
+      </div>
+      <div class="card reveal d3"><div class="kicker">The moat</div><h3>The verification pipeline</h3><p>Direct ingestion of raw, clinic-certified pre/post-op photos tied to anonymised patient registries. No airbrushing, no marketing filters.</p></div>
+    </div>
+    <div class="grid" style="margin-top:20px">
+      <div class="card reveal d4"><div class="kicker">Legal &amp; liability shield</div><p style="max-width:none">Oia operates strictly as a secure marketplace router and logistics coordinator. Contractual medical liability remains entirely with the credentialed, insured clinical providers.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 · GTM -->
+<section class="slide" id="s9">
+  <div class="wrap">
+    <div class="eyebrow reveal"><svg class="mk" viewBox="0 0 100 100"><path fill-rule="evenodd" fill="#99402b" d="M4,50 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0 Z M24,50 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0 Z"/></svg>Go-to-market &amp; trust loop</div>
+    <h2 class="reveal d1">An organic, high-barrier <i>trust loop.</i></h2>
+    <p class="lead reveal d1">Designed to minimise customer acquisition cost — safe journeys compound into referrals.</p>
+    <div class="grid g3">
+      <div class="card reveal d2"><div class="idx">01</div><h3>The clinic network</h3><p>Elite, JCI-accredited clinics onboarded via rigorous clinical standards — exclusive supply and instant medical credibility.</p></div>
+      <div class="card reveal d3"><div class="idx">02</div><h3>Organic high-intent capture</h3><p>Capturing high-intent search traffic with an immediate, empathetic AI triage — the alternative to spammy clinic lead forms.</p></div>
+      <div class="card reveal d4"><div class="idx">03</div><h3>The advocacy loop</h3><p>Word-of-mouth referral rates in cosmetic surgery are historically massive. Fully supported recoveries compound into organic referrals.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · The Ask -->
+<section class="slide" id="s10">
+  <div class="wrap">
+    <div class="eyebrow reveal"><svg class="mk" viewBox="0 0 100 100"><path fill-rule="evenodd" fill="#99402b" d="M4,50 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0 Z M24,50 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0 Z"/></svg>The ask &amp; milestones</div>
+    <h2 class="reveal d1">Raising <i>£1.5M</i> — prototype to paid, coordinated bookings.</h2>
+    <div class="grid g3">
+      <div class="card reveal d2"><div class="num" style="font-size:34px">45%</div><div class="bar" style="--w:45%"><span></span></div><h3 style="margin-top:16px">Product &amp; engineering</h3><p>Conversational AI stack, automated clinical-portfolio verification pipeline, and partner integration APIs.</p></div>
+      <div class="card reveal d3"><div class="num" style="font-size:34px">30%</div><div class="bar" style="--w:30%"><span></span></div><h3 style="margin-top:16px">Network &amp; growth</h3><p>Clinic onboarding, clinical registry integration, localised medical operations, and UK patient acquisition.</p></div>
+      <div class="card reveal d4"><div class="num" style="font-size:34px">25%</div><div class="bar" style="--w:25%"><span></span></div><h3 style="margin-top:16px">Team &amp; compliance</h3><p>Backend/AI Engineer &amp; Head of Clinical Provider Ops. GDPR/DPIA frameworks, medical-data compliance, and legal architecture.</p></div>
+    </div>
+    <p class="reveal d5" style="margin-top:40px;font-family:var(--serif);font-size:20px;color:var(--ink)">Ida — Founder &amp; Product Builder&nbsp;&nbsp;·&nbsp;&nbsp;<a href="mailto:hello@heyoia.com" style="color:var(--terracotta);text-decoration:none">hello@heyoia.com</a></p>
+  </div>
+</section>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const dotsNav=document.querySelector('.dots');
+  const pn=document.getElementById('pn');
+  slides.forEach((s,i)=>{const a=document.createElement('a');a.href='#'+s.id;a.setAttribute('aria-label','Slide '+(i+1));dotsNav.appendChild(a);});
+  const dots=[...dotsNav.children];
+
+  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function countUp(el){
+    const to=parseFloat(el.dataset.to),dec=+el.dataset.dec,pre=el.dataset.pre||'',suf=el.dataset.suf||'';
+    if(reduce){return;}
+    const dur=1100,t0=performance.now();
+    function tick(now){
+      const p=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-p,3),v=to*e;
+      el.textContent=pre+(dec?v.toFixed(dec):Math.round(v).toLocaleString('en-GB'))+suf;
+      if(p<1)requestAnimationFrame(tick);else el.textContent=pre+(dec?to.toFixed(dec):Math.round(to).toLocaleString('en-GB'))+suf;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  let current=0;
+  const io=new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{
+      const i=slides.indexOf(en.target);
+      if(en.isIntersecting){
+        current=i;
+        en.target.classList.add('in');
+        dots.forEach((d,k)=>d.classList.toggle('on',k===i));
+        pn.textContent=String(i+1).padStart(2,'0');
+        en.target.querySelectorAll('.num[data-to]').forEach(n=>{if(!n.dataset.done){n.dataset.done='1';countUp(n);}});
+      }
+    });
+  },{threshold:.5});
+  slides.forEach(s=>io.observe(s));
+
+  // keyboard navigation — uses the observed current slide
+  function go(dir){
+    const idx=Math.min(slides.length-1,Math.max(0,current+dir));
+    slides[idx].scrollIntoView({behavior:reduce?'auto':'smooth'});
+  }
+  window.addEventListener('keydown',e=>{
+    if(['ArrowDown','PageDown',' '].includes(e.key)){e.preventDefault();go(1);}
+    if(['ArrowUp','PageUp'].includes(e.key)){e.preventDefault();go(-1);}
+  });
+</script>
+</body>
+</html>

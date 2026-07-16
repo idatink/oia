@@ -8,7 +8,10 @@ const config = {
   transpilePackages: ['@nia/shared-ui', '@nia/shared'],
   // Serve the brand guidelines (static HTML in /public) at a clean /brand URL.
   async rewrites() {
-    return [{ source: '/brand', destination: '/brand.html' }];
+    return [
+      { source: '/brand', destination: '/brand.html' },
+      { source: '/deck', destination: '/deck.html' },
+    ];
   },
   outputFileTracingRoot: path.join(__dirname, '../../'),
   // Load Oia's editable .md brain (packages/shared/src/oia/*.md) as raw text so the
