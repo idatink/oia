@@ -46,7 +46,7 @@ export default function Nav({ onCTAClick, hideUntilScroll = false }: NavProps) {
 
   return (
     <>
-      <nav className={`w-full fixed top-0 z-50 transition-all duration-500 border-b border-outline-variant/10 nav-blur bg-surface/80 ${scrolled ? 'shadow-card' : ''} ${navHidden ? 'opacity-0 -translate-y-3 pointer-events-none' : 'opacity-100 translate-y-0'}`}>
+      <nav className={`w-full fixed top-0 z-50 transition-all duration-500 glass-nav ${scrolled ? 'elev-1' : ''} ${navHidden ? 'opacity-0 -translate-y-3 pointer-events-none' : 'opacity-100 translate-y-0'}`}>
         <div className="flex justify-between items-center w-full px-6 md:px-[64px] max-w-container mx-auto h-16">
 
           {/* Logo */}

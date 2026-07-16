@@ -70,7 +70,7 @@ function PhoneFrame({ children, size = 'md' }: { children: React.ReactNode; size
         className="absolute inset-0 w-full h-full pointer-events-none select-none"
         style={{
           mixBlendMode: 'multiply',
-          filter: 'drop-shadow(0 24px 56px rgba(0,0,0,0.5))',
+          filter: 'drop-shadow(0 8px 16px rgba(60,26,18,0.10)) drop-shadow(0 30px 60px rgba(153,64,43,0.22))',
         }}
       />
     </div>
@@ -561,8 +561,8 @@ function PhoneCarousel() {
                   cursor: isActive ? 'default' : 'pointer',
                   zIndex: 10 - dist,
                   filter: isActive
-                    ? 'drop-shadow(0 24px 60px rgba(0,0,0,0.36))'
-                    : 'drop-shadow(0 8px 24px rgba(0,0,0,0.14))',
+                    ? 'drop-shadow(0 10px 22px rgba(60,26,18,0.13)) drop-shadow(0 36px 70px rgba(153,64,43,0.28))'
+                    : 'drop-shadow(0 6px 18px rgba(60,26,18,0.10))',
                 }}
               >
                 {/* Screen content — inset matches phone bezel on active, fills full rect on peeks */}
@@ -675,10 +675,10 @@ export default function Home() {
     <>
       <Nav onCTAClick={() => setModalOpen(true)} hideUntilScroll />
 
-      <main className="flex-grow pt-16 bg-white">
+      <main className="flex-grow bg-white">
 
         {/* ── Hero ────────────────────────────────────────────────── */}
-        <section className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center text-center px-6 pt-14 pb-0 bg-white overflow-hidden">
+        <section className="aurora min-h-screen flex flex-col items-center justify-center text-center px-6 pt-24 pb-0 bg-white overflow-hidden">
           <h1 className="font-display text-[2.6rem] leading-[1.06] sm:text-6xl md:text-7xl text-on-surface max-w-2xl mx-auto mb-5">
             Your treatment,{' '}
             <span className="text-primary italic">managed by Aesthetic&nbsp;Intelligence.</span>
@@ -687,7 +687,7 @@ export default function Home() {
             Tell Oia your goals, timeline, and budget. She matches you to an accredited surgeon — available when you are.
           </p>
           <button onClick={() => setModalOpen(true)}
-            className="bg-primary text-on-primary px-8 py-4 rounded-lg font-body font-semibold text-label-caps uppercase tracking-widest hover:opacity-90 active:opacity-80 transition-all mb-14">
+            className="lift-cta bg-primary text-on-primary px-8 py-4 rounded-xl font-body font-semibold text-label-caps uppercase tracking-widest active:opacity-90 mb-14">
             Talk to Oia
           </button>
 
@@ -838,7 +838,7 @@ export default function Home() {
         </section>
 
         {/* ── Bottom CTA ───────────────────────────────────────────── */}
-        <section className="py-20 md:py-28 bg-surface-container-low px-6 text-center">
+        <section className="aurora py-20 md:py-28 bg-surface-container-low px-6 text-center overflow-hidden">
           <p className="font-body text-label-caps text-primary uppercase tracking-[0.2em] mb-4">Start your journey</p>
           <h2 className="font-display text-3xl md:text-5xl text-on-surface mb-6 max-w-xl mx-auto">
             We&apos;re inviting a limited number of patients to plan their journey with Oia.
@@ -847,7 +847,7 @@ export default function Home() {
             Early patients receive special partner discounts and a dedicated concierge — no commitment, just a conversation. Ask Oia if she is available in your country.
           </p>
           <button onClick={() => setModalOpen(true)}
-            className="bg-primary text-on-primary px-8 py-4 rounded-lg font-body font-semibold text-label-caps uppercase tracking-widest hover:opacity-90 active:opacity-80 transition-all">
+            className="lift-cta bg-primary text-on-primary px-8 py-4 rounded-xl font-body font-semibold text-label-caps uppercase tracking-widest active:opacity-90">
             Talk to Oia
           </button>
           <p className="font-body text-[11px] text-on-surface-variant mt-4 italic opacity-60">Informed, not overwhelmed.</p>
@@ -895,7 +895,7 @@ export default function Home() {
           <span className="absolute animate-[niaGloss_3.6s_ease-in-out_infinite]" style={{ top: '5%', left: '8%', width: '50%', height: '36%', background: 'radial-gradient(ellipse, rgba(255,255,255,0.92) 0%, rgba(255,245,240,0.45) 45%, transparent 78%)', filter: 'blur(2px)', borderRadius: '50%' }} />
           <span className="absolute" style={{ top: '9%', left: '16%', width: '17%', height: '12%', background: 'radial-gradient(ellipse, rgba(255,255,255,1) 0%, transparent 80%)', filter: 'blur(0.5px)', borderRadius: '50%' }} />
           <span className="nia-spark absolute inset-0 flex items-center justify-center select-none" style={{ opacity: 0.5, filter: 'drop-shadow(0 0 3px rgba(110,28,18,0.55))', transition: 'opacity 0.4s ease, filter 0.4s ease', zIndex: 10 }}>
-            <svg width="24" height="24" viewBox="0 0 100 100" fill="none"><path d="M50 0 C50 0 56 44 100 50 C56 56 50 100 50 100 C50 100 44 56 0 50 C44 44 50 0 50 0Z" fill="#7d2c19" /></svg>
+            <svg width="26" height="26" viewBox="0 0 100 100" fill="none"><g className="oia-turn"><path fillRule="evenodd" fill="#7d2c19" d="M4,50 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0 Z M24,50 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0 Z" /></g></svg>
           </span>
         </button>
       </div>

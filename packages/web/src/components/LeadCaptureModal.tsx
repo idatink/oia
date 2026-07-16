@@ -84,7 +84,10 @@ export default function LeadCaptureModal({ open, onClose }: LeadCaptureModalProp
       />
 
       {/* Modal card */}
-      <div className="relative w-full sm:max-w-md bg-surface rounded-t-card3 sm:rounded-card2 shadow-concierge px-6 pt-7 pb-8 sm:p-8 mx-0 sm:mx-6 animate-[sheetUp_0.28s_cubic-bezier(0.22,1,0.36,1)]">
+      <div
+        className="relative w-full sm:max-w-md bg-surface/80 backdrop-blur-xl border border-white/50 rounded-t-card3 sm:rounded-card2 px-6 pt-7 pb-8 sm:p-8 mx-0 sm:mx-6 animate-[sheetUp_0.28s_cubic-bezier(0.22,1,0.36,1)]"
+        style={{ boxShadow: 'var(--elev-float), inset 0 1px 0 rgba(255,255,255,0.6)' }}
+      >
         {/* Close */}
         <button
           onClick={onClose}
