@@ -63,6 +63,44 @@
   .cmp .vs{font-family:var(--serif);font-style:italic;color:var(--terra-soft);font-size:14px}
   .cmp .new{color:var(--ink);font-size:14.5px;font-weight:500}
 
+  /* ── Product phone mockup ── */
+  .showcase{display:grid;grid-template-columns:1fr 320px;gap:48px;align-items:center;margin-top:40px}
+  .showcase .ticks{list-style:none;margin-top:26px;display:flex;flex-direction:column;gap:14px}
+  .showcase .ticks li{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--muted)}
+  .showcase .ticks b{color:var(--ink);font-weight:600}
+  .showcase .ticks .dot{width:8px;height:8px;border-radius:50%;background:var(--terracotta);margin-top:7px;flex:none}
+  .device{position:relative;width:300px;margin:0 auto;animation:float 6s var(--ease) infinite alternate;filter:drop-shadow(0 34px 60px rgba(153,64,43,.26))}
+  @keyframes float{to{transform:translateY(-14px)}}
+  .screen{background:var(--cream);border-radius:40px;border:9px solid #26201f;height:566px;overflow:hidden;display:flex;flex-direction:column;position:relative}
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:118px;height:24px;background:#26201f;border-radius:0 0 15px 15px;z-index:6}
+  .chead{display:flex;align-items:center;gap:10px;padding:26px 16px 11px;border-bottom:1px solid var(--line);background:var(--cream)}
+  .chead .av{width:30px;height:30px;border-radius:50%;background:var(--terracotta);display:flex;align-items:center;justify-content:center;flex:none}
+  .chead .av svg{width:15px;height:15px;transform-box:fill-box;transform-origin:center;animation:turn 14s linear infinite}
+  .chead .nm{font-size:12px;font-weight:600;color:var(--ink);line-height:1.2}
+  .chead .st{font-size:9.5px;color:#40794f;display:flex;align-items:center;gap:4px}
+  .chead .st i{width:5px;height:5px;border-radius:50%;background:#4caf72;display:inline-block}
+  .cbody{flex:1;padding:14px 12px;display:flex;flex-direction:column;gap:10px}
+  .msg{max-width:84%;padding:9px 12px;font-size:12px;line-height:1.42;border-radius:15px}
+  .mo{align-self:flex-start;background:rgba(255,255,255,.62);border:1px solid var(--rim);color:var(--ink);border-top-left-radius:4px;box-shadow:0 2px 8px -4px rgba(60,26,18,.1)}
+  .mp{align-self:flex-end;background:var(--terracotta);color:#fff;border-top-right-radius:4px;position:relative}
+  .tap{position:absolute;bottom:-11px;left:-7px;background:#fff;border:1px solid rgba(153,64,43,.12);border-radius:999px;padding:2px 7px;display:flex;align-items:center;gap:3px;box-shadow:0 3px 9px -3px rgba(60,26,18,.24);font-size:11px;line-height:1;transform-origin:bottom left}
+  .tap svg{width:9px;height:9px;flex:none}
+  .mcard{align-self:flex-start;width:84%;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 5px 16px -7px rgba(60,26,18,.22)}
+  .mcard .ph{height:66px;position:relative;background:linear-gradient(120deg,#b7734f,#e0a988)}
+  .mcard .ph .rating{position:absolute;top:7px;right:7px;background:rgba(255,255,255,.22);backdrop-filter:blur(4px);border-radius:999px;padding:2px 7px;font-size:9px;color:#fff;font-weight:600}
+  .mcard .ph .loc{position:absolute;bottom:6px;left:9px;color:#fff}
+  .mcard .ph .loc h5{font-size:11px;font-weight:600;line-height:1.2}
+  .mcard .ph .loc span{font-size:8.5px;opacity:.85}
+  .mcard .cc{padding:8px 10px;display:flex;justify-content:space-between;align-items:center}
+  .mcard .cc p{font-size:9px;color:var(--muted)}
+  .mcard .cc b{font-size:12px;color:var(--terracotta);font-weight:600}
+  /* chat entrance (staggered on slide-in) */
+  .ce{opacity:0;transform:translateY(12px) scale(.98);transition:opacity .55s var(--ease),transform .55s var(--ease)}
+  .slide.in .ce{opacity:1;transform:none}
+  .slide.in .tap{animation:pop .45s cubic-bezier(.34,1.56,.64,1) both}
+  @keyframes pop{0%{opacity:0;transform:scale(.4)}60%{transform:scale(1.14)}100%{opacity:1;transform:scale(1)}}
+  @media(max-width:860px){.showcase{grid-template-columns:1fr;gap:34px}.device{margin-top:6px}}
+
   /* Cover */
   .cover{flex-direction:column;justify-content:center;text-align:center}
   .cover .mark{width:96px;height:96px;margin:0 auto 30px}
@@ -107,7 +145,7 @@
 <div class="aura"><b class="b1"></b><b class="b2"></b><b class="b3"></b></div>
 <div class="brandmini">OIA</div>
 <nav class="dots" aria-hidden="true"></nav>
-<div class="pageno"><b id="pn">01</b> / 10</div>
+<div class="pageno"><b id="pn">01</b> / 11</div>
 
 <!-- 1 · Cover -->
 <section class="slide cover in" id="s1">
@@ -189,7 +227,45 @@
   </div>
 </section>
 
-<!-- 7 · Business Model -->
+<!-- 7 · Product in action -->
+<section class="slide" id="s6p">
+  <div class="wrap">
+    <div class="eyebrow reveal"><svg class="mk" viewBox="0 0 100 100"><path fill-rule="evenodd" fill="#99402b" d="M4,50 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0 Z M24,50 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0 Z"/></svg>Product · in action</div>
+    <h2 class="reveal d1">The conversation <i>does the work.</i></h2>
+    <div class="showcase">
+      <div>
+        <p class="lead reveal d1" style="margin-top:0">One warm thread carries a patient from first question to a verified match — no cold forms, no dead ends.</p>
+        <ul class="ticks reveal d2">
+          <li><span class="dot"></span><span><b>Conversational intake.</b> Goals, history &amp; reference photos — on WhatsApp or web.</span></li>
+          <li><span class="dot"></span><span><b>Verified matches.</b> Surgeons whose real, clinic-certified results fit her goals.</span></li>
+          <li><span class="dot"></span><span><b>Human warmth.</b> Oia reads the moment and reacts — present, never clinical.</span></li>
+        </ul>
+      </div>
+      <div class="device reveal d3">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="chead">
+            <div class="av"><svg viewBox="0 0 100 100"><path fill-rule="evenodd" fill="#fff" d="M4,50 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0 Z M24,50 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0 Z"/></svg></div>
+            <div><div class="nm">Oia</div><div class="st"><i></i>Here with you now</div></div>
+          </div>
+          <div class="cbody">
+            <div class="msg mo ce" style="transition-delay:.4s">What would feeling at home in your body look like for you?</div>
+            <div class="msg mp ce" style="transition-delay:.8s">After two children — I'd love to feel like myself again. Natural, not &ldquo;done&rdquo;.
+              <span class="tap" style="animation-delay:1.25s"><svg viewBox="0 0 100 100"><path fill-rule="evenodd" fill="#99402b" d="M4,50 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0 Z M24,50 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0 Z"/></svg>🤍</span>
+            </div>
+            <div class="msg mo ce" style="transition-delay:1.6s">I understand completely. I've found three surgeons whose real results match yours.</div>
+            <div class="mcard ce" style="transition-delay:2s">
+              <div class="ph"><span class="rating">★ 4.9</span><div class="loc"><h5>Estetik International</h5><span>Istanbul · JCI accredited</span></div></div>
+              <div class="cc"><p>All-inclusive package from</p><b>£6,800</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · Business Model -->
 <section class="slide" id="s7">
   <div class="wrap">
     <div class="eyebrow reveal"><svg class="mk" viewBox="0 0 100 100"><path fill-rule="evenodd" fill="#99402b" d="M4,50 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0 Z M24,50 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0 Z"/></svg>Business model &amp; unit economics</div>
