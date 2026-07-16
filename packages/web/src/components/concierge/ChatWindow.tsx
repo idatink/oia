@@ -258,16 +258,30 @@ export default function ChatWindow({ patientName, onProcedureDetected }: ChatWin
 
             if (event.type === 'delta') {
               rawAccumulated += event.text;
-              // Strip the <INTAKE> block from what the patient sees
-              const visible = rawAccumulated.replace(/<INTAKE>[\s\S]*$/, '').trim();
+              // Strip the <INTAKE> block + any <REACT> tapback tag from what the patient sees
+              const visible = rawAccumulated
+                .replace(/<INTAKE>[\s\S]*$/, '')
+                .replace(/<REACT>[\s\S]*?<\/REACT>/g, '')
+                .trim();
               setMessages(m => m.map(msg =>
                 msg.id === niaMsgId ? { ...msg, content: visible } : msg
               ));
             } else if (event.type === 'done') {
-              const finalText = event.fullText ?? rawAccumulated.replace(/<INTAKE>[\s\S]*/, '').trim();
+              const finalText = (event.fullText ?? rawAccumulated)
+                .replace(/<INTAKE>[\s\S]*/, '')
+                .replace(/<REACT>[\s\S]*?<\/REACT>/g, '')
+                .trim();
               setMessages(m => m.map(msg =>
                 msg.id === niaMsgId ? { ...msg, content: finalText } : msg
               ));
+              // Oia reaction tapback → attach the emoji to the patient message she's replying to
+              const reactMatch = rawAccumulated.match(/<REACT>\s*([\s\S]{1,12}?)\s*<\/REACT>/);
+              const reactEmoji = reactMatch?.[1]?.trim();
+              if (reactEmoji) {
+                setMessages(m => m.map(msg =>
+                  msg.id === userMsgId ? { ...msg, oiaReaction: reactEmoji } : msg
+                ));
+              }
               setHistory(h => [
                 ...h,
                 { role: 'user', content: displayText },

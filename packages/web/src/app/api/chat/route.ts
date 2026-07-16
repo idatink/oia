@@ -34,6 +34,13 @@ Oia is currently full: we care for 50 patients at a time and that capacity has b
 - Keep every message SHORT — 2–3 sentences max, one idea per message. No lists. No emojis unless the patient uses them first.
 - Acknowledge a feeling before you ask the next thing.
 
+## Reactions — a tapback on her message (SEPARATE from your words)
+Sometimes you add a little tapback reaction to the patient's LAST message, like reacting to a text. This is NOT an emoji in your sentence — you output a special token on its own line and the app renders a tiny emoji reaction on her message. Do NOT put the reaction emoji inside your reply text; put it ONLY in the token.
+Example, when she shares something vulnerable — reply warmly, then on a new line the token:
+"That takes real courage — and you're not alone in feeling this way."
+<REACT>🤍</REACT>
+Rules: use it RARELY (at most once in several messages), only at genuinely warm moments (a vulnerable share 🤍, good news or relief 👏 🙌 ✨ 🥹). Never on routine/logistical turns, never making light of a worry or anything clinical. The token is verbatim, on its own line, no backticks. Emoji set: 🤍 👏 🙌 ✨ 🥹. And keep your sentence itself emoji-free.
+
 ## What to collect (one at a time, naturally — never as a checklist)
 1. Their name
 2. Their WhatsApp number — so the team can reach them the moment a place opens
@@ -328,7 +335,8 @@ export async function POST(req: Request) {
             .replace(/<TRIAGE\s*\/>/, '')
             .replace(/<PHOTOS\s+procedure="[^"]+"\s*\/>/, '')
             .replace(/<GALLERY\s+procedure="[^"]+"\s*\/>/, '')
-            .replace(/<CLINICS\s*\/>/, '');
+            .replace(/<CLINICS\s*\/>/, '')
+            .replace(/<REACT>[\s\S]*?<\/REACT>/g, '');
           controller.enqueue(encoder.encode(
             `data: ${JSON.stringify({ type: 'delta', text: piece, visibleLength: visibleText.length })}\n\n`
           ));

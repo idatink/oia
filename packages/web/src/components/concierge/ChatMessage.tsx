@@ -12,6 +12,7 @@ export interface Message {
   timestamp: Date;
   photoPreviewUrls?: string[];
   matchLink?: string; // durable /matches/<token> room link, rendered as a card
+  oiaReaction?: string; // Oia's emoji reaction on a patient message (tapback)
 }
 
 interface ChatMessageProps {
@@ -55,12 +56,25 @@ export default function ChatMessage({ message, patientInitial = 'E', onClinicSel
 
         {/* Text bubble */}
         {message.content && (
-          <div className={`px-4 py-3 rounded-2xl font-body text-body-md leading-relaxed ${
+          <div className={`relative px-4 py-3 rounded-2xl font-body text-body-md leading-relaxed ${
             isOia
               ? 'glass-soft text-on-surface rounded-tl-sm'
               : 'bg-primary text-on-primary rounded-tr-sm'
           }`}>
             {message.content}
+            {/* Oia's reaction tapback — eclipse mark + emoji, on the Oia-facing corner */}
+            {!isOia && message.oiaReaction && (
+              <span
+                className="oia-react absolute -bottom-3 -left-2 flex items-center gap-1 bg-white rounded-full pl-1.5 pr-2 py-1 border border-primary/10"
+                style={{ boxShadow: '0 3px 10px -3px rgba(60,26,18,0.22)' }}
+                aria-label={`Oia reacted ${message.oiaReaction}`}
+              >
+                <svg className="w-3 h-3 shrink-0" viewBox="0 0 100 100" aria-hidden="true">
+                  <path fillRule="evenodd" fill="#99402b" d="M4,50 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0 Z M24,50 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0 Z" />
+                </svg>
+                <span className="text-sm leading-none">{message.oiaReaction}</span>
+              </span>
+            )}
           </div>
         )}
 
