@@ -118,6 +118,32 @@ function PatientMsg({ children, delay = 0 }: { children: React.ReactNode; delay?
   );
 }
 
+/* ── Patient's video note — the "start with a video" intake, shown as a chat attachment ──
+   The Anonymised badge is both an honest label on the clip and a demo of the privacy
+   option the step-01 copy promises. */
+function VideoMsg({ src, duration, delay = 0, anonymised = false }: { src: string; duration: string; delay?: number; anonymised?: boolean }) {
+  return (
+    <div className="flex justify-end" style={{ animation: `msgIn 0.4s ease-out ${delay}s both` }}>
+      <div className="bg-primary p-1 rounded-2xl rounded-br-sm w-[50%] shadow-sm">
+        <div className="relative rounded-[13px] overflow-hidden bg-surface-container-lowest">
+          {/* eslint-disable-next-line @next/next/no-img-element -- animated GIF; next/image would strip motion */}
+          <img src={src} alt="Patient video note to Oia" loading="lazy" className="w-full aspect-square object-cover" />
+          {anonymised && (
+            <span className="absolute top-1 left-1 font-body font-semibold text-[7px] uppercase tracking-wide text-on-surface bg-surface/85 backdrop-blur-sm rounded px-1 py-0.5">
+              Anonymised
+            </span>
+          )}
+          <div className="absolute bottom-1 left-1 flex items-center gap-0.5 bg-on-surface/55 rounded-full pl-0.5 pr-1.5 py-0.5">
+            <svg className="w-2 h-2 fill-white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+            <span className="font-body text-[7px] font-semibold text-white tabular-nums">{duration}</span>
+          </div>
+        </div>
+        <p className="font-body text-[8px] text-on-primary/80 text-right px-1 pt-1 pb-0.5">Video note · Sent</p>
+      </div>
+    </div>
+  );
+}
+
 /* ── Before/After card that appears in chat ── */
 function BeforeAfterCard({ delay = 0 }: { delay?: number }) {
   return (
@@ -715,22 +741,20 @@ export default function Home() {
             <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20">
               <div className="md:w-1/2 text-center md:text-left order-2 md:order-1">
                 <span className="font-body text-[11px] text-primary uppercase tracking-[0.2em] font-semibold block mb-4">01</span>
-                <h3 className="font-display text-3xl md:text-4xl text-on-surface mb-5">Tell Oia your goals</h3>
+                <h3 className="font-display text-3xl md:text-4xl text-on-surface mb-5">Start with a video</h3>
                 <p className="font-body text-body-md text-on-surface-variant leading-relaxed max-w-md">
-                  No forms. Just talk — about what you want, your timeline, your budget. Oia pulls before/after cases that match your goals so you can see what&apos;s realistic.
+                  No forms. Record a short video and explain it exactly as you would to your surgeon — what you want changed, your timeline, your budget. Anonymise your face first if you&apos;d rather stay private. Oia takes it from there: the surgeons who do this work best, and patients who started where you are, so you can see their results.
                 </p>
               </div>
               <div className="md:w-1/2 flex justify-center order-1 md:order-2">
                 <PhoneFrame>
                   <ChatHeader />
-                  <div className="flex-1 overflow-hidden px-3 py-3 flex flex-col gap-2">
-                    <NiaMsg delay={0.2}>Hi! What are you hoping to achieve?</NiaMsg>
-                    <TypingDots from="patient" delay={0.8} duration={0.7} />
-                    <PatientMsg delay={1.4}>I&apos;ve had two kids and I feel great! I&apos;d just love a tummy tuck and a bit of contouring. Purely for my own confidence.</PatientMsg>
-                    <TypingDots from="nia" delay={2.1} duration={0.7} />
-                    <NiaMsg delay={2.7}>And that&apos;s the best reason of all — doing this for you. A tummy tuck with gentle contouring is one of the most rewarding journeys we plan. Here&apos;s what our surgeons achieve:</NiaMsg>
+                  <div className="flex-1 overflow-hidden px-3 py-3 flex flex-col gap-1.5">
+                    <NiaMsg delay={0.2}>Record a video — tell me everything, as you would your surgeon.</NiaMsg>
+                    <VideoMsg src="/screens/video-note.gif" duration="0:47" delay={1.1} anonymised />
+                    <NiaMsg delay={2.4}>Got it. Here&apos;s what our surgeons achieve for patients like you:</NiaMsg>
                     {/* Consent-first results card — body imagery stays private, and that IS the product */}
-                    <div className="ml-7" style={{ animation: 'msgIn 0.4s ease-out 3.1s both' }}>
+                    <div className="ml-7" style={{ animation: 'msgIn 0.4s ease-out 3.0s both' }}>
                       <div className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm">
                         <div className="px-3 py-2.5 flex items-start gap-2.5">
                           <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center shrink-0 text-primary"><IcLock size={16} /></div>
@@ -746,10 +770,6 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
-                    <TypingDots from="nia" delay={3.8} duration={0.6} />
-                    <NiaMsg delay={4.3}>What&apos;s your rough budget and when could you travel?</NiaMsg>
-                    <TypingDots from="patient" delay={5.0} duration={0.6} />
-                    <PatientMsg delay={5.5}>Around £8–11k. Summer works — kids will be at their dad&apos;s.</PatientMsg>
                   </div>
                 </PhoneFrame>
               </div>
