@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Nav from '@/components/Nav';
 import LeadCaptureModal from '@/components/LeadCaptureModal';
+import ResearchClubModal from '@/components/ResearchClubModal';
 import { IcPlane, IcSuite, IcClinic, IcProcedure, IcRecovery, IcHome, IcVest, IcLeggings, IcCapsule, IcSerum, IcPillow, IcSnowflake, IcChevronLeft, IcChevronRight, IcLock } from '@/components/OiaIcons';
 
 function NiaStar({ size = 10, color = 'white' }: { size?: number; color?: string }) {
@@ -670,6 +671,7 @@ function HeroChat() {
 
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [clubOpen, setClubOpen] = useState(false);
 
   return (
     <>
@@ -687,8 +689,13 @@ export default function Home() {
             Tell Oia your goals, timeline, and budget. She matches you to an accredited surgeon — available when you are.
           </p>
           <button onClick={() => setModalOpen(true)}
-            className="lift-cta bg-primary text-on-primary px-8 py-4 rounded-xl font-body font-semibold text-label-caps uppercase tracking-widest active:opacity-90 mb-14">
+            className="lift-cta bg-primary text-on-primary px-8 py-4 rounded-xl font-body font-semibold text-label-caps uppercase tracking-widest active:opacity-90 mb-4">
             Talk to Oia
+          </button>
+
+          <button onClick={() => setClubOpen(true)}
+            className="font-body text-[12px] font-semibold uppercase tracking-[0.15em] text-primary hover:opacity-80 transition-opacity mb-14">
+            Invite only — The Research Club
           </button>
 
           {/* Carousel — single phone, swipeable screens */}
@@ -932,6 +939,7 @@ export default function Home() {
       `}</style>
 
       <LeadCaptureModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      <ResearchClubModal open={clubOpen} onClose={() => setClubOpen(false)} />
     </>
   );
 }
