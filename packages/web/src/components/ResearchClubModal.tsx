@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, type FormEvent } from 'react';
 import { IcLock } from '@/components/OiaIcons';
 
 interface ResearchClubModalProps {
@@ -12,7 +12,23 @@ interface ResearchClubModalProps {
 const WA_NUMBER = (process.env.NEXT_PUBLIC_WA_NUMBER || '447752991023').replace(/[^0-9]/g, '');
 const WA_INVITE_GREETING = "Hi Oia, I have an invite to the Research Club.";
 
-const PREVIEW_CLIPS = ['/research-club/card1.gif', '/research-club/card2.gif', '/research-club/card3.gif'];
+interface PreviewClip {
+  src: string;
+  procedure: string;
+  /** Faces modified with AI to protect the participant's identity. */
+  illustrative?: boolean;
+}
+
+// Procedure labels reflect the most-searched-for plastic surgery categories
+// (ASPS procedural statistics), matched to what's visible in each clip.
+const PREVIEW_CLIPS: PreviewClip[] = [
+  { src: '/research-club/card1.gif', procedure: 'Liposuction' },
+  { src: '/research-club/card2.gif', procedure: 'Rhinoplasty' },
+  { src: '/research-club/card3.gif', procedure: 'Brazilian Butt Lift' },
+  { src: '/research-club/card4.gif', procedure: 'Tummy Tuck', illustrative: true },
+  { src: '/research-club/card5.gif', procedure: 'Arm Lift', illustrative: true },
+  { src: '/research-club/card6.gif', procedure: 'Rhinoplasty', illustrative: true },
+];
 
 type FormState = 'idle' | 'submitting' | 'done' | 'error';
 
@@ -26,6 +42,27 @@ export default function ResearchClubModal({ open, onClose }: ResearchClubModalPr
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [state, setState] = useState<FormState>('idle');
+
+  // Preview clip carousel
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [activeClip, setActiveClip] = useState(0);
+
+  const handleCarouselScroll = useCallback(() => {
+    const el = carouselRef.current;
+    const first = el?.children[0] as HTMLElement | undefined;
+    if (!el || !first) return;
+    const step = first.getBoundingClientRect().width + 12; // matches gap-3
+    const idx = Math.round(el.scrollLeft / step);
+    setActiveClip(Math.max(0, Math.min(PREVIEW_CLIPS.length - 1, idx)));
+  }, []);
+
+  const goToClip = useCallback((idx: number) => {
+    const el = carouselRef.current;
+    const clamped = Math.max(0, Math.min(PREVIEW_CLIPS.length - 1, idx));
+    const target = el?.children[clamped] as HTMLElement | undefined;
+    if (!el || !target) return;
+    el.scrollTo({ left: target.offsetLeft, behavior: 'smooth' });
+  }, []);
 
   // Close on Escape, lock background scroll while open.
   useEffect(() => {
@@ -48,7 +85,7 @@ export default function ResearchClubModal({ open, onClose }: ResearchClubModalPr
   }, [open]);
 
   const submit = useCallback(
-    async (e: React.FormEvent) => {
+    async (e: FormEvent) => {
       e.preventDefault();
       if (!name.trim() || !email.trim()) return;
       setState('submitting');
@@ -119,22 +156,80 @@ export default function ResearchClubModal({ open, onClose }: ResearchClubModalPr
           so the next woman considering the same thing can see a real outcome first.
         </p>
 
-        {/* Preview clips */}
-        <div className="mt-6 grid grid-cols-3 gap-3">
-          {PREVIEW_CLIPS.map((src) => (
-            <div key={src} className="relative rounded-card overflow-hidden bg-surface-container-lowest border border-outline-variant/50">
-              <div className="relative aspect-square">
-                {/* eslint-disable-next-line @next/next/no-img-element -- animated GIF; next/image would strip motion */}
-                <img src={src} alt="" className="w-full h-full object-cover" />
+        {/* Preview clips — swipeable carousel so visitors can find a procedure that relates to them */}
+        <div className="mt-6">
+          <div
+            ref={carouselRef}
+            onScroll={handleCarouselScroll}
+            className="relative flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 -mx-6 px-6 sm:mx-0 sm:px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {PREVIEW_CLIPS.map((clip) => (
+              <div
+                key={clip.src}
+                className="relative shrink-0 w-[64%] sm:w-[42%] snap-center rounded-card overflow-hidden bg-surface-container-lowest border border-outline-variant/50"
+              >
+                <div className="relative aspect-square">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- animated GIF; next/image would strip motion */}
+                  <img src={clip.src} alt={`${clip.procedure} preview`} className="w-full h-full object-cover" />
+                </div>
+                <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1 max-w-[calc(100%-2.75rem)]">
+                  <span className="font-body font-semibold text-[9px] uppercase tracking-wide text-on-surface bg-surface/85 backdrop-blur-sm rounded px-1.5 py-0.5 truncate">
+                    {clip.procedure}
+                  </span>
+                  {clip.illustrative && (
+                    <span className="shrink-0 font-body font-semibold text-[8px] uppercase tracking-wide text-on-surface-variant bg-surface/70 backdrop-blur-sm rounded px-1.5 py-0.5">
+                      Illustrative
+                    </span>
+                  )}
+                </div>
+                <span className="absolute bottom-1.5 right-1.5 font-body font-semibold text-[8px] uppercase tracking-wide text-on-primary bg-on-surface/60 rounded px-1.5 py-0.5">
+                  Preview
+                </span>
               </div>
-              <span className="absolute bottom-1.5 right-1.5 font-body font-semibold text-[8px] uppercase tracking-wide text-on-primary bg-on-surface/60 rounded px-1.5 py-0.5">
-                Preview
-              </span>
+            ))}
+          </div>
+
+          {/* Dots + arrows */}
+          <div className="mt-2.5 flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => goToClip(activeClip - 1)}
+              disabled={activeClip === 0}
+              aria-label="Previous preview"
+              className="hidden sm:flex w-6 h-6 items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container disabled:opacity-30 transition-colors"
+            >
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <div className="flex items-center gap-1.5">
+              {PREVIEW_CLIPS.map((clip, i) => (
+                <button
+                  key={clip.src}
+                  type="button"
+                  onClick={() => goToClip(i)}
+                  aria-label={`Show ${clip.procedure} preview`}
+                  className={`h-1.5 rounded-full transition-all ${
+                    i === activeClip ? 'w-4 bg-primary' : 'w-1.5 bg-outline-variant'
+                  }`}
+                />
+              ))}
             </div>
-          ))}
+            <button
+              type="button"
+              onClick={() => goToClip(activeClip + 1)}
+              disabled={activeClip === PREVIEW_CLIPS.length - 1}
+              aria-label="Next preview"
+              className="hidden sm:flex w-6 h-6 items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container disabled:opacity-30 transition-colors"
+            >
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
         </div>
         <p className="mt-3 font-body text-[11.5px] leading-relaxed text-on-surface-variant">
-          Shown with participant consent ahead of the Research Club&apos;s launch. Results vary by person; Oia never guarantees an outcome.
+          Shown with participant consent ahead of the Research Club&apos;s launch. Clips marked &ldquo;Illustrative&rdquo; have faces modified with AI to protect participant identity. Results vary by person; Oia never guarantees an outcome.
         </p>
 
         {/* Invite form */}
