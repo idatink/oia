@@ -172,16 +172,14 @@ export default function ResearchClubModal({ open, onClose }: ResearchClubModalPr
                   {/* eslint-disable-next-line @next/next/no-img-element -- animated GIF; next/image would strip motion */}
                   <img src={clip.src} alt={`${clip.procedure} preview`} className="w-full h-full object-cover" />
                 </div>
-                <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1 max-w-[calc(100%-2.75rem)]">
-                  <span className="font-body font-semibold text-[9px] uppercase tracking-wide text-on-surface bg-surface/85 backdrop-blur-sm rounded px-1.5 py-0.5 truncate">
-                    {clip.procedure}
+                {clip.illustrative && (
+                  <span className="absolute top-1.5 left-1.5 font-body font-semibold text-[8px] uppercase tracking-wide text-on-surface-variant bg-surface/85 backdrop-blur-sm rounded px-1.5 py-0.5">
+                    Illustrative
                   </span>
-                  {clip.illustrative && (
-                    <span className="shrink-0 font-body font-semibold text-[8px] uppercase tracking-wide text-on-surface-variant bg-surface/70 backdrop-blur-sm rounded px-1.5 py-0.5">
-                      Illustrative
-                    </span>
-                  )}
-                </div>
+                )}
+                <span className="absolute bottom-1.5 left-1.5 max-w-[calc(100%-3.5rem)] font-body font-semibold text-[9px] uppercase tracking-wide text-on-surface bg-surface/85 backdrop-blur-sm rounded px-1.5 py-0.5 truncate">
+                  {clip.procedure}
+                </span>
                 <span className="absolute bottom-1.5 right-1.5 font-body font-semibold text-[8px] uppercase tracking-wide text-on-primary bg-on-surface/60 rounded px-1.5 py-0.5">
                   Preview
                 </span>
