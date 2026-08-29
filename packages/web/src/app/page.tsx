@@ -707,20 +707,33 @@ export default function Home() {
 
         {/* ── Hero ────────────────────────────────────────────────── */}
         <section className="aurora min-h-screen flex flex-col items-center justify-center text-center px-6 pt-24 pb-0 bg-white overflow-hidden">
-          <h1 className="font-display text-[2.6rem] leading-[1.06] sm:text-6xl md:text-7xl text-on-surface max-w-2xl mx-auto mb-5">
-            Your treatment,{' '}
-            <span className="text-primary italic">managed by Aesthetic&nbsp;Intelligence.</span>
+          <h1 className="font-display text-[2rem] leading-[1.1] sm:text-[2.75rem] md:text-[3.4rem] text-on-surface max-w-4xl mx-auto mb-5">
+            <span className="block">Planning plastic surgery is hard.</span>
+            <span className="block text-primary italic">Oia makes it simple and safe.</span>
           </h1>
-          <p className="font-body text-body-md text-on-surface-variant max-w-sm mx-auto mb-8 leading-relaxed">
-            Tell Oia your goals, timeline, and budget. She matches you to an accredited surgeon — available when you are.
+          <p className="font-body text-body-md text-on-surface-variant max-w-lg mx-auto mb-7 leading-relaxed">
+            The research is overwhelming. The reviews are hard to trust. Doing it abroad is harder still.
+            Oia handles all of it — verified surgeons, honest prices, and someone on your side from your
+            first question to your last check-up.
           </p>
+
+          {/* Scope rail — makes "research to post-op" concrete in the first fold */}
+          <div className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-2 font-body text-[10.5px] uppercase tracking-[0.16em] text-on-surface-variant/75 max-w-lg mx-auto mb-9">
+            {['Research', 'Surgeon', 'Travel & clinic', 'Surgery', 'Recovery'].map((stage, i) => (
+              <span key={stage} className="flex items-center gap-2.5">
+                {i > 0 && <span className="w-1 h-1 rounded-full bg-primary/40 inline-block" />}
+                {stage}
+              </span>
+            ))}
+          </div>
+
           <button onClick={() => setModalOpen(true)}
             className="lift-cta bg-primary text-on-primary px-8 py-4 rounded-xl font-body font-semibold text-label-caps uppercase tracking-widest active:opacity-90 mb-4">
             Talk to Oia
           </button>
 
           <button onClick={() => setClubOpen(true)}
-            className="font-body text-[12px] font-semibold uppercase tracking-[0.15em] text-primary hover:opacity-80 transition-opacity mb-14">
+            className="font-body text-[12px] font-semibold uppercase tracking-[0.15em] text-primary hover:opacity-80 transition-opacity mb-11">
             Invite only — The Research Club
           </button>
 
