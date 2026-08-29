@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Nav from '@/components/Nav';
 import LeadCaptureModal from '@/components/LeadCaptureModal';
 import ResearchClubModal from '@/components/ResearchClubModal';
@@ -698,6 +698,27 @@ function HeroChat() {
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [clubOpen, setClubOpen] = useState(false);
+
+  // The Research Club is the homepage's main hook, so it opens on arrival rather than
+  // waiting for a click. Short delay lets the hero paint first (an instant modal reads
+  // as a broken page), and we show it once per browser session so a returning visitor
+  // isn't nagged on every visit — the "Invite only" button still opens it any time.
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem('oia_club_seen') === '1') return;
+    } catch {
+      // Private mode or blocked storage — fall through and just show it.
+    }
+    const timer = setTimeout(() => {
+      setClubOpen(true);
+      try {
+        sessionStorage.setItem('oia_club_seen', '1');
+      } catch {
+        // Non-fatal: worst case it shows again next navigation.
+      }
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <>
