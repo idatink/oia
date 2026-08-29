@@ -45,6 +45,7 @@ export default function ResearchClubModal({ open, onClose }: ResearchClubModalPr
 
   // Preview clip carousel
   const carouselRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
   const [activeClip, setActiveClip] = useState(0);
 
   const handleCarouselScroll = useCallback(() => {
@@ -79,9 +80,13 @@ export default function ResearchClubModal({ open, onClose }: ResearchClubModalPr
     };
   }, [open, onClose]);
 
-  // Reset form state each time the modal is reopened.
+  // Reset form state each time the modal is reopened, and move focus into the dialog.
+  // Focus matters more than usual here: the modal can open on its own, so a keyboard or
+  // screen-reader user would otherwise be left outside a dialog they never asked for.
   useEffect(() => {
-    if (open) setState('idle');
+    if (!open) return;
+    setState('idle');
+    closeRef.current?.focus();
   }, [open]);
 
   const submit = useCallback(
@@ -126,6 +131,7 @@ export default function ResearchClubModal({ open, onClose }: ResearchClubModalPr
       >
         {/* Close */}
         <button
+          ref={closeRef}
           onClick={onClose}
           aria-label="Close"
           className="absolute top-4 right-4 w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container transition-colors"
@@ -170,7 +176,9 @@ export default function ResearchClubModal({ open, onClose }: ResearchClubModalPr
               >
                 <div className="relative aspect-square">
                   {/* eslint-disable-next-line @next/next/no-img-element -- animated GIF; next/image would strip motion */}
-                  <img src={clip.src} alt={`${clip.procedure} preview`} className="w-full h-full object-cover" />
+                  {/* Lazy so the off-screen carousel cards don't all download on arrival —
+                      this modal now opens automatically, so its weight is on the landing path. */}
+                  <img src={clip.src} alt={`${clip.procedure} preview`} loading="lazy" className="w-full h-full object-cover" />
                 </div>
                 {clip.illustrative && (
                   <span className="absolute top-1.5 left-1.5 font-body font-semibold text-[8px] uppercase tracking-wide text-on-surface-variant bg-surface/85 backdrop-blur-sm rounded px-1.5 py-0.5">
