@@ -1,0 +1,54 @@
+name: Deploy marketing site to GitHub Pages
+
+# Builds only the public marketing pages of packages/web as static files.
+# The app (concierge chat, intake, profile, API routes) needs a server and is
+# left out of this build; "Talk to Oia" buttons open WhatsApp instead.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Drop server-only routes from this build
+        working-directory: packages/web
+        run: rm -rf src/app/api src/app/concierge src/app/profile src/app/compare src/app/matches
+      - name: Build static site
+        working-directory: packages/web
+        env:
+          STATIC_EXPORT: '1'
+          NEXT_PUBLIC_STATIC_SITE: '1'
+          NEXT_TELEMETRY_DISABLED: '1'
+        run: npx next build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: packages/web/out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
