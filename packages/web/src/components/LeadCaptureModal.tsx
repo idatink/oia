@@ -19,6 +19,10 @@ const WA_GREETING = "Hi Oia, I'd like to chat about a treatment. 🤍";
 // false to restore the channel-selection modal.
 const SKIP_CHANNEL_MODAL = true;
 
+// Static marketing build (GitHub Pages): the web chat isn't deployed, so every
+// "Talk to Oia" CTA goes straight to WhatsApp instead.
+const STATIC_SITE = process.env.NEXT_PUBLIC_STATIC_SITE === '1';
+
 /**
  * Channel-selection modal. When a visitor presses any "Talk to Oia" / "Ask Oia"
  * CTA (all of which toggle `open`), they choose how they'd like to chat:
@@ -35,7 +39,11 @@ export default function LeadCaptureModal({ open, onClose }: LeadCaptureModalProp
   useEffect(() => {
     if (SKIP_CHANNEL_MODAL && open) {
       onClose();
-      router.push('/concierge');
+      if (STATIC_SITE) {
+        window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(WA_GREETING)}`, '_blank', 'noopener');
+      } else {
+        router.push('/concierge');
+      }
     }
   }, [open, onClose, router]);
 
